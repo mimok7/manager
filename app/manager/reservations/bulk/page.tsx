@@ -874,22 +874,333 @@ export default function BulkReservationPage() {
                                         </div>
 
                                         {/* 서비스별 상세 정보 */}
-                                        {!reservationDetails?.error && viewingReservation.services.map((service, idx) => (
-                                            <div key={idx} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <h4 className="font-semibold text-gray-900 text-lg">
-                                                        {getTypeName(service.re_type)} 서비스
-                                                    </h4>
-                                                    <div className={`inline-flex items-center px-3 py-1 rounded text-sm ${getStatusColor(service.re_status)}`}>
-                                                        {getStatusText(service.re_status)}
-                                                    </div>
-                                                </div>
-                                                <div className="text-sm text-gray-600 mb-3">
-                                                    예약 ID: <span className="font-mono">{service.re_id}</span>
-                                                </div>
-                                                <div className="text-sm text-gray-500">
-                                                    상세 정보는 수정 페이지에서 확인할 수 있습니다.
-                                                </div>
+                                        {!reservationDetails?.error && reservationDetails && Object.entries(reservationDetails).map(([serviceType, serviceDataArray]: [string, any]) => (
+                                            <div key={serviceType}>
+                                                {Array.isArray(serviceDataArray) && serviceDataArray.map((serviceData: any, idx: number) => {
+                                                    const service = serviceData.service;
+
+                                                    return (
+                                                        <div key={idx} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 mb-4">
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <h4 className="font-semibold text-gray-900 text-lg">
+                                                                    {getTypeName(service.re_type)} 서비스
+                                                                </h4>
+                                                                <div className={`inline-flex items-center px-3 py-1 rounded text-sm ${getStatusColor(service.re_status)}`}>
+                                                                    {getStatusText(service.re_status)}
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-sm text-gray-600 mb-4">
+                                                                예약 ID: <span className="font-mono">{service.re_id}</span>
+                                                            </div>
+
+                                                            {/* 크루즈 상세 정보 */}
+                                                            {serviceType === 'cruise' && serviceData.cruise && (
+                                                                <div className="space-y-4">
+                                                                    <div className="bg-blue-50 p-4 rounded-lg">
+                                                                        <h5 className="font-semibold text-gray-900 mb-3">객실 정보</h5>
+                                                                        <div className="grid grid-cols-2 gap-3">
+                                                                            {serviceData.cruise.roomPriceInfo && (
+                                                                                <>
+                                                                                    <div>
+                                                                                        <span className="text-sm text-gray-600">크루즈:</span>
+                                                                                        <p className="font-medium text-gray-900">{serviceData.cruise.roomPriceInfo.cruise}</p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className="text-sm text-gray-600">객실 타입:</span>
+                                                                                        <p className="font-medium text-gray-900">{serviceData.cruise.roomPriceInfo.room_type}</p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className="text-sm text-gray-600">카테고리:</span>
+                                                                                        <p className="font-medium text-gray-900">{serviceData.cruise.roomPriceInfo.room_category}</p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className="text-sm text-gray-600">일정:</span>
+                                                                                        <p className="font-medium text-gray-900">{serviceData.cruise.roomPriceInfo.schedule}</p>
+                                                                                    </div>
+                                                                                </>
+                                                                            )}
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">체크인:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.cruise.checkin}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">체크아웃:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.cruise.checkout}</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">투숙객 수:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.cruise.guest_count}명</p>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">객실 총액:</span>
+                                                                                <p className="font-medium text-blue-600">{serviceData.cruise.room_total_price?.toLocaleString()}동</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        {serviceData.cruise.request_note && (
+                                                                            <div className="mt-3">
+                                                                                <span className="text-sm text-gray-600">요청사항:</span>
+                                                                                <p className="text-gray-900 mt-1 whitespace-pre-wrap">{serviceData.cruise.request_note}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* 차량 정보 */}
+                                                                    {serviceData.cars && serviceData.cars.length > 0 && (
+                                                                        <div className="bg-green-50 p-4 rounded-lg">
+                                                                            <h5 className="font-semibold text-gray-900 mb-3">차량 정보 ({serviceData.cars.length}대)</h5>
+                                                                            {serviceData.cars.map((car: any, carIdx: number) => (
+                                                                                <div key={carIdx} className="bg-white p-3 rounded mb-2 last:mb-0">
+                                                                                    <div className="grid grid-cols-2 gap-2">
+                                                                                        {car.priceInfo && (
+                                                                                            <>
+                                                                                                <div>
+                                                                                                    <span className="text-sm text-gray-600">차량 타입:</span>
+                                                                                                    <p className="font-medium text-gray-900">{car.priceInfo.car_type}</p>
+                                                                                                </div>
+                                                                                                <div>
+                                                                                                    <span className="text-sm text-gray-600">카테고리:</span>
+                                                                                                    <p className="font-medium text-gray-900">{car.priceInfo.car_category}</p>
+                                                                                                </div>
+                                                                                            </>
+                                                                                        )}
+                                                                                        {car.vehicle_number && (
+                                                                                            <div>
+                                                                                                <span className="text-sm text-gray-600">차량번호:</span>
+                                                                                                <p className="font-medium text-gray-900">{car.vehicle_number}</p>
+                                                                                            </div>
+                                                                                        )}
+                                                                                        {car.seat_number && (
+                                                                                            <div>
+                                                                                                <span className="text-sm text-gray-600">좌석수:</span>
+                                                                                                <p className="font-medium text-gray-900">{car.seat_number}인승</p>
+                                                                                            </div>
+                                                                                        )}
+                                                                                        {car.boarding_assist && (
+                                                                                            <div>
+                                                                                                <span className="text-sm text-gray-600">승선보조:</span>
+                                                                                                <p className="font-medium text-gray-900">{car.boarding_assist}</p>
+                                                                                            </div>
+                                                                                        )}
+                                                                                        {car.pickup_location && (
+                                                                                            <div>
+                                                                                                <span className="text-sm text-gray-600">픽업 위치:</span>
+                                                                                                <p className="font-medium text-gray-900">{car.pickup_location}</p>
+                                                                                            </div>
+                                                                                        )}
+                                                                                        {car.dropoff_location && (
+                                                                                            <div>
+                                                                                                <span className="text-sm text-gray-600">하차 위치:</span>
+                                                                                                <p className="font-medium text-gray-900">{car.dropoff_location}</p>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* 공항 상세 정보 */}
+                                                            {serviceType === 'airport' && serviceData.airport && (
+                                                                <div className="bg-purple-50 p-4 rounded-lg">
+                                                                    <h5 className="font-semibold text-gray-900 mb-3">공항 서비스 정보</h5>
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        {serviceData.airport.ra_airport_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">공항:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.airport.ra_airport_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.airport.ra_flight_number && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">항공편:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.airport.ra_flight_number}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.airport.ra_datetime && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">일시:</span>
+                                                                                <p className="font-medium text-gray-900">
+                                                                                    {new Date(serviceData.airport.ra_datetime).toLocaleString('ko-KR')}
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.airport.ra_passenger_count && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">승객 수:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.airport.ra_passenger_count}명</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.airport.ra_pickup_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">픽업 위치:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.airport.ra_pickup_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.airport.ra_dropoff_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">하차 위치:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.airport.ra_dropoff_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    {serviceData.airport.ra_request_note && (
+                                                                        <div className="mt-3">
+                                                                            <span className="text-sm text-gray-600">요청사항:</span>
+                                                                            <p className="text-gray-900 mt-1 whitespace-pre-wrap">{serviceData.airport.ra_request_note}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* 호텔 상세 정보 */}
+                                                            {serviceType === 'hotel' && serviceData.hotel && (
+                                                                <div className="bg-pink-50 p-4 rounded-lg">
+                                                                    <h5 className="font-semibold text-gray-900 mb-3">호텔 정보</h5>
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        {serviceData.hotel.hotel_name && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">호텔명:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.hotel_name}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.hotel.room_type && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">객실 타입:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.room_type}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.hotel.checkin_date && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">체크인:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.checkin_date}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.hotel.checkout_date && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">체크아웃:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.checkout_date}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.hotel.nights && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">숙박일:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.nights}박</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.hotel.guest_count && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">투숙객 수:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.hotel.guest_count}명</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    {serviceData.hotel.request_note && (
+                                                                        <div className="mt-3">
+                                                                            <span className="text-sm text-gray-600">요청사항:</span>
+                                                                            <p className="text-gray-900 mt-1 whitespace-pre-wrap">{serviceData.hotel.request_note}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* 투어 상세 정보 */}
+                                                            {serviceType === 'tour' && serviceData.tour && (
+                                                                <div className="bg-orange-50 p-4 rounded-lg">
+                                                                    <h5 className="font-semibold text-gray-900 mb-3">투어 정보</h5>
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        {serviceData.tour.tour_name && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">투어명:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.tour.tour_name}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.tour.tour_date && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">투어 날짜:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.tour.tour_date}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.tour.participant_count && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">참가자 수:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.tour.participant_count}명</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.tour.pickup_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">픽업 위치:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.tour.pickup_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    {serviceData.tour.request_note && (
+                                                                        <div className="mt-3">
+                                                                            <span className="text-sm text-gray-600">요청사항:</span>
+                                                                            <p className="text-gray-900 mt-1 whitespace-pre-wrap">{serviceData.tour.request_note}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* 렌터카 상세 정보 */}
+                                                            {serviceType === 'rentcar' && serviceData.rentcar && (
+                                                                <div className="bg-yellow-50 p-4 rounded-lg">
+                                                                    <h5 className="font-semibold text-gray-900 mb-3">렌터카 정보</h5>
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        {serviceData.rentcar.vehicle_type && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">차량 타입:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.rentcar.vehicle_type}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.rentcar.pickup_datetime && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">픽업 일시:</span>
+                                                                                <p className="font-medium text-gray-900">
+                                                                                    {new Date(serviceData.rentcar.pickup_datetime).toLocaleString('ko-KR')}
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.rentcar.return_datetime && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">반납 일시:</span>
+                                                                                <p className="font-medium text-gray-900">
+                                                                                    {new Date(serviceData.rentcar.return_datetime).toLocaleString('ko-KR')}
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.rentcar.rental_days && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">대여일:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.rentcar.rental_days}일</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.rentcar.pickup_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">픽업 위치:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.rentcar.pickup_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                        {serviceData.rentcar.return_location && (
+                                                                            <div>
+                                                                                <span className="text-sm text-gray-600">반납 위치:</span>
+                                                                                <p className="font-medium text-gray-900">{serviceData.rentcar.return_location}</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    {serviceData.rentcar.request_note && (
+                                                                        <div className="mt-3">
+                                                                            <span className="text-sm text-gray-600">요청사항:</span>
+                                                                            <p className="text-gray-900 mt-1 whitespace-pre-wrap">{serviceData.rentcar.request_note}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         ))}
                                     </div>
