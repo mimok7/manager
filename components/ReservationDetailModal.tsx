@@ -118,8 +118,14 @@ const CruiseDetailSection = ({ reservation }: { reservation: any }) => {
                                             <div><strong>룸 카테고리:</strong> {cruise.room_price?.room_category || '정보 없음'}</div>
                                             <div><strong>크루즈:</strong> {cruise.room_price?.cruise || '정보 없음'}</div>
                                             <div><strong>룸 타입:</strong> {cruise.room_price?.room_type || '정보 없음'}</div>
-                                            <div><strong>가격:</strong> <span className="text-green-600 font-medium">{cruise.room_price?.price?.toLocaleString() || 0}동</span></div>
-                                            <div><strong>투숙객 수:</strong> {cruise.guest_count}명</div>
+                                            <div><strong>단가:</strong> <span className="text-green-600 font-medium">{cruise.room_price?.price?.toLocaleString() || 0}동</span></div>
+                                            {cruise.room_price?.payment && <div><strong>결제:</strong> <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">{cruise.room_price.payment}</span></div>}
+                                            <div>
+                                                <strong>투숙객 수:</strong>
+                                                <span className="font-semibold text-purple-600 text-lg ml-1">
+                                                    {cruise.guest_count !== null && cruise.guest_count !== undefined ? `${cruise.guest_count}명` : '정보 없음'}
+                                                </span>
+                                            </div>
                                             <div><strong>체크인:</strong> {cruise.checkin ? new Date(cruise.checkin).toLocaleDateString('ko-KR') : '미정'}</div>
                                             <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{cruise.room_total_price?.toLocaleString() || 0}동</span></div>
                                             {cruise.boarding_code && <div><strong>탑승 코드:</strong> {cruise.boarding_code}</div>}
@@ -362,7 +368,12 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                         <div><strong>가격:</strong> <span className="text-green-600 font-medium">{detail.price_info?.price?.toLocaleString() || 0}동</span></div>
                                         <div><strong>스케줄:</strong> {detail.schedule || '정보 없음'}</div>
                                         <div><strong>객실 수:</strong> {detail.room_count || 0}개</div>
-                                        <div><strong>투숙객 수:</strong> {detail.guest_count || 0}명</div>
+                                        <div>
+                                            <strong>투숙객 수:</strong>
+                                            <span className="font-semibold text-purple-600 text-lg ml-1">
+                                                {detail.guest_count !== null && detail.guest_count !== undefined ? `${detail.guest_count}명` : '0명'}
+                                            </span>
+                                        </div>
                                         <div><strong>체크인:</strong> {detail.checkin_date ? new Date(detail.checkin_date).toLocaleDateString('ko-KR') : '미정'}</div>
                                         <div><strong>조식 서비스:</strong> {detail.breakfast_service || '없음'}</div>
                                         <div><strong>호텔 카테고리:</strong> {detail.hotel_category || '정보 없음'}</div>
@@ -443,15 +454,21 @@ interface ReservationDetailModalProps {
     onClose: () => void;
     reservation: any;
     title?: string;
+    onRefresh?: () => void; // 목록 새로고침 콜백 추가
 }
 
 export default function ReservationDetailModal({
     isOpen,
     onClose,
     reservation,
-    title = "예약 상세 정보"
+    title = "예약 상세 정보",
+    onRefresh
 }: ReservationDetailModalProps) {
     if (!isOpen || !reservation) return null;
+
+    /* ----------------------- 상태 관리 ----------------------- */
+    const [confirming, setConfirming] = React.useState(false);
+    const [currentStatus, setCurrentStatus] = React.useState(reservation.re_status || reservation.reservation?.re_status);
 
     /* ----------------------- 사용자 정보 조회 (users 테이블) ----------------------- */
     const [userInfo, setUserInfo] = React.useState<any | null>(null);
@@ -493,6 +510,48 @@ export default function ReservationDetailModal({
 
     const safeText = (v: any, fb = '정보 없음') =>
         v !== undefined && v !== null && String(v).trim() !== '' ? String(v) : fb;
+
+    /* --------------------------- 예약 확정 처리 --------------------------- */
+    const handleConfirmReservation = async () => {
+        if (confirming) return;
+
+        const reservationId = reservation.re_id || reservation.reservation?.re_id;
+        if (!reservationId) {
+            alert('예약 ID를 찾을 수 없습니다.');
+            return;
+        }
+
+        if (!confirm('이 예약을 확정 처리하시겠습니까?')) {
+            return;
+        }
+
+        setConfirming(true);
+        try {
+            const { data, error } = await supabase
+                .from('reservation')
+                .update({ re_status: 'confirmed' })
+                .eq('re_id', reservationId)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('예약 확정 실패:', error);
+                alert('예약 확정에 실패했습니다. 다시 시도해주세요.');
+            } else {
+                alert('예약이 성공적으로 확정되었습니다.');
+                setCurrentStatus('confirmed');
+                // 부모 컴포넌트에 새로고침 요청 (페이지 새로고침 대신)
+                if (onRefresh) {
+                    onRefresh();
+                }
+            }
+        } catch (error) {
+            console.error('예약 확정 중 오류:', error);
+            alert('예약 확정 중 오류가 발생했습니다.');
+        } finally {
+            setConfirming(false);
+        }
+    };
 
     /* --------------------------- 가격 테이블 정보 로드 --------------------------- */
     const loadPriceDetails = async (serviceType: string, priceCode: string) => {
@@ -887,7 +946,12 @@ export default function ReservationDetailModal({
                                 </h5>
                                 <div><strong>객실 가격 코드:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{data.room_price_code}</span></div>
                                 <div><strong>체크인 날짜:</strong> {data.checkin ? new Date(data.checkin).toLocaleDateString('ko-KR') : '미정'}</div>
-                                <div><strong>투숙객 수:</strong> <span className="font-semibold text-purple-600">{data.guest_count}명</span></div>
+                                <div>
+                                    <strong>투숙객 수:</strong>
+                                    <span className="font-semibold text-purple-600 text-lg ml-2">
+                                        {data.guest_count !== null && data.guest_count !== undefined ? `${data.guest_count}명` : '정보 없음'}
+                                    </span>
+                                </div>
                                 <div><strong>단가:</strong> <span className="text-lg text-orange-600">{data.unit_price?.toLocaleString()}동</span></div>
                                 <div><strong>객실 총 금액:</strong> <span className="text-lg font-bold text-green-600">{data.room_total_price?.toLocaleString()}동</span></div>
                                 <div><strong>탑승 지원:</strong> {data.boarding_assist ? '예' : '아니오'}</div>
@@ -908,6 +972,7 @@ export default function ReservationDetailModal({
                                     <div><strong>객실명:</strong> {priceInfo.room_name || priceInfo.room_type}</div>
                                     <div><strong>객실 타입:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{priceInfo.room_type}</span></div>
                                     <div><strong>가격:</strong> <span className="text-lg text-green-600">{priceInfo.price?.toLocaleString()}동</span></div>
+                                    {priceInfo.payment && <div><strong>결제:</strong> <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">{priceInfo.payment}</span></div>}
                                     {priceInfo.room_category && <div><strong>카테고리:</strong> {priceInfo.room_category}</div>}
                                     {priceInfo.capacity && <div><strong>수용 인원:</strong> {priceInfo.capacity}명</div>}
                                     {priceInfo.description && <div><strong>설명:</strong> {priceInfo.description}</div>}
@@ -1007,7 +1072,12 @@ export default function ReservationDetailModal({
                                 </h5>
                                 {data.hotel_price_code && <div><strong>호텔 가격 코드:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">{data.hotel_price_code}</span></div>}
                                 {data.checkin_date && <div><strong>체크인 날짜:</strong> {new Date(data.checkin_date).toLocaleDateString('ko-KR')}</div>}
-                                {data.guest_count && <div><strong>투숙객 수:</strong> {data.guest_count}명</div>}
+                                <div>
+                                    <strong>투숙객 수:</strong>
+                                    <span className="font-semibold text-purple-600 text-lg ml-2">
+                                        {data.guest_count !== null && data.guest_count !== undefined ? `${data.guest_count}명` : '정보 없음'}
+                                    </span>
+                                </div>
                                 {data.room_count && <div><strong>객실 수:</strong> {data.room_count}개</div>}
                                 {data.schedule && <div><strong>일정:</strong> {data.schedule}</div>}
                                 {data.hotel_category && <div><strong>호텔 카테고리:</strong> {data.hotel_category}</div>}
@@ -1177,187 +1247,228 @@ export default function ReservationDetailModal({
         switch (reservation.re_type) {
             case 'cruise':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-blue-600 border-b pb-2">🚢 크루즈 정보</h5>
-                            <div><strong>크루즈명:</strong> <span className="text-blue-700 font-medium">{details.cruise_name || details.room_price_info?.cruise || ''}</span></div>
-                            <div><strong>객실명:</strong> <span className="text-blue-700">{details.room_name || details.room_price_info?.room_category || ''}</span></div>
-                            <div><strong>객실타입:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{details.room_type || details.room_price_info?.room_type || ''}</span></div>
-                            <div><strong>체크인 날짜:</strong> {details.checkin ? new Date(details.checkin).toLocaleDateString('ko-KR') : '미정'}</div>
-                            <div><strong>투숙객 수:</strong> <span className="font-semibold text-purple-600">{typeof details.guest_count === 'number' ? `${details.guest_count}명` : ''}</span></div>
-                            <div><strong>객실 가격 코드:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{details.room_price_code || ''}</span></div>
-                            <div><strong>탑승 지원:</strong> {details.boarding_assist || ''}</div>
-                        </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-green-600 border-b pb-2">💰 금액 정보</h5>
-                            <div><strong>단가:</strong> <span className="text-lg text-orange-600">{details.unit_price?.toLocaleString()}동</span></div>
-                            <div><strong>객실 총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.room_total_price?.toLocaleString()}동</span></div>
-                            <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-blue-600 border-b pb-2">🚢 크루즈 정보</h5>
+                                <div><strong>크루즈명:</strong> <span className="text-blue-700 font-medium">{details.cruise_name || details.room_price_info?.cruise || ''}</span></div>
+                                <div><strong>객실명:</strong> <span className="text-blue-700">{details.room_name || details.room_price_info?.room_category || ''}</span></div>
+                                <div><strong>객실타입:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{details.room_type || details.room_price_info?.room_type || ''}</span></div>
+                                <div><strong>체크인 날짜:</strong> {details.checkin ? new Date(details.checkin).toLocaleDateString('ko-KR') : '미정'}</div>
+                                <div>
+                                    <strong>투숙객 수:</strong>
+                                    <span className="font-semibold text-purple-600 text-lg ml-2">
+                                        {details.guest_count !== null && details.guest_count !== undefined ? `${details.guest_count}명` : '정보 없음'}
+                                    </span>
                                 </div>
-                            )}
+                                <div><strong>객실 가격 코드:</strong> <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{details.room_price_code || ''}</span></div>
+                                <div><strong>탑승 지원:</strong> {details.boarding_assist || ''}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-green-600 border-b pb-2">💰 금액 정보</h5>
+                                <div><strong>단가:</strong> <span className="text-lg text-orange-600">{details.unit_price?.toLocaleString()}동</span></div>
+                                <div><strong>객실 총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.room_total_price?.toLocaleString()}동</span></div>
+                                <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="cruise" priceCode={details.room_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="cruise" priceCode={details.room_price_code} />
-                        </div>
-                    </div>
+                        {/* 요청사항 - 전체 너비로 별도 섹션 */}
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             case 'cruise_car':
             case 'sht_car':
             case 'car':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-amber-600 border-b pb-2">🚐 차량 정보</h5>
-                            <div><strong>차량 가격 코드:</strong> <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">{details.car_price_code}</span></div>
-                            {details.vehicle_number && <div><strong>차량번호:</strong> {details.vehicle_number}</div>}
-                            {details.seat_number && <div><strong>좌석 수:</strong> {details.seat_number}석</div>}
-                            {details.color_label && <div><strong>색상:</strong> {details.color_label}</div>}
-                            <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-amber-600 border-b pb-2">🚐 차량 정보</h5>
+                                <div><strong>차량 가격 코드:</strong> <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">{details.car_price_code}</span></div>
+                                {details.vehicle_number && <div><strong>차량번호:</strong> {details.vehicle_number}</div>}
+                                {details.seat_number && <div><strong>좌석 수:</strong> {details.seat_number}석</div>}
+                                {details.color_label && <div><strong>색상:</strong> {details.color_label}</div>}
+                                <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-blue-600 border-b pb-2">💰 금액 및 메모</h5>
+                                <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
+                                <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="car" priceCode={details.car_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-blue-600 border-b pb-2">💰 금액 및 메모</h5>
-                            <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
-                            <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="car" priceCode={details.car_price_code} />
-                        </div>
-                    </div>
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             case 'airport':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-green-600 border-b pb-2">✈️ 공항 정보</h5>
-                            <div><strong>공항 위치:</strong> <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">{details.ra_airport_location}</span></div>
-                            <div><strong>항공편 번호:</strong> {details.ra_flight_number || '미정'}</div>
-                            <div><strong>출발/도착 일시:</strong> {details.ra_datetime ? new Date(details.ra_datetime).toLocaleString('ko-KR') : '미정'}</div>
-                            <div><strong>가격 코드:</strong> <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">{details.airport_price_code}</span></div>
-                            {details.ra_stopover_location && <div><strong>경유지:</strong> {details.ra_stopover_location}</div>}
-                            {details.ra_stopover_wait_minutes && <div><strong>경유 대기시간:</strong> {details.ra_stopover_wait_minutes}분</div>}
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-green-600 border-b pb-2">✈️ 공항 정보</h5>
+                                <div><strong>공항 위치:</strong> <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">{details.ra_airport_location}</span></div>
+                                <div><strong>항공편 번호:</strong> {details.ra_flight_number || '미정'}</div>
+                                <div><strong>출발/도착 일시:</strong> {details.ra_datetime ? new Date(details.ra_datetime).toLocaleString('ko-KR') : '미정'}</div>
+                                <div><strong>가격 코드:</strong> <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">{details.airport_price_code}</span></div>
+                                {details.ra_stopover_location && <div><strong>경유지:</strong> {details.ra_stopover_location}</div>}
+                                {details.ra_stopover_wait_minutes && <div><strong>경유 대기시간:</strong> {details.ra_stopover_wait_minutes}분</div>}
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-blue-600 border-b pb-2">🚗 차량 및 인원</h5>
+                                <div><strong>승객 수:</strong> {details.ra_passenger_count}명</div>
+                                <div><strong>차량 수:</strong> {details.ra_car_count}대</div>
+                                <div><strong>수하물 개수:</strong> {details.ra_luggage_count}개</div>
+                                <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
+                                <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
+                                <div><strong>처리 상태:</strong> {details.ra_is_processed || '미처리'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="airport" priceCode={details.airport_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-blue-600 border-b pb-2">🚗 차량 및 인원</h5>
-                            <div><strong>승객 수:</strong> {details.ra_passenger_count}명</div>
-                            <div><strong>차량 수:</strong> {details.ra_car_count}대</div>
-                            <div><strong>수하물 개수:</strong> {details.ra_luggage_count}개</div>
-                            <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
-                            <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
-                            <div><strong>처리 상태:</strong> {details.ra_is_processed || '미처리'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="airport" priceCode={details.airport_price_code} />
-                        </div>
-                    </div>
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             case 'hotel':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-purple-600 border-b pb-2">🏨 호텔 정보</h5>
-                            <div><strong>체크인 날짜:</strong> {details.checkin_date ? new Date(details.checkin_date).toLocaleDateString('ko-KR') : '미정'}</div>
-                            <div><strong>호텔 카테고리:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">{details.hotel_category}</span></div>
-                            <div><strong>호텔 가격 코드:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">{details.hotel_price_code}</span></div>
-                            <div><strong>일정:</strong> {details.schedule || '정보 없음'}</div>
-                            {details.breakfast_service && <div><strong>조식 서비스:</strong> {details.breakfast_service}</div>}
-                        </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-blue-600 border-b pb-2">🛏️ 객실 및 금액</h5>
-                            <div><strong>투숙객 수:</strong> {details.guest_count}명</div>
-                            <div><strong>객실 수:</strong> {details.room_count}개</div>
-                            <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
-                            <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-purple-600 border-b pb-2">🏨 호텔 정보</h5>
+                                <div><strong>체크인 날짜:</strong> {details.checkin_date ? new Date(details.checkin_date).toLocaleDateString('ko-KR') : '미정'}</div>
+                                <div><strong>호텔 카테고리:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">{details.hotel_category}</span></div>
+                                <div><strong>호텔 가격 코드:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">{details.hotel_price_code}</span></div>
+                                <div><strong>일정:</strong> {details.schedule || '정보 없음'}</div>
+                                {details.breakfast_service && <div><strong>조식 서비스:</strong> {details.breakfast_service}</div>}
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-blue-600 border-b pb-2">🛏️ 객실 및 금액</h5>
+                                <div>
+                                    <strong>투숙객 수:</strong>
+                                    <span className="font-semibold text-purple-600 text-lg ml-2">
+                                        {details.guest_count !== null && details.guest_count !== undefined ? `${details.guest_count}명` : '정보 없음'}
+                                    </span>
                                 </div>
-                            )}
+                                <div><strong>객실 수:</strong> {details.room_count}개</div>
+                                <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
+                                <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="hotel" priceCode={details.hotel_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="hotel" priceCode={details.hotel_price_code} />
-                        </div>
-                    </div>
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             case 'tour':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-orange-600 border-b pb-2">🗺️ 투어 정보</h5>
-                            <div><strong>투어 가격 코드:</strong> <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">{details.tour_price_code}</span></div>
-                            <div><strong>참가 인원:</strong> {details.tour_capacity}명</div>
-                            <div><strong>픽업 장소:</strong> {details.pickup_location || '미정'}</div>
-                            <div><strong>드롭오프 장소:</strong> {details.dropoff_location || '미정'}</div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-orange-600 border-b pb-2">🗺️ 투어 정보</h5>
+                                <div><strong>투어 가격 코드:</strong> <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">{details.tour_price_code}</span></div>
+                                <div><strong>참가 인원:</strong> {details.tour_capacity}명</div>
+                                <div><strong>픽업 장소:</strong> {details.pickup_location || '미정'}</div>
+                                <div><strong>드롭오프 장소:</strong> {details.dropoff_location || '미정'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-green-600 border-b pb-2">💰 금액 정보</h5>
+                                <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
+                                <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="tour" priceCode={details.tour_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-green-600 border-b pb-2">💰 금액 정보</h5>
-                            <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
-                            <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="tour" priceCode={details.tour_price_code} />
-                        </div>
-                    </div>
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             case 'rentcar':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-red-600 border-b pb-2">🚗 렌터카 정보</h5>
-                            <div><strong>렌터카 가격 코드:</strong> <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">{details.rentcar_price_code}</span></div>
-                            <div><strong>렌터카 수:</strong> {details.rentcar_count}대</div>
-                            <div><strong>차량 수:</strong> {details.car_count || '정보 없음'}대</div>
-                            <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
-                            <div><strong>픽업 일시:</strong> {details.pickup_datetime ? new Date(details.pickup_datetime).toLocaleString('ko-KR') : '미정'}</div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-red-600 border-b pb-2">🚗 렌터카 정보</h5>
+                                <div><strong>렌터카 가격 코드:</strong> <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">{details.rentcar_price_code}</span></div>
+                                <div><strong>렌터카 수:</strong> {details.rentcar_count}대</div>
+                                <div><strong>차량 수:</strong> {details.car_count || '정보 없음'}대</div>
+                                <div><strong>단가:</strong> {details.unit_price?.toLocaleString()}동</div>
+                                <div><strong>픽업 일시:</strong> {details.pickup_datetime ? new Date(details.pickup_datetime).toLocaleString('ko-KR') : '미정'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <h5 className="font-semibold text-blue-600 border-b pb-2">📍 이동 경로 및 승객</h5>
+                                <div><strong>승객 수:</strong> {details.passenger_count}명</div>
+                                <div><strong>픽업 장소:</strong> {details.pickup_location || '미정'}</div>
+                                <div><strong>목적지:</strong> {details.destination || '미정'}</div>
+                                {details.via_location && <div><strong>경유지:</strong> {details.via_location}</div>}
+                                {details.via_waiting && <div><strong>경유 대기:</strong> {details.via_waiting}</div>}
+                                <div><strong>수하물 개수:</strong> {details.luggage_count}개</div>
+                                <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
+                                <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
+                            </div>
+                            <div className="space-y-3">
+                                <PriceTableInfo serviceType="rentcar" priceCode={details.rentcar_price_code} />
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-blue-600 border-b pb-2">📍 이동 경로 및 승객</h5>
-                            <div><strong>승객 수:</strong> {details.passenger_count}명</div>
-                            <div><strong>픽업 장소:</strong> {details.pickup_location || '미정'}</div>
-                            <div><strong>목적지:</strong> {details.destination || '미정'}</div>
-                            {details.via_location && <div><strong>경유지:</strong> {details.via_location}</div>}
-                            {details.via_waiting && <div><strong>경유 대기:</strong> {details.via_waiting}</div>}
-                            <div><strong>수하물 개수:</strong> {details.luggage_count}개</div>
-                            <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{details.total_price?.toLocaleString()}동</span></div>
-                            <div><strong>생성일:</strong> {details.created_at ? new Date(details.created_at).toLocaleString('ko-KR') : '정보 없음'}</div>
-                            {details.request_note && (
-                                <div className="mt-4">
-                                    <strong>요청사항:</strong>
-                                    <div className="bg-gray-100 p-3 rounded mt-2 text-sm">{details.request_note}</div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="space-y-3">
-                            <PriceTableInfo serviceType="rentcar" priceCode={details.rentcar_price_code} />
-                        </div>
-                    </div>
+                        {details.request_note && (
+                            <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                                <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                    <FileText className="w-4 h-4 mr-2" />
+                                    📝 요청사항
+                                </h5>
+                                <div className="text-gray-900 whitespace-pre-wrap">{details.request_note}</div>
+                            </div>
+                        )}
+                    </>
                 );
 
             default:
@@ -1422,26 +1533,56 @@ export default function ReservationDetailModal({
                                 <Calendar className="w-5 h-5 mr-2" />
                                 처리 상태
                             </h4>
-                            <div className="space-y-2 text-sm">
+                            <div className="space-y-3 text-sm">
                                 <div>
                                     <strong>상태:</strong>
-                                    <span className={`ml-2 px-2 py-1 rounded text-xs ${(reservation.re_status || reservation.reservation?.re_status) === 'confirmed'
+                                    <span className={`ml-2 px-2 py-1 rounded text-xs ${currentStatus === 'confirmed'
                                         ? 'bg-green-100 text-green-800'
-                                        : (reservation.re_status || reservation.reservation?.re_status) === 'pending'
+                                        : currentStatus === 'pending'
                                             ? 'bg-yellow-100 text-yellow-800'
-                                            : (reservation.re_status || reservation.reservation?.re_status) === 'cancelled'
+                                            : currentStatus === 'cancelled'
                                                 ? 'bg-red-100 text-red-800'
                                                 : 'bg-gray-100 text-gray-800'
                                         }`}>
-                                        {(reservation.re_status || reservation.reservation?.re_status) === 'confirmed'
+                                        {currentStatus === 'confirmed'
                                             ? '확정'
-                                            : (reservation.re_status || reservation.reservation?.re_status) === 'pending'
+                                            : currentStatus === 'pending'
                                                 ? '대기중'
-                                                : (reservation.re_status || reservation.reservation?.re_status) === 'cancelled'
+                                                : currentStatus === 'cancelled'
                                                     ? '취소'
-                                                    : (reservation.re_status || reservation.reservation?.re_status) || '정보 없음'}
+                                                    : currentStatus || '정보 없음'}
                                     </span>
                                 </div>
+
+                                {/* 확정 버튼 - pending 상태일 때만 표시 */}
+                                {currentStatus === 'pending' && (
+                                    <div className="pt-2">
+                                        <button
+                                            onClick={handleConfirmReservation}
+                                            disabled={confirming}
+                                            className={`w-full px-4 py-2 rounded-lg font-semibold transition-all ${confirming
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                : 'bg-green-500 text-white hover:bg-green-600 active:bg-green-700'
+                                                }`}
+                                        >
+                                            {confirming ? (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    처리중...
+                                                </span>
+                                            ) : (
+                                                '✅ 예약 확정하기'
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* 이미 확정된 경우 안내 */}
+                                {currentStatus === 'confirmed' && (
+                                    <div className="pt-2 bg-green-100 border border-green-300 rounded-lg p-3 text-center">
+                                        <p className="text-green-800 font-semibold">✅ 확정 완료된 예약입니다</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -1118,6 +1118,7 @@ export default function ManagerReservationsPage() {
                     isOpen={showModal}
                     onClose={closeModal}
                     reservation={selectedReservation}
+                    onRefresh={loadReservations}
                   />
                 </>
               )}

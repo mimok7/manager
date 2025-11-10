@@ -1620,6 +1620,7 @@ export default function ManagerServiceTablesPage() {
                         onClose={() => setShowDetails(false)}
                         reservation={convertToReservationFormat(selectedItem)}
                         title={`${currentTab?.label || '서비스'} 상세 정보`}
+                        onRefresh={() => loadServiceData(activeTab)}
                     />
                 )}
             </div>

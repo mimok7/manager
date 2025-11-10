@@ -1926,6 +1926,7 @@ export default function ManagerSchedulePage() {
         onClose={() => setIsModalOpen(false)}
         reservation={selectedSchedule}
         title="예약 상세 정보"
+        onRefresh={loadSchedules}
       />
     </ManagerLayout>
   );

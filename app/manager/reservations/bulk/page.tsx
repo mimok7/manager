@@ -44,6 +44,7 @@ interface ReservationItem {
 }
 
 type BulkAction = 'confirm' | 'cancel' | 'delete' | 'status_update';
+type SortType = 'date' | 'name';
 
 
 export default function BulkReservationPage() {
@@ -62,10 +63,11 @@ export default function BulkReservationPage() {
     const [viewingReservation, setViewingReservation] = useState<ReservationItem | null>(null);
     const [reservationDetails, setReservationDetails] = useState<any>(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
+    const [sortType, setSortType] = useState<SortType>('date'); // 정렬 타입
 
     useEffect(() => {
         loadReservations();
-    }, [filter, serviceFilter, searchTrigger]);
+    }, [filter, serviceFilter, searchTrigger, sortType]);
 
     const loadReservations = async () => {
         try {
@@ -241,6 +243,26 @@ export default function BulkReservationPage() {
 
             let list: ReservationItem[] = Object.values(groupedByQuote);
 
+            // 정렬 타입에 따라 정렬
+            list.sort((a, b) => {
+                if (sortType === 'date') {
+                    // 최신 예약일별로 정렬 (내림차순)
+                    const dateA = new Date(a.re_created_at).getTime();
+                    const dateB = new Date(b.re_created_at).getTime();
+                    return dateB - dateA; // 최신 순으로 정렬
+                } else {
+                    // 고객명 순으로 정렬 (오름차순)
+                    const nameA = (a.users?.name || '').toLowerCase();
+                    const nameB = (b.users?.name || '').toLowerCase();
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    // 이름이 같으면 날짜순으로 정렬
+                    const dateA = new Date(a.re_created_at).getTime();
+                    const dateB = new Date(b.re_created_at).getTime();
+                    return dateB - dateA;
+                }
+            });
+
             // 이름/이메일 통합 검색 필터
             const q = searchQuery.trim().toLowerCase();
             if (q) {
@@ -315,6 +337,7 @@ export default function BulkReservationPage() {
                             console.error('크루즈 데이터 조회 오류:', cruiseError);
                         }
                         console.log('크루즈 데이터:', cruiseData);
+                        console.log('📊 투숙객 수 (guest_count):', cruiseData?.guest_count);
 
                         const { data: cruiseCarData, error: carError } = await supabase
                             .from('reservation_cruise_car')
@@ -693,6 +716,17 @@ export default function BulkReservationPage() {
 
                     <div className="flex flex-col md:flex-row md:items-end md:gap-6 gap-2 mb-4 w-full">
                         <div className="flex flex-col md:flex-row md:items-end gap-2 md:gap-4 flex-1">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-500 mb-1">정렬</label>
+                                <select
+                                    value={sortType}
+                                    onChange={(e) => setSortType(e.target.value as SortType)}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg min-w-[110px] bg-green-50"
+                                >
+                                    <option value="date">예약일순</option>
+                                    <option value="name">고객명순</option>
+                                </select>
+                            </div>
                             <div>
                                 <label className="block text-xs font-medium text-gray-500 mb-1">상태</label>
                                 <select
@@ -1083,10 +1117,10 @@ export default function BulkReservationPage() {
                                                                                         <p className="font-medium text-gray-900">{serviceData.cruise.checkout}</p>
                                                                                     </div>
                                                                                 )}
-                                                                                {serviceData.cruise.guest_count && (
+                                                                                {(serviceData.cruise.guest_count !== null && serviceData.cruise.guest_count !== undefined) && (
                                                                                     <div>
                                                                                         <span className="text-sm text-gray-600">투숙객 수:</span>
-                                                                                        <p className="font-medium text-gray-900">{serviceData.cruise.guest_count}명</p>
+                                                                                        <p className="font-medium text-purple-600 text-lg">{serviceData.cruise.guest_count}명</p>
                                                                                     </div>
                                                                                 )}
                                                                                 {serviceData.cruise.room_total_price !== null && serviceData.cruise.room_total_price !== undefined && (
@@ -1381,10 +1415,10 @@ export default function BulkReservationPage() {
                                                                                     <p className="font-medium text-gray-900">{serviceData.hotel.nights}박</p>
                                                                                 </div>
                                                                             )}
-                                                                            {serviceData.hotel.guest_count && (
+                                                                            {(serviceData.hotel.guest_count !== null && serviceData.hotel.guest_count !== undefined) && (
                                                                                 <div>
                                                                                     <span className="text-sm text-gray-600">투숙객 수:</span>
-                                                                                    <p className="font-medium text-gray-900">{serviceData.hotel.guest_count}명</p>
+                                                                                    <p className="font-medium text-purple-600 text-lg">{serviceData.hotel.guest_count}명</p>
                                                                                 </div>
                                                                             )}
                                                                             {serviceData.hotel.hotel_location && (
