@@ -712,7 +712,10 @@ export default function NotificationManagement() {
 
                   {selectedNotification.status === 'unread' && (
                     <button
-                      onClick={() => updateNotificationStatus(selectedNotification.id, 'processing')}
+                      onClick={async () => {
+                        await updateNotificationStatus(selectedNotification.id, 'processing');
+                        setShowModal(false);
+                      }}
                       className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                     >
                       처리 시작
@@ -773,7 +776,10 @@ export default function NotificationManagement() {
                       상세보기
                     </button>
                     <button
-                      onClick={() => updateNotificationStatus(notification.id, 'processing')}
+                      onClick={async () => {
+                        await updateNotificationStatus(notification.id, 'processing');
+                        dismissPopup(notification.id);
+                      }}
                       className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs hover:bg-opacity-30"
                     >
                       처리하기
