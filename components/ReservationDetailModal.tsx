@@ -14,7 +14,8 @@ import {
     Mail,
     CreditCard,
     FileText,
-    X
+    X,
+    ChevronLeft
 } from 'lucide-react';
 
 // 크루즈 상세 정보 컴포넌트
@@ -455,6 +456,7 @@ interface ReservationDetailModalProps {
     reservation: any;
     title?: string;
     onRefresh?: () => void; // 목록 새로고침 콜백 추가
+    onBack?: () => void; // 뒤로가기 콜백 추가
 }
 
 export default function ReservationDetailModal({
@@ -462,7 +464,8 @@ export default function ReservationDetailModal({
     onClose,
     reservation,
     title = "예약 상세 정보",
-    onRefresh
+    onRefresh,
+    onBack
 }: ReservationDetailModalProps) {
     if (!isOpen || !reservation) return null;
 
@@ -1481,7 +1484,18 @@ export default function ReservationDetailModal({
             <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between p-6 border-b">
-                    <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+                    <div className="flex items-center gap-3">
+                        {onBack && (
+                            <button
+                                onClick={onBack}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                title="예약 목록으로 돌아가기"
+                            >
+                                <ChevronLeft className="w-6 h-6 text-gray-600" />
+                            </button>
+                        )}
+                        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+                    </div>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

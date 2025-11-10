@@ -984,7 +984,7 @@ export default function ManagerReservationsPage() {
                       <h3 className="text-lg font-semibold text-gray-800">예약 상세 목록</h3>
                       {selectedUser.reservations
                         .slice()
-                        .sort((a: any, b: any) => new Date(b.re_created_at).getTime() - new Date(a.re_created_at).getTime())
+                        .sort((a: any, b: any) => new Date(a.re_created_at).getTime() - new Date(b.re_created_at).getTime())
                         .map((reservation: any) => {
                           // 서비스 상세 정보 추출
                           const sd: any = reservation.serviceDetails || {};
@@ -1119,6 +1119,7 @@ export default function ManagerReservationsPage() {
                     onClose={closeModal}
                     reservation={selectedReservation}
                     onRefresh={loadReservations}
+                    onBack={goBackToUserView}
                   />
                 </>
               )}

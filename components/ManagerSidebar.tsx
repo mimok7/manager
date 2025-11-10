@@ -226,7 +226,7 @@ export default function ManagerSidebar({ activeTab, userEmail, onLogout, userRol
                                     />
                                     <NavItem
                                         icon="⚡"
-                                        label="예약 처리"
+                                        label="예약 삭제"
                                         path="/manager/reservations/bulk"
                                         isActive={isActiveTab('reservations-bulk')}
                                         onClick={() => handleNavigation('/manager/reservations/bulk')}
