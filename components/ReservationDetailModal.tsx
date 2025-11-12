@@ -472,6 +472,8 @@ export default function ReservationDetailModal({
     /* ----------------------- 상태 관리 ----------------------- */
     const [confirming, setConfirming] = React.useState(false);
     const [currentStatus, setCurrentStatus] = React.useState(reservation.re_status || reservation.reservation?.re_status);
+    const [allUserReservations, setAllUserReservations] = React.useState<any[]>([]);
+    const [loadingAllReservations, setLoadingAllReservations] = React.useState(false);
 
     /* ----------------------- 사용자 정보 조회 (users 테이블) ----------------------- */
     const [userInfo, setUserInfo] = React.useState<any | null>(null);
@@ -506,6 +508,132 @@ export default function ReservationDetailModal({
             }
         }
         fetchUser();
+        return () => {
+            cancelled = true;
+        };
+    }, [userId]);
+
+    /* ----------------------- 해당 사용자의 모든 예약 서비스 조회 ----------------------- */
+    React.useEffect(() => {
+        let cancelled = false;
+        async function fetchAllUserReservations() {
+            if (!userId) {
+                setAllUserReservations([]);
+                return;
+            }
+
+            setLoadingAllReservations(true);
+            try {
+                // 1. 해당 사용자의 모든 예약 조회
+                const { data: reservations, error: reservationsError } = await supabase
+                    .from('reservation')
+                    .select('re_id, re_type, re_status, re_created_at, re_quote_id')
+                    .eq('re_user_id', userId)
+                    .order('re_created_at', { ascending: false });
+
+                if (reservationsError || !reservations || cancelled) {
+                    setAllUserReservations([]);
+                    setLoadingAllReservations(false);
+                    return;
+                }
+
+                // 2. 각 예약의 서비스 상세 정보 조회
+                const allServices = [];
+                for (const res of reservations) {
+                    let serviceData = null;
+
+                    switch (res.re_type) {
+                        case 'cruise': {
+                            const { data } = await supabase
+                                .from('reservation_cruise')
+                                .select('*, room_price:room_price_code(cruise, room_type, room_category, base_price)')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            serviceData = data;
+                            break;
+                        }
+                        case 'airport': {
+                            const { data } = await supabase
+                                .from('reservation_airport')
+                                .select('*')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            serviceData = data;
+                            break;
+                        }
+                        case 'hotel': {
+                            const { data } = await supabase
+                                .from('reservation_hotel')
+                                .select('*')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            serviceData = data;
+                            break;
+                        }
+                        case 'tour': {
+                            const { data } = await supabase
+                                .from('reservation_tour')
+                                .select('*')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            serviceData = data;
+                            break;
+                        }
+                        case 'rentcar': {
+                            const { data } = await supabase
+                                .from('reservation_rentcar')
+                                .select('*')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            serviceData = data;
+                            break;
+                        }
+                        case 'car': {
+                            // 크루즈 차량 먼저 확인
+                            const { data: cruiseCar } = await supabase
+                                .from('reservation_cruise_car')
+                                .select('*')
+                                .eq('reservation_id', res.re_id)
+                                .maybeSingle();
+                            if (cruiseCar) {
+                                serviceData = cruiseCar;
+                            } else {
+                                // 스하차량 확인
+                                const { data: shtCar } = await supabase
+                                    .from('reservation_car_sht')
+                                    .select('*')
+                                    .eq('reservation_id', res.re_id)
+                                    .maybeSingle();
+                                serviceData = shtCar;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (serviceData) {
+                        allServices.push({
+                            ...res,
+                            serviceDetails: serviceData
+                        });
+                    }
+                }
+
+                if (!cancelled) {
+                    setAllUserReservations(allServices);
+                }
+            } catch (error) {
+                console.error('사용자 예약 조회 실패:', error);
+                if (!cancelled) {
+                    setAllUserReservations([]);
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoadingAllReservations(false);
+                }
+            }
+        }
+
+        fetchAllUserReservations();
         return () => {
             cancelled = true;
         };
@@ -1600,6 +1728,183 @@ export default function ReservationDetailModal({
                             </div>
                         </div>
                     </div>
+
+                    {/* 해당 고객의 모든 예약 서비스 목록 */}
+                    {loadingAllReservations ? (
+                        <div className="bg-gray-50 p-8 rounded-lg text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                            <p className="text-gray-600">고객의 모든 예약을 조회하는 중...</p>
+                        </div>
+                    ) : allUserReservations.length > 0 ? (
+                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border-2 border-blue-200">
+                            <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                                <Calendar className="w-6 h-6 mr-2" />
+                                🎫 {userInfo?.name || '고객'}님의 모든 예약 서비스 ({allUserReservations.length}건)
+                            </h3>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {allUserReservations.map((res: any, index: number) => {
+                                    const isCurrentReservation = res.re_id === (reservation.re_id || reservation.reservation?.re_id);
+                                    return (
+                                        <div
+                                            key={res.re_id}
+                                            className={`bg-white p-5 rounded-lg border-2 transition-all ${isCurrentReservation
+                                                    ? 'border-blue-500 shadow-lg'
+                                                    : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                                }`}
+                                        >
+                                            <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                                                <div className="flex items-center gap-2">
+                                                    {res.re_type === 'cruise' && <Ship className="w-5 h-5 text-blue-600" />}
+                                                    {res.re_type === 'airport' && <Plane className="w-5 h-5 text-green-600" />}
+                                                    {res.re_type === 'hotel' && <Building className="w-5 h-5 text-orange-600" />}
+                                                    {res.re_type === 'tour' && <MapPin className="w-5 h-5 text-pink-600" />}
+                                                    {res.re_type === 'rentcar' && <Car className="w-5 h-5 text-red-600" />}
+                                                    {res.re_type === 'car' && <Car className="w-5 h-5 text-purple-600" />}
+                                                    <span className="font-bold text-gray-800">
+                                                        {getServiceName(res.re_type)}
+                                                    </span>
+                                                    {isCurrentReservation && (
+                                                        <span className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">
+                                                            현재
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className={`px-2 py-1 rounded text-xs font-medium ${res.re_status === 'confirmed'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : res.re_status === 'pending'
+                                                            ? 'bg-yellow-100 text-yellow-800'
+                                                            : 'bg-red-100 text-red-800'
+                                                    }`}>
+                                                    {res.re_status === 'confirmed' ? '확정' : res.re_status === 'pending' ? '대기' : '취소'}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-2 text-sm">
+                                                {/* 크루즈 */}
+                                                {res.re_type === 'cruise' && res.serviceDetails && (
+                                                    <>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">크루즈:</strong>
+                                                            <span className="text-blue-700 font-semibold">
+                                                                {res.serviceDetails.room_price?.cruise || '정보 없음'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">객실:</strong>
+                                                            <span>{res.serviceDetails.room_price?.room_type || res.serviceDetails.room_price?.room_category || '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">체크인:</strong>
+                                                            <span>{res.serviceDetails.checkin ? new Date(res.serviceDetails.checkin).toLocaleDateString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">인원:</strong>
+                                                            <span>{res.serviceDetails.guest_count || 0}명</span>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {/* 공항 */}
+                                                {res.re_type === 'airport' && res.serviceDetails && (
+                                                    <>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">공항:</strong>
+                                                            <span>{res.serviceDetails.ra_airport_location || '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">일시:</strong>
+                                                            <span>{res.serviceDetails.ra_datetime ? new Date(res.serviceDetails.ra_datetime).toLocaleString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">항공편:</strong>
+                                                            <span>{res.serviceDetails.ra_flight_number || '정보 없음'}</span>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {/* 호텔 */}
+                                                {res.re_type === 'hotel' && res.serviceDetails && (
+                                                    <>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">호텔:</strong>
+                                                            <span>{res.serviceDetails.hotel_category || '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">체크인:</strong>
+                                                            <span>{res.serviceDetails.checkin_date ? new Date(res.serviceDetails.checkin_date).toLocaleDateString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">숙박:</strong>
+                                                            <span>{res.serviceDetails.nights || 0}박</span>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {/* 투어 */}
+                                                {res.re_type === 'tour' && res.serviceDetails && (
+                                                    <>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">픽업:</strong>
+                                                            <span>{res.serviceDetails.pickup_location || '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">인원:</strong>
+                                                            <span>{res.serviceDetails.tour_capacity || 0}명</span>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {/* 렌터카 */}
+                                                {res.re_type === 'rentcar' && res.serviceDetails && (
+                                                    <>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">픽업:</strong>
+                                                            <span>{res.serviceDetails.pickup_location || '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">일시:</strong>
+                                                            <span>{res.serviceDetails.pickup_datetime ? new Date(res.serviceDetails.pickup_datetime).toLocaleString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {/* 차량 */}
+                                                {res.re_type === 'car' && res.serviceDetails && (
+                                                    <>
+                                                        {res.serviceDetails.pickup_datetime && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">승차일:</strong>
+                                                                <span>{new Date(res.serviceDetails.pickup_datetime).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.usage_date && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">이용일:</strong>
+                                                                <span>{new Date(res.serviceDetails.usage_date).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.vehicle_number && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">차량번호:</strong>
+                                                                <span>{res.serviceDetails.vehicle_number}</span>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                                <div className="flex items-center gap-2 pt-2 border-t">
+                                                    <Clock className="w-3 h-3 text-gray-400" />
+                                                    <span className="text-xs text-gray-500">
+                                                        예약일: {new Date(res.re_created_at).toLocaleDateString('ko-KR')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
 
                     {/* 결제 계산된 서비스 정보 */}
                     {reservation.serviceData?.services && reservation.serviceData.services.length > 0 && (
