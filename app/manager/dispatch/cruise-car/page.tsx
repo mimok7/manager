@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import supabase from '@/lib/supabase';
 import { Calendar, Car, MapPin, Clock, User, Phone, FileText, Filter, Ship, Copy } from 'lucide-react';
 
@@ -33,7 +32,6 @@ interface CruiseDispatchItem {
 
 export default function CruiseCarDispatchPage() {
     const router = useRouter();
-    const { loading: authLoading, isManager, user: authUser } = useAuth(['manager', 'admin'], '/');
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<CruiseDispatchItem[]>([]);
     const [stats, setStats] = useState<{ roundtrip: number; oneway: number; total: number }>({ roundtrip: 0, oneway: 0, total: 0 });
@@ -42,10 +40,8 @@ export default function CruiseCarDispatchPage() {
     const [filterCategory, setFilterCategory] = useState<'all' | 'roundtrip' | 'oneway'>('all');
 
     useEffect(() => {
-        if (!authLoading && isManager && authUser) {
-            loadCruiseDispatchData();
-        }
-    }, [authLoading, isManager, authUser, startDate, endDate, filterCategory]);
+        loadCruiseDispatchData();
+    }, [startDate, endDate, filterCategory]);
 
     // checkAuth 제거됨 - useAuth 훅 사용
 
@@ -308,7 +304,7 @@ export default function CruiseCarDispatchPage() {
         }
     };
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">

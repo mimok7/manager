@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import supabase from '@/lib/supabase';
 import { Calendar, Car, Clock, FileText, Filter, MapPin, Plane, User, Phone, Copy } from 'lucide-react';
 
@@ -34,7 +33,6 @@ interface AirportDispatchItem {
 
 export default function AirportDispatchPage() {
     const router = useRouter();
-    const { loading: authLoading, isManager, user: authUser } = useAuth(['manager', 'admin'], '/');
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<AirportDispatchItem[]>([]);
     const [stats, setStats] = useState<{ pickup: number; sending: number; total: number }>({ pickup: 0, sending: 0, total: 0 });
@@ -42,10 +40,8 @@ export default function AirportDispatchPage() {
     const [endDate, setEndDate] = useState(() => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 
     useEffect(() => {
-        if (!authLoading && isManager && authUser) {
-            loadData();
-        }
-    }, [authLoading, isManager, authUser, startDate, endDate]);
+        loadData();
+    }, [startDate, endDate]);
 
     // checkAuth 제거됨 - useAuth 훅 사용
 
@@ -132,7 +128,7 @@ export default function AirportDispatchPage() {
                             if (!userErr && users) {
                                 const userMap = new Map(users.map((u: any) => [u.id, u]));
                                 reservations.forEach((r: any) => {
-                                    const user = userMap.get(r.re_user_id);
+                                    const user: any = userMap.get(r.re_user_id);
                                     if (user) {
                                         reservationInfoMap.set(String(r.re_id), {
                                             customer_name: user.name,
@@ -320,7 +316,7 @@ export default function AirportDispatchPage() {
         }
     };
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">

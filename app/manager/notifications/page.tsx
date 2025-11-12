@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import supabase from '@/lib/supabase';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 
 // 타입 정의
 interface BaseNotification {
@@ -106,7 +105,6 @@ const getStatusColor = (status: string): string => {
 
 export default function NotificationManagement() {
   const router = useRouter();
-  const { loading: authLoading, isManager, user: authUser } = useAuth(['manager', 'admin'], '/');
 
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -140,19 +138,23 @@ export default function NotificationManagement() {
   });
 
   useEffect(() => {
-    if (!authLoading && isManager && authUser) {
-      setUser(authUser);
-      loadNotifications();
-      loadStats();
-
-      // 실시간 알림 체크 (30초마다)
-      const interval = setInterval(() => {
+    async function init() {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        setUser(authUser);
         loadNotifications();
-      }, 30000);
+        loadStats();
 
-      return () => clearInterval(interval);
+        // 실시간 알림 체크 (30초마다)
+        const interval = setInterval(() => {
+          loadNotifications();
+        }, 30000);
+
+        return () => clearInterval(interval);
+      }
     }
-  }, [authLoading, isManager, authUser, activeTab, statusFilter, priorityFilter, categoryFilter]);
+    init();
+  }, [activeTab, statusFilter, priorityFilter, categoryFilter]);
 
   // checkAuth 함수 제거 - useAuth 훅으로 대체됨
 
@@ -383,12 +385,12 @@ export default function NotificationManagement() {
     }
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <ManagerLayout title="알림 관리" activeTab="notifications">
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="ml-4 text-gray-600">{authLoading ? '권한 확인 중...' : '알림을 불러오는 중...'}</p>
+          <p className="ml-4 text-gray-600">알림을 불러오는 중...</p>
         </div>
       </ManagerLayout>
     );

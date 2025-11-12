@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import supabase from '@/lib/supabase';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function PricingManagement() {
   const router = useRouter();
-    const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('room'); // room, car, hotel, tour
@@ -34,7 +32,14 @@ export default function PricingManagement() {
   });
 
   useEffect(() => {
-    
+    async function init() {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        setUser(authUser);
+        setLoading(false);
+      }
+    }
+    init();
   }, []);
 
   useEffect(() => {
@@ -636,7 +641,7 @@ export default function PricingManagement() {
     );
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-lg text-gray-600">로딩 중...</div>
     </div>;

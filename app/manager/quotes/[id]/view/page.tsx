@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import supabase from '@/lib/supabase';
 import { updateQuoteItemPrices } from '@/lib/updateQuoteItemPrices';
-import { useAuth } from '@/hooks/useAuth';
 
 interface QuoteDetail {
   id: string;
@@ -35,7 +34,6 @@ interface QuoteDetail {
 
 export default function QuoteDetailPage() {
   const router = useRouter();
-  const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
   const params = useParams();
   const quoteId = params.id as string;
 

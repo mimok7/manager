@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import supabase from '@/lib/supabase';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 
 interface EditStats {
     totalReservations: number;
@@ -16,7 +15,6 @@ interface EditStats {
 
 export default function ReservationEditMainPage() {
     const router = useRouter();
-    const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
     const [stats, setStats] = useState<EditStats>({
         totalReservations: 0,
         pendingEdits: 0,
@@ -26,7 +24,6 @@ export default function ReservationEditMainPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        
         loadStats();
     }, []);
 

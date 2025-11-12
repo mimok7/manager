@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import supabase from '@/lib/supabase';
 import { Calendar, Car, Clock, FileText, Filter, MapPin, User, Phone, Map as MapIcon, Copy } from 'lucide-react';
 
@@ -31,7 +30,6 @@ interface RentcarDispatchItem {
 
 export default function RentcarDispatchPage() {
     const router = useRouter();
-    const { loading: authLoading, isManager, user: authUser } = useAuth(['manager', 'admin'], '/');
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<RentcarDispatchItem[]>([]);
     const [stats, setStats] = useState<{ pickup: number; sending: number; total: number }>({ pickup: 0, sending: 0, total: 0 });
@@ -39,10 +37,8 @@ export default function RentcarDispatchPage() {
     const [endDate, setEndDate] = useState(() => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 
     useEffect(() => {
-        if (!authLoading && isManager && authUser) {
-            loadData();
-        }
-    }, [authLoading, isManager, authUser, startDate, endDate]);
+        loadData();
+    }, [startDate, endDate]);
 
     // checkAuth 제거됨 - useAuth 훅 사용
 
@@ -224,7 +220,7 @@ export default function RentcarDispatchPage() {
         }
     };
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">

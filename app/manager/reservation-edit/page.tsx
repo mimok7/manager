@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import supabase from '@/lib/supabase';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import {
     Search,
     Edit3,
@@ -53,9 +52,6 @@ function ReservationEditContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // ✅ useAuth 훅 사용 (캐싱 적용)
-    const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
-
     const [reservations, setReservations] = useState<ReservationSummary[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -77,15 +73,12 @@ function ReservationEditContent() {
             setStatusFilter(status);
         }
 
-        // 인증 완료 후 데이터 로드
-        if (!authLoading && isManager) {
-            loadReservations();
-        }
-    }, [searchParams, authLoading, isManager]);
+        loadReservations();
+    }, [searchParams]);
 
     // 필터 변경 시 데이터 재로드
     useEffect(() => {
-        if (!authLoading && isManager && !loading) {
+        if (!loading) {
             loadReservations();
         }
     }, [statusFilter, typeFilter]);
@@ -356,13 +349,13 @@ function ReservationEditContent() {
     };
 
     // 로딩 상태 처리
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <ManagerLayout title="📝 예약 수정" activeTab="reservation-edit">
                 <div className="flex justify-center items-center h-64">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">{authLoading ? '권한 확인 중...' : '데이터 로드 중...'}</p>
+                        <p className="mt-4 text-gray-600">데이터 로드 중...</p>
                     </div>
                 </div>
             </ManagerLayout>

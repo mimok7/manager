@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import supabase from '@/lib/supabase';
 import { Calendar, Car, MapPin, Clock, User, Phone, FileText, Filter, Copy } from 'lucide-react';
 
@@ -31,7 +30,6 @@ interface ShtDispatchItem {
 
 export default function ShtCarDispatchPage() {
     const router = useRouter();
-    const { loading: authLoading, isManager, user: authUser } = useAuth(['manager', 'admin'], '/');
 
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<ShtDispatchItem[]>([]);
@@ -41,10 +39,8 @@ export default function ShtCarDispatchPage() {
     const [filterCategory, setFilterCategory] = useState<'all' | 'pickup' | 'dropoff'>('all');
 
     useEffect(() => {
-        if (!authLoading && isManager && authUser) {
-            loadShtDispatchData();
-        }
-    }, [authLoading, isManager, authUser, startDate, endDate, filterCategory]);
+        loadShtDispatchData();
+    }, [startDate, endDate, filterCategory]);
 
     // checkAuth 제거됨 - useAuth 훅 사용
 
@@ -280,7 +276,7 @@ export default function ShtCarDispatchPage() {
         }
     };
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
