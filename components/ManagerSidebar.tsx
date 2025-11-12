@@ -288,21 +288,21 @@ export default function ManagerSidebar({ activeTab, userEmail, onLogout, userRol
                                         icon="📝"
                                         label="결제 처리"
                                         path="/manager/payment-processing"
-                                        isActive={activeTab === 'payment-processing'}
+                                        isActive={isActiveTab('payment-processing')}
                                         onClick={() => handleNavigation('/manager/payment-processing')}
                                     />
                                     <NavItem
                                         icon="💳"
                                         label="현황 처리"
                                         path="/manager/payments"
-                                        isActive={activeTab === 'payments'}
+                                        isActive={isActiveTab('payments')}
                                         onClick={() => handleNavigation('/manager/payments')}
                                     />
                                     <NavItem
                                         icon="📄"
                                         label="예약 확인서"
                                         path="/manager/confirmation"
-                                        isActive={activeTab === 'confirmation'}
+                                        isActive={isActiveTab('confirmation')}
                                         onClick={() => handleNavigation('/manager/confirmation')}
                                     />
                                 </div>

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ManagerLayout from '@/components/ManagerLayout';
-import { useAuth } from '@/hooks/useAuth';
 import supabase from '@/lib/supabase';
 import {
   CreditCard,
@@ -93,7 +92,7 @@ const getPaymentMethodText = (method: string) => {
 
 export default function ManagerPaymentsPage() {
   const router = useRouter();
-    const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
+  const [user, setUser] = useState<any>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -118,7 +117,16 @@ export default function ManagerPaymentsPage() {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    
+    const checkAuth = async () => {
+      const { data: { user: authUser }, error } = await supabase.auth.getUser();
+      if (error || !authUser) {
+        router.push('/login');
+        return;
+      }
+      setUser(authUser);
+      setLoading(false);
+    };
+    checkAuth();
   }, []);
 
   useEffect(() => {
@@ -670,7 +678,7 @@ export default function ManagerPaymentsPage() {
     );
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <ManagerLayout title="예약 결제 관리" activeTab="payments">
         <div className="flex justify-center items-center h-64">
