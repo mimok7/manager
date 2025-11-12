@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import ManagerLayout from '@/components/ManagerLayout';
 import supabase from '@/lib/supabase';
 import ReservationDetailModal from '../../../../components/ReservationDetailModal';
+import GoogleSheetsDetailModal from '@/components/GoogleSheetsDetailModal';
 import {
   Calendar,
   Clock,
@@ -184,6 +185,12 @@ export default function ManagerSchedulePage() {
   const [selectedSchedule, setSelectedSchedule] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Google Sheets 모달 상태
+  const [selectedGoogleSheetsReservation, setSelectedGoogleSheetsReservation] = useState<any>(null);
+  const [isGoogleSheetsModalOpen, setIsGoogleSheetsModalOpen] = useState(false);
+  const [allOrderServices, setAllOrderServices] = useState<any[]>([]);
+  const [loadingOrderServices, setLoadingOrderServices] = useState(false);
+
   // Google Sheets 데이터
   const [googleSheetsData, setGoogleSheetsData] = useState<any[]>([]);
   const [googleSheetsLoading, setGoogleSheetsLoading] = useState(true);
@@ -196,6 +203,57 @@ export default function ManagerSchedulePage() {
   useEffect(() => {
     loadGoogleSheetsData();
   }, [typeFilter]);
+
+  // 주문 ID로 모든 서비스 조회
+  const loadAllOrderServices = async (orderId: string) => {
+    if (!orderId) {
+      setAllOrderServices([]);
+      return;
+    }
+
+    setLoadingOrderServices(true);
+    try {
+      const serviceTypes = ['cruise', 'car', 'vehicle', 'airport', 'hotel', 'tour', 'rentcar'];
+      const results = await Promise.all(
+        serviceTypes.map(async (type) => {
+          try {
+            const response = await fetch(`/api/schedule/google-sheets?type=${type}`);
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              return [];
+            }
+            const result = await response.json();
+            if (result.success && result.data) {
+              // 같은 주문 ID를 가진 모든 서비스 필터링
+              return result.data.filter((item: any) => item.orderId === orderId);
+            }
+            return [];
+          } catch {
+            return [];
+          }
+        })
+      );
+
+      // 모든 서비스 데이터 합치기
+      const allData = results.flat();
+      setAllOrderServices(allData);
+    } catch (error) {
+      console.error('주문 서비스 조회 실패:', error);
+      setAllOrderServices([]);
+    } finally {
+      setLoadingOrderServices(false);
+    }
+  };
+
+  // Google Sheets 상세보기 모달 열기
+  const handleOpenGoogleSheetsDetail = async (reservation: any) => {
+    setSelectedGoogleSheetsReservation(reservation);
+    setIsGoogleSheetsModalOpen(true);
+    // 해당 주문 ID의 모든 서비스 조회
+    if (reservation.orderId) {
+      await loadAllOrderServices(reservation.orderId);
+    }
+  };
 
   const getRange = (base: Date, mode: 'day' | 'week' | 'month') => {
     const start = new Date(base);
@@ -874,6 +932,12 @@ export default function ManagerSchedulePage() {
               >
                 {isPast ? '완료' : '예정'}
               </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-blue-500 text-white py-0.5 px-2 rounded text-xs hover:bg-blue-600 transition-colors"
+              >
+                상세
+              </button>
             </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
@@ -952,9 +1016,17 @@ export default function ManagerSchedulePage() {
             <h5 className="font-bold text-sm flex-1 truncate text-gray-800">
               스하차량
             </h5>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-purple-100 text-purple-800'}`}>
-              {isPast ? '완료' : '예정'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-purple-100 text-purple-800'}`}>
+                {isPast ? '완료' : '예정'}
+              </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-purple-500 text-white py-0.5 px-2 rounded text-xs hover:bg-purple-600 transition-colors"
+              >
+                상세
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
             {reservation.customerName && (
@@ -1027,9 +1099,17 @@ export default function ManagerSchedulePage() {
             <h5 className="font-bold text-sm flex-1 truncate text-gray-800">
               공항서비스
             </h5>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}`}>
-              {isPast ? '완료' : '예정'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-green-100 text-green-800'}`}>
+                {isPast ? '완료' : '예정'}
+              </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-green-500 text-white py-0.5 px-2 rounded text-xs hover:bg-green-600 transition-colors"
+              >
+                상세
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
             {reservation.customerName && (
@@ -1094,9 +1174,17 @@ export default function ManagerSchedulePage() {
             <h5 className="font-bold text-sm flex-1 truncate text-gray-800">
               호텔
             </h5>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-orange-100 text-orange-800'}`}>
-              {isPast ? '완료' : '예정'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-orange-100 text-orange-800'}`}>
+                {isPast ? '완료' : '예정'}
+              </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-orange-500 text-white py-0.5 px-2 rounded text-xs hover:bg-orange-600 transition-colors"
+              >
+                상세
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
             {reservation.customerName && (
@@ -1162,9 +1250,17 @@ export default function ManagerSchedulePage() {
             <h5 className="font-bold text-sm flex-1 truncate text-gray-800">
               투어
             </h5>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-pink-100 text-pink-800'}`}>
-              {isPast ? '완료' : '예정'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-pink-100 text-pink-800'}`}>
+                {isPast ? '완료' : '예정'}
+              </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-pink-500 text-white py-0.5 px-2 rounded text-xs hover:bg-pink-600 transition-colors"
+              >
+                상세
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
             {reservation.customerName && (
@@ -1225,9 +1321,17 @@ export default function ManagerSchedulePage() {
             <h5 className="font-bold text-sm flex-1 truncate text-gray-800">
               렌트카
             </h5>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-indigo-100 text-indigo-800'}`}>
-              {isPast ? '완료' : '예정'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-indigo-100 text-indigo-800'}`}>
+                {isPast ? '완료' : '예정'}
+              </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-indigo-500 text-white py-0.5 px-2 rounded text-xs hover:bg-indigo-600 transition-colors"
+              >
+                상세
+              </button>
+            </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
             {reservation.customerName && (
@@ -1300,6 +1404,12 @@ export default function ManagerSchedulePage() {
               >
                 {isPast ? '완료' : '예정'}
               </span>
+              <button
+                onClick={() => handleOpenGoogleSheetsDetail(reservation)}
+                className="bg-blue-500 text-white py-0.5 px-2 rounded text-xs hover:bg-blue-600 transition-colors"
+              >
+                상세
+              </button>
             </div>
           </div>
           <div className="flex flex-col gap-1 text-sm text-gray-700 mt-1">
@@ -1927,6 +2037,14 @@ export default function ManagerSchedulePage() {
         reservation={selectedSchedule}
         title="예약 상세 정보"
         onRefresh={loadSchedules}
+      />
+
+      <GoogleSheetsDetailModal
+        isOpen={isGoogleSheetsModalOpen}
+        onClose={() => setIsGoogleSheetsModalOpen(false)}
+        selectedReservation={selectedGoogleSheetsReservation}
+        allOrderServices={allOrderServices}
+        loading={loadingOrderServices}
       />
     </ManagerLayout>
   );
