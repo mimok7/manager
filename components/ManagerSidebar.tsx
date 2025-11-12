@@ -42,6 +42,9 @@ export default function ManagerSidebar({ activeTab, userEmail, onLogout, userRol
         if (!pathname) return null;
         if (pathname.startsWith('/manager/reservations/bulk')) return 'reservations-bulk';
         if (pathname === '/manager/reservations') return 'reservations';
+        if (pathname === '/manager/payment-processing') return 'payment-processing';
+        if (pathname === '/manager/payments') return 'payments';
+        if (pathname === '/manager/confirmation') return 'confirmation';
         return null;
     })();
 

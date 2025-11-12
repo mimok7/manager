@@ -166,7 +166,7 @@ export default function ManagerPaymentsPage() {
           paid_amount,
           payment_status,
           re_created_at,
-          users:re_user_id(id, name, email)
+          users!re_user_id(id, name, email)
         `)
         .order('re_created_at', { ascending: false });
 
@@ -262,7 +262,7 @@ export default function ManagerPaymentsPage() {
           re_id,
           re_user_id,
           payment_status,
-          users:re_user_id(name, email)
+          users!re_user_id(name, email)
         `)
         .neq('payment_status', 'completed');
 
