@@ -109,7 +109,7 @@ export default function ReservationEditMainPage() {
         }
     ];
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <ManagerLayout title="예약 수정 관리" activeTab="reservation-edit-main">
                 <div className="flex justify-center items-center h-64">

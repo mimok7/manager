@@ -34,7 +34,6 @@ interface QuoteDetail {
 
 export default function QuoteDetailPage() {
   const router = useRouter();
-    const { loading: authLoading, isManager } = useAuth(['manager', 'admin'], '/');
   const params = useParams();
   const quoteId = params.id as string;
 
@@ -49,7 +48,13 @@ export default function QuoteDetailPage() {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
 
   useEffect(() => {
-    
+    async function init() {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        setUser(authUser);
+      }
+    }
+    init();
   }, []);
 
   useEffect(() => {
