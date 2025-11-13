@@ -548,63 +548,57 @@ export default function ReservationDetailModal({
                         case 'cruise': {
                             const { data } = await supabase
                                 .from('reservation_cruise')
-                                .select('*, room_price:room_price_code(cruise, room_type, room_category, route, base_price)')
+                                .select('*, room_price:room_price_code(cruise, room_type, room_category, base_price)')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             serviceData = data;
-                            console.log('크루즈 데이터:', serviceData);
                             break;
                         }
                         case 'airport': {
                             const { data } = await supabase
                                 .from('reservation_airport')
-                                .select('*, airport_price:airport_price_code(airport_category, airport_route, airport_car_type)')
+                                .select('*')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             serviceData = data;
-                            console.log('공항 데이터:', serviceData);
                             break;
                         }
                         case 'hotel': {
                             const { data } = await supabase
                                 .from('reservation_hotel')
-                                .select('*, hotel_price:hotel_price_code(hotel_name, room_type, location, category)')
+                                .select('*')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             serviceData = data;
-                            console.log('호텔 데이터:', serviceData);
                             break;
                         }
                         case 'tour': {
                             const { data } = await supabase
                                 .from('reservation_tour')
-                                .select('*, tour_price:tour_price_code(tour_name, category, location)')
+                                .select('*')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             serviceData = data;
-                            console.log('투어 데이터:', serviceData);
                             break;
                         }
                         case 'rentcar': {
                             const { data } = await supabase
                                 .from('reservation_rentcar')
-                                .select('*, rentcar_price:rentcar_price_code(vehicle_type, category, passenger_capacity)')
+                                .select('*')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             serviceData = data;
-                            console.log('렌터카 데이터:', serviceData);
                             break;
                         }
                         case 'car': {
                             // 크루즈 차량 먼저 확인
                             const { data: cruiseCar } = await supabase
                                 .from('reservation_cruise_car')
-                                .select('*, car_price:car_price_code(car_category, cruise, car_type, passenger_count)')
+                                .select('*')
                                 .eq('reservation_id', res.re_id)
                                 .maybeSingle();
                             if (cruiseCar) {
                                 serviceData = cruiseCar;
-                                console.log('크루즈 차량 데이터:', serviceData);
                             } else {
                                 // 스하차량 확인
                                 const { data: shtCar } = await supabase
@@ -613,17 +607,17 @@ export default function ReservationDetailModal({
                                     .eq('reservation_id', res.re_id)
                                     .maybeSingle();
                                 serviceData = shtCar;
-                                console.log('SHT 차량 데이터:', serviceData);
                             }
                             break;
                         }
                     }
 
-                    // 데이터가 없어도 예약은 추가 (서비스 세부 정보가 없을 수 있음)
-                    allServices.push({
-                        ...res,
-                        serviceDetails: serviceData
-                    });
+                    if (serviceData) {
+                        allServices.push({
+                            ...res,
+                            serviceDetails: serviceData
+                        });
+                    }
                 }
 
                 if (!cancelled) {
@@ -1873,507 +1867,309 @@ export default function ReservationDetailModal({
 
                                             <div className="space-y-2 text-sm">
                                                 {/* 크루즈 */}
-                                                {res.re_type === 'cruise' && (
+                                                {res.re_type === 'cruise' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.room_price?.cruise && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">크루즈:</strong>
-                                                                        <span className="text-blue-700 font-semibold">
-                                                                            {res.serviceDetails.room_price.cruise}
-                                                                        </span>
-                                                                    </div>
-                                                                )}
-                                                                {(res.serviceDetails.room_price?.room_type || res.serviceDetails.room_price?.room_category) && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">객실:</strong>
-                                                                        <span>{res.serviceDetails.room_price?.room_type || res.serviceDetails.room_price?.room_category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.room_price?.route && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">항로:</strong>
-                                                                        <span>{res.serviceDetails.room_price.route}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.checkin && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">체크인:</strong>
-                                                                        <span>{new Date(res.serviceDetails.checkin).toLocaleDateString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.boarding_code && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">승선코드:</strong>
-                                                                        <span className="font-mono text-xs bg-blue-100 px-2 py-1 rounded">{res.serviceDetails.boarding_code}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.guest_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">인원:</strong>
-                                                                        <span>{res.serviceDetails.guest_count}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.unit_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">단가:</strong>
-                                                                        <span className="text-blue-600">{res.serviceDetails.unit_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.room_total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-blue-700 font-bold">{res.serviceDetails.room_total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.boarding_assist && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">승선 도움:</strong>
-                                                                        <span className="text-green-600">✓ 필요</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">크루즈:</strong>
+                                                            <span className="text-blue-700 font-semibold">
+                                                                {res.serviceDetails.room_price?.cruise || '정보 없음'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">객실:</strong>
+                                                            <span>{res.serviceDetails.room_price?.room_type || res.serviceDetails.room_price?.room_category || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.room_price?.route && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">항로:</strong>
+                                                                <span>{res.serviceDetails.room_price.route}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">체크인:</strong>
+                                                            <span>{res.serviceDetails.checkin ? new Date(res.serviceDetails.checkin).toLocaleDateString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">체크아웃:</strong>
+                                                            <span>{res.serviceDetails.checkout ? new Date(res.serviceDetails.checkout).toLocaleDateString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">인원:</strong>
+                                                            <span>{res.serviceDetails.guest_count || 0}명</span>
+                                                        </div>
+                                                        {res.serviceDetails.room_total_price && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">객실 금액:</strong>
+                                                                <span className="text-blue-600 font-semibold">{res.serviceDetails.room_total_price.toLocaleString()}동</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
 
                                                 {/* 공항 */}
-                                                {res.re_type === 'airport' && (
+                                                {res.re_type === 'airport' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.ra_airport_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">공항:</strong>
-                                                                        <span>{res.serviceDetails.ra_airport_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.airport_price?.airport_category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">카테고리:</strong>
-                                                                        <span className="text-green-700 font-semibold">{res.serviceDetails.airport_price.airport_category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.airport_price?.airport_route && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">경로:</strong>
-                                                                        <span>{res.serviceDetails.airport_price.airport_route}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.airport_price?.airport_car_type && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량 타입:</strong>
-                                                                        <span>{res.serviceDetails.airport_price.airport_car_type}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_datetime && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">일시:</strong>
-                                                                        <span>{new Date(res.serviceDetails.ra_datetime).toLocaleString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_flight_number && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">항공편:</strong>
-                                                                        <span className="font-mono text-xs bg-green-100 px-2 py-1 rounded">{res.serviceDetails.ra_flight_number}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_passenger_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">승객 수:</strong>
-                                                                        <span>{res.serviceDetails.ra_passenger_count}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_car_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량 수:</strong>
-                                                                        <span>{res.serviceDetails.ra_car_count}대</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_luggage_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">짐 개수:</strong>
-                                                                        <span>{res.serviceDetails.ra_luggage_count}개</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_stopover_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">경유지:</strong>
-                                                                        <span>{res.serviceDetails.ra_stopover_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.ra_stopover_wait_minutes > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">대기 시간:</strong>
-                                                                        <span>{res.serviceDetails.ra_stopover_wait_minutes}분</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.dispatch_code && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">배차코드:</strong>
-                                                                        <span className="font-mono text-xs bg-green-100 px-2 py-1 rounded">{res.serviceDetails.dispatch_code}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-green-700 font-bold">{res.serviceDetails.total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">공항:</strong>
+                                                            <span>{res.serviceDetails.ra_airport_location || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.ra_service_type && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">서비스 타입:</strong>
+                                                                <span>{res.serviceDetails.ra_service_type}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">일시:</strong>
+                                                            <span>{res.serviceDetails.ra_datetime ? new Date(res.serviceDetails.ra_datetime).toLocaleString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">항공편:</strong>
+                                                            <span>{res.serviceDetails.ra_flight_number || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.ra_passenger_count && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">승객 수:</strong>
+                                                                <span>{res.serviceDetails.ra_passenger_count}명</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.ra_pickup_location && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">픽업 위치:</strong>
+                                                                <span>{res.serviceDetails.ra_pickup_location}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.ra_dropoff_location && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">하차 위치:</strong>
+                                                                <span>{res.serviceDetails.ra_dropoff_location}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
 
                                                 {/* 호텔 */}
-                                                {res.re_type === 'hotel' && (
+                                                {res.re_type === 'hotel' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.hotel_price?.hotel_name && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">호텔:</strong>
-                                                                        <span className="text-orange-700 font-semibold">{res.serviceDetails.hotel_price.hotel_name}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.hotel_category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">카테고리:</strong>
-                                                                        <span>{res.serviceDetails.hotel_category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.hotel_price?.room_type && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">객실 타입:</strong>
-                                                                        <span>{res.serviceDetails.hotel_price.room_type}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.hotel_price?.location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">위치:</strong>
-                                                                        <span>{res.serviceDetails.hotel_price.location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.checkin_date && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">체크인:</strong>
-                                                                        <span>{new Date(res.serviceDetails.checkin_date).toLocaleDateString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.schedule && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">일정:</strong>
-                                                                        <span>{res.serviceDetails.schedule}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.room_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">객실 수:</strong>
-                                                                        <span>{res.serviceDetails.room_count}실</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.guest_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">투숙객:</strong>
-                                                                        <span>{res.serviceDetails.guest_count}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.breakfast_service && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">조식:</strong>
-                                                                        <span>{res.serviceDetails.breakfast_service}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.assignment_code && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">배정코드:</strong>
-                                                                        <span className="font-mono text-xs bg-orange-100 px-2 py-1 rounded">{res.serviceDetails.assignment_code}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-orange-700 font-bold">{res.serviceDetails.total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">호텔:</strong>
+                                                            <span>{res.serviceDetails.hotel_price?.hotel_name || res.serviceDetails.hotel_category || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.hotel_price?.room_type && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">객실 타입:</strong>
+                                                                <span>{res.serviceDetails.hotel_price.room_type}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">체크인:</strong>
+                                                            <span>{res.serviceDetails.checkin_date ? new Date(res.serviceDetails.checkin_date).toLocaleDateString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.checkout_date && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">체크아웃:</strong>
+                                                                <span>{new Date(res.serviceDetails.checkout_date).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">숙박:</strong>
+                                                            <span>{res.serviceDetails.nights || 0}박</span>
+                                                        </div>
+                                                        {res.serviceDetails.guest_count && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">투숙객:</strong>
+                                                                <span>{res.serviceDetails.guest_count}명</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.room_count && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">객실 수:</strong>
+                                                                <span>{res.serviceDetails.room_count}실</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.hotel_total_price && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">총 금액:</strong>
+                                                                <span className="text-orange-600 font-semibold">{res.serviceDetails.hotel_total_price.toLocaleString()}동</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
 
                                                 {/* 투어 */}
-                                                {res.re_type === 'tour' && (
+                                                {res.re_type === 'tour' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.tour_price?.tour_name && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">투어:</strong>
-                                                                        <span className="text-pink-700 font-semibold">{res.serviceDetails.tour_price.tour_name}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.tour_price?.category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">카테고리:</strong>
-                                                                        <span>{res.serviceDetails.tour_price.category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.tour_price?.location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">위치:</strong>
-                                                                        <span>{res.serviceDetails.tour_price.location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.usage_date && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">이용일:</strong>
-                                                                        <span>{new Date(res.serviceDetails.usage_date).toLocaleDateString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.pickup_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">픽업:</strong>
-                                                                        <span>{res.serviceDetails.pickup_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.dropoff_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">하차:</strong>
-                                                                        <span>{res.serviceDetails.dropoff_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.tour_capacity > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">정원:</strong>
-                                                                        <span>{res.serviceDetails.tour_capacity}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-pink-700 font-bold">{res.serviceDetails.total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        {res.serviceDetails.tour_price?.tour_name && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">투어:</strong>
+                                                                <span className="text-pink-700 font-semibold">{res.serviceDetails.tour_price.tour_name}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.tour_date && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">투어일:</strong>
+                                                                <span>{new Date(res.serviceDetails.tour_date).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">픽업:</strong>
+                                                            <span>{res.serviceDetails.pickup_location || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.pickup_time && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">픽업 시간:</strong>
+                                                                <span>{res.serviceDetails.pickup_time}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.participant_count && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">참가자:</strong>
+                                                                <span>{res.serviceDetails.participant_count}명</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">수용 인원:</strong>
+                                                            <span>{res.serviceDetails.tour_capacity || res.serviceDetails.participant_count || 0}명</span>
+                                                        </div>
+                                                        {res.serviceDetails.tour_total_price && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">총 금액:</strong>
+                                                                <span className="text-pink-600 font-semibold">{res.serviceDetails.tour_total_price.toLocaleString()}동</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
 
                                                 {/* 렌터카 */}
-                                                {res.re_type === 'rentcar' && (
+                                                {res.re_type === 'rentcar' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.rentcar_price?.vehicle_type && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량:</strong>
-                                                                        <span className="text-red-700 font-semibold">{res.serviceDetails.rentcar_price.vehicle_type}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.rentcar_price?.category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">카테고리:</strong>
-                                                                        <span>{res.serviceDetails.rentcar_price.category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.pickup_datetime && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">픽업 일시:</strong>
-                                                                        <span>{new Date(res.serviceDetails.pickup_datetime).toLocaleString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.pickup_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">픽업:</strong>
-                                                                        <span>{res.serviceDetails.pickup_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.destination && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">목적지:</strong>
-                                                                        <span>{res.serviceDetails.destination}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.via_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">경유지:</strong>
-                                                                        <span>{res.serviceDetails.via_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.via_waiting && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">경유 대기:</strong>
-                                                                        <span>{res.serviceDetails.via_waiting}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.car_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량 수:</strong>
-                                                                        <span>{res.serviceDetails.car_count}대</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.passenger_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">승객:</strong>
-                                                                        <span>{res.serviceDetails.passenger_count}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.luggage_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">짐:</strong>
-                                                                        <span>{res.serviceDetails.luggage_count}개</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.dispatch_code && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">배차코드:</strong>
-                                                                        <span className="font-mono text-xs bg-red-100 px-2 py-1 rounded">{res.serviceDetails.dispatch_code}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-red-700 font-bold">{res.serviceDetails.total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        {res.serviceDetails.rentcar_price?.vehicle_type && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">차량:</strong>
+                                                                <span className="text-red-700 font-semibold">{res.serviceDetails.rentcar_price.vehicle_type}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">픽업:</strong>
+                                                            <span>{res.serviceDetails.pickup_location || '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.dropoff_location && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">반납:</strong>
+                                                                <span>{res.serviceDetails.dropoff_location}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.pickup_date && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">대여일:</strong>
+                                                                <span>{new Date(res.serviceDetails.pickup_date).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <strong className="text-gray-600">일시:</strong>
+                                                            <span>{res.serviceDetails.pickup_datetime ? new Date(res.serviceDetails.pickup_datetime).toLocaleString('ko-KR') : '정보 없음'}</span>
+                                                        </div>
+                                                        {res.serviceDetails.rental_days && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">대여기간:</strong>
+                                                                <span>{res.serviceDetails.rental_days}일</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.driver_count && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">운전자:</strong>
+                                                                <span>{res.serviceDetails.driver_count}명</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.rentcar_total_price && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">총 금액:</strong>
+                                                                <span className="text-red-600 font-semibold">{res.serviceDetails.rentcar_total_price.toLocaleString()}동</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
 
-                                                {/* 차량 (크루즈 차량 + SHT 차량) */}
-                                                {res.re_type === 'car' && (
+                                                {/* 차량 */}
+                                                {res.re_type === 'car' && res.serviceDetails && (
                                                     <>
-                                                        {res.serviceDetails ? (
-                                                            <>
-                                                                {res.serviceDetails.car_price?.car_type && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량 타입:</strong>
-                                                                        <span className="text-purple-700 font-semibold">{res.serviceDetails.car_price.car_type}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.car_price?.car_category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">카테고리:</strong>
-                                                                        <span>{res.serviceDetails.car_price.car_category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.car_price?.cruise && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">크루즈:</strong>
-                                                                        <span>{res.serviceDetails.car_price.cruise}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.sht_category && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">SHT 카테고리:</strong>
-                                                                        <span>{res.serviceDetails.sht_category}</span>
-                                                                    </div>
-                                                                )}
-                                                                {(res.serviceDetails.pickup_datetime || res.serviceDetails.usage_date) && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">이용일:</strong>
-                                                                        <span>{new Date(res.serviceDetails.pickup_datetime || res.serviceDetails.usage_date).toLocaleDateString('ko-KR')}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.pickup_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">픽업:</strong>
-                                                                        <span>{res.serviceDetails.pickup_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.dropoff_location && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">하차:</strong>
-                                                                        <span>{res.serviceDetails.dropoff_location}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.vehicle_number && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량번호:</strong>
-                                                                        <span className="font-mono text-xs bg-purple-100 px-2 py-1 rounded">{res.serviceDetails.vehicle_number}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.seat_number && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">좌석:</strong>
-                                                                        <span>{res.serviceDetails.seat_number}석</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.car_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">차량 수:</strong>
-                                                                        <span>{res.serviceDetails.car_count}대</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.passenger_count > 0 && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">승객:</strong>
-                                                                        <span>{res.serviceDetails.passenger_count}명</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.dispatch_code && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">배차코드:</strong>
-                                                                        <span className="font-mono text-xs bg-purple-100 px-2 py-1 rounded">{res.serviceDetails.dispatch_code}</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.car_total_price && (
-                                                                    <div className="flex items-center gap-2">
-                                                                        <strong className="text-gray-600">총 금액:</strong>
-                                                                        <span className="text-purple-700 font-bold">{res.serviceDetails.car_total_price.toLocaleString()}동</span>
-                                                                    </div>
-                                                                )}
-                                                                {res.serviceDetails.request_note && (
-                                                                    <div className="flex flex-col gap-1 pt-2 border-t">
-                                                                        <strong className="text-gray-600">요청사항:</strong>
-                                                                        <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <div className="text-gray-500 text-xs">상세 정보 로딩 중...</div>
+                                                        {res.serviceDetails.vehicle_type && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">차량 타입:</strong>
+                                                                <span className="text-purple-700 font-semibold">{res.serviceDetails.vehicle_type}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.pickup_datetime && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">승차일:</strong>
+                                                                <span>{new Date(res.serviceDetails.pickup_datetime).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.pickup_location && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">승차 위치:</strong>
+                                                                <span>{res.serviceDetails.pickup_location}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.usage_date && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">이용일:</strong>
+                                                                <span>{new Date(res.serviceDetails.usage_date).toLocaleDateString('ko-KR')}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.destination && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">목적지:</strong>
+                                                                <span>{res.serviceDetails.destination}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.vehicle_number && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">차량번호:</strong>
+                                                                <span>{res.serviceDetails.vehicle_number}</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.seat_number && (
+                                                            <div className="flex items-center gap-2">
+                                                                <strong className="text-gray-600">좌석:</strong>
+                                                                <span>{res.serviceDetails.seat_number}석</span>
+                                                            </div>
+                                                        )}
+                                                        {res.serviceDetails.request_note && (
+                                                            <div className="flex flex-col gap-1 pt-2 border-t">
+                                                                <strong className="text-gray-600">요청사항:</strong>
+                                                                <span className="text-xs text-gray-500 whitespace-pre-line">{res.serviceDetails.request_note}</span>
+                                                            </div>
                                                         )}
                                                     </>
                                                 )}
