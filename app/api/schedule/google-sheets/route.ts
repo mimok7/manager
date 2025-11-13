@@ -35,12 +35,14 @@ export async function GET(request: Request) {
         const sheetMapping: Record<string, string> = {
             'car': 'SH_C',        // 차량
             'cruise': 'SH_R',     // 크루즈
-            'vehicle': 'SH_CC',   // 스하차량
+            'vehicle': 'SH_CC',   // 스하차량 (첫번째 SH_CC 정의)
+            'sapa': 'SH_CC',      // 사파 (두번째 SH_CC 정의, 같은 시트)
             'airport': 'SH_P',    // 공항
             'hotel': 'SH_H',      // 호텔
             'tour': 'SH_T',       // 투어
             'rentcar': 'SH_RC',   // 렌트카
             'user': 'SH_M',       // 사용자
+            'price': 'Price',     // 가격정보
         };
 
         let sheetName = sheetMapping[type] || 'SH_C'; // 기본: 차량
@@ -219,15 +221,20 @@ export async function GET(request: Request) {
                 })
                 .filter(Boolean);
         } else if (type === 'vehicle') {
-            // SH_CC 스하차량 데이터 파싱
+            // SH_CC 스하차량 데이터 파싱 (첫번째 구조)
             // A=ID, B=주문ID, C=승차일, D=구분, E=분류, F=차량번호, G=좌석번호, H=이름
-            // I=수정자, J=수정일시, K=Email, L=승차위치, M=하차위치 (추가 필드 가능)
+            // I=수정자, J=수정일시, K=Email
             reservations = rows
                 .map((row) => {
                     if (!row[1]) return null;
 
                     const orderId = row[1] || '';
                     const carLocation = carLocationMap[orderId] || { pickup: '', dropoff: '' };
+
+                    // 첫번째 구조 판별: C열이 날짜 형식이고, F열에 차량번호가 있으면 vehicle
+                    const isVehicleStructure = row[2] && row[5]; // C=승차일, F=차량번호
+
+                    if (!isVehicleStructure) return null;
 
                     return {
                         orderId, // B열: 주문ID
@@ -240,9 +247,46 @@ export async function GET(request: Request) {
                         vehicleNumber: row[5] || '', // F열: 차량번호
                         seatNumber: row[6] || '', // G열: 좌석번호
                         name: row[7] || '', // H열: 이름
-                        pickupLocation: carLocation.pickup || row[11] || '', // SH_C K열 우선, 없으면 SH_CC L열
-                        dropoffLocation: carLocation.dropoff || row[12] || '', // SH_C L열 우선, 없으면 SH_CC M열
-                        email: row[10] || '', // K열: Email (표시 안 함)
+                        pickupLocation: carLocation.pickup || '', // SH_C K열
+                        dropoffLocation: carLocation.dropoff || '', // SH_C L열
+                        email: row[10] || '', // K열: Email
+                    };
+                })
+                .filter(Boolean);
+        } else if (type === 'sapa') {
+            // SH_CC 사파 데이터 파싱 (두번째 구조)
+            // A=ID, B=주문ID, C=구분, D=버스선택, E=분류, F=사파종류, G=인원수, H=좌석수
+            // I=메모, J=사파코드, K=승차일자, L=승차시간, M=집결시간
+            // N=수정자, O=수정일시, P=처리, Q=처리일시, R=금액, S=합계, T=Email
+            reservations = rows
+                .map((row) => {
+                    if (!row[1]) return null;
+
+                    const orderId = row[1] || '';
+
+                    // 두번째 구조 판별: C열이 구분(텍스트)이고, F열에 사파종류가 있으면 sapa
+                    const isSapaStructure = row[2] && row[5] && !row[2].match(/\d{4}-\d{2}-\d{2}/); // C열이 날짜가 아님
+
+                    if (!isSapaStructure) return null;
+
+                    return {
+                        orderId, // B열: 주문ID
+                        customerName: userNameMap[orderId] || '',
+                        customerEnglishName: userEnglishNameMap[orderId] || '',
+                        category: row[2] || '', // C열: 구분
+                        busSelection: row[3] || '', // D열: 버스선택
+                        classification: row[4] || '', // E열: 분류
+                        sapaType: row[5] || '', // F열: 사파종류
+                        participantCount: parseInt(row[6]) || 0, // G열: 인원수
+                        seatCount: parseInt(row[7]) || 0, // H열: 좌석수
+                        memo: row[8] || '', // I열: 메모
+                        sapaCode: row[9] || '', // J열: 사파코드
+                        boardingDate: row[10] || '', // K열: 승차일자
+                        boardingTime: row[11] || '', // L열: 승차시간
+                        gatheringTime: row[12] || '', // M열: 집결시간
+                        unitPrice: parseFloat(String(row[17] || '0').replace(/[,\s]/g, '')) || 0, // R열: 금액
+                        totalPrice: parseFloat(String(row[18] || '0').replace(/[,\s]/g, '')) || 0, // S열: 합계
+                        email: row[19] || '', // T열: Email
                     };
                 })
                 .filter(Boolean);
@@ -376,6 +420,77 @@ export async function GET(request: Request) {
                         unitPrice: parseFloat(String(row[21] || '0').replace(/[,\s]/g, '')) || 0, // V열: 금액
                         totalPrice: parseFloat(String(row[22] || '0').replace(/[,\s]/g, '')) || 0, // W열: 합계
                         email: row[23] || '', // X열: Email
+                    };
+                })
+                .filter(Boolean);
+        } else if (type === 'price') {
+            // Price 가격정보 데이터 파싱
+            // A=주문ID, B=견적일시, C=예약금, D=예약일시, E=중도금, F=중도일시, G=잔금, H=잔금일시
+            // I=수기합계, J=총합계, K=전체합계, L=객실합계, M=차량합계, N=픽업합계, O=호텔합계
+            // P=렌트합계, Q=투어합계, R=사파합계, S=메모
+            reservations = rows
+                .map((row) => {
+                    if (!row[0]) return null; // 주문ID 없으면 건너뛰기
+
+                    const orderId = row[0] || '';
+                    return {
+                        orderId, // A열: 주문ID
+                        customerName: userNameMap[orderId] || '',
+                        customerEnglishName: userEnglishNameMap[orderId] || '',
+                        quoteDate: row[1] || '', // B열: 견적일시
+                        deposit: parseFloat(String(row[2] || '0').replace(/[,\s]/g, '')) || 0, // C열: 예약금
+                        depositDate: row[3] || '', // D열: 예약일시
+                        midPayment: parseFloat(String(row[4] || '0').replace(/[,\s]/g, '')) || 0, // E열: 중도금
+                        midPaymentDate: row[5] || '', // F열: 중도일시
+                        finalPayment: parseFloat(String(row[6] || '0').replace(/[,\s]/g, '')) || 0, // G열: 잔금
+                        finalPaymentDate: row[7] || '', // H열: 잔금일시
+                        manualTotal: parseFloat(String(row[8] || '0').replace(/[,\s]/g, '')) || 0, // I열: 수기합계
+                        subTotal: parseFloat(String(row[9] || '0').replace(/[,\s]/g, '')) || 0, // J열: 총합계
+                        grandTotal: parseFloat(String(row[10] || '0').replace(/[,\s]/g, '')) || 0, // K열: 전체합계
+                        roomTotal: parseFloat(String(row[11] || '0').replace(/[,\s]/g, '')) || 0, // L열: 객실합계
+                        carTotal: parseFloat(String(row[12] || '0').replace(/[,\s]/g, '')) || 0, // M열: 차량합계
+                        pickupTotal: parseFloat(String(row[13] || '0').replace(/[,\s]/g, '')) || 0, // N열: 픽업합계
+                        hotelTotal: parseFloat(String(row[14] || '0').replace(/[,\s]/g, '')) || 0, // O열: 호텔합계
+                        rentTotal: parseFloat(String(row[15] || '0').replace(/[,\s]/g, '')) || 0, // P열: 렌트합계
+                        tourTotal: parseFloat(String(row[16] || '0').replace(/[,\s]/g, '')) || 0, // Q열: 투어합계
+                        sapaTotal: parseFloat(String(row[17] || '0').replace(/[,\s]/g, '')) || 0, // R열: 사파합계
+                        memo: row[18] || '', // S열: 메모
+                    };
+                })
+                .filter(Boolean);
+        } else if (type === 'user') {
+            // SH_M 사용자 정보 데이터 파싱
+            // A=주문ID, B=예약일, C=Email, D=한글이름, E=영문이름, F=닉네임, G=회원등급, H=이름
+            // I=전화번호, J=만든사람, K=만든일시, L=환율, M=미환율, N=URL, O=요금제, P=결제방식
+            // Q=요청사항, R=카톡ID, S=특이사항, T=생년월일, U=메모, V=할인금액, W=할인코드
+            reservations = rows
+                .map((row) => {
+                    if (!row[0]) return null; // 주문ID 없으면 건너뛰기
+
+                    return {
+                        orderId: row[0] || '', // A열: 주문ID
+                        reservationDate: row[1] || '', // B열: 예약일
+                        email: row[2] || '', // C열: Email
+                        koreanName: row[3] || '', // D열: 한글이름
+                        englishName: row[4] || '', // E열: 영문이름
+                        nickname: row[5] || '', // F열: 닉네임
+                        memberLevel: row[6] || '', // G열: 회원등급
+                        name: row[7] || '', // H열: 이름
+                        phone: row[8] || '', // I열: 전화번호
+                        creator: row[9] || '', // J열: 만든사람
+                        createdAt: row[10] || '', // K열: 만든일시
+                        exchangeRate: row[11] || '', // L열: 환율
+                        usdRate: row[12] || '', // M열: 미환율
+                        url: row[13] || '', // N열: URL
+                        plan: row[14] || '', // O열: 요금제
+                        paymentMethod: row[15] || '', // P열: 결제방식
+                        requestNote: row[16] || '', // Q열: 요청사항
+                        kakaoId: row[17] || '', // R열: 카톡ID
+                        specialNote: row[18] || '', // S열: 특이사항
+                        birthDate: row[19] || '', // T열: 생년월일
+                        memo: row[20] || '', // U열: 메모
+                        discountAmount: parseFloat(String(row[21] || '0').replace(/[,\s]/g, '')) || 0, // V열: 할인금액
+                        discountCode: row[22] || '', // W열: 할인코드
                     };
                 })
                 .filter(Boolean);

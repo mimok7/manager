@@ -190,6 +190,7 @@ export default function ManagerSchedulePage() {
   const [isGoogleSheetsModalOpen, setIsGoogleSheetsModalOpen] = useState(false);
   const [allOrderServices, setAllOrderServices] = useState<any[]>([]);
   const [loadingOrderServices, setLoadingOrderServices] = useState(false);
+  const [orderUserInfo, setOrderUserInfo] = useState<any>(null); // SH_M 사용자 정보
 
   // Google Sheets 데이터
   const [googleSheetsData, setGoogleSheetsData] = useState<any[]>([]);
@@ -208,12 +209,25 @@ export default function ManagerSchedulePage() {
   const loadAllOrderServices = async (orderId: string) => {
     if (!orderId) {
       setAllOrderServices([]);
+      setOrderUserInfo(null);
       return;
     }
 
     setLoadingOrderServices(true);
     try {
-      const serviceTypes = ['cruise', 'car', 'vehicle', 'airport', 'hotel', 'tour', 'rentcar'];
+      // SH_M 사용자 정보 조회
+      const userResponse = await fetch(`/api/schedule/google-sheets?type=user`);
+      if (userResponse.ok) {
+        const userResult = await userResponse.json();
+        if (userResult.success && userResult.data) {
+          const userInfo = userResult.data.find((item: any) => item.orderId === orderId);
+          setOrderUserInfo(userInfo || null);
+          console.log('👤 SH_M 사용자 정보:', userInfo);
+        }
+      }
+
+      // 모든 서비스 타입 조회
+      const serviceTypes = ['cruise', 'car', 'vehicle', 'airport', 'hotel', 'tour', 'rentcar', 'sapa', 'price'];
       const results = await Promise.all(
         serviceTypes.map(async (type) => {
           try {
@@ -224,8 +238,10 @@ export default function ManagerSchedulePage() {
             }
             const result = await response.json();
             if (result.success && result.data) {
-              // 같은 주문 ID를 가진 모든 서비스 필터링
-              return result.data.filter((item: any) => item.orderId === orderId);
+              // 같은 주문 ID를 가진 모든 서비스 필터링하고 serviceType 추가
+              return result.data
+                .filter((item: any) => item.orderId === orderId)
+                .map((item: any) => ({ ...item, serviceType: type }));
             }
             return [];
           } catch {
@@ -236,10 +252,12 @@ export default function ManagerSchedulePage() {
 
       // 모든 서비스 데이터 합치기
       const allData = results.flat();
+      console.log('📋 로드된 주문 서비스:', allData.length, '개', allData);
       setAllOrderServices(allData);
     } catch (error) {
       console.error('주문 서비스 조회 실패:', error);
       setAllOrderServices([]);
+      setOrderUserInfo(null);
     } finally {
       setLoadingOrderServices(false);
     }
@@ -247,8 +265,20 @@ export default function ManagerSchedulePage() {
 
   // Google Sheets 상세보기 모달 열기
   const handleOpenGoogleSheetsDetail = async (reservation: any) => {
-    setSelectedGoogleSheetsReservation(reservation);
+    // 서비스 타입 감지
+    let serviceType = 'unknown';
+    if (isCruiseData(reservation)) serviceType = 'cruise';
+    else if (isVehicleData(reservation)) serviceType = 'vehicle';
+    else if (isAirportData(reservation)) serviceType = 'airport';
+    else if (isHotelData(reservation)) serviceType = 'hotel';
+    else if (isTourData(reservation)) serviceType = 'tour';
+    else if (isRentcarData(reservation)) serviceType = 'rentcar';
+    else if (isCarData(reservation)) serviceType = 'car';
+
+    // 선택된 예약에 serviceType 추가
+    setSelectedGoogleSheetsReservation({ ...reservation, serviceType });
     setIsGoogleSheetsModalOpen(true);
+
     // 해당 주문 ID의 모든 서비스 조회
     if (reservation.orderId) {
       await loadAllOrderServices(reservation.orderId);
@@ -2045,6 +2075,7 @@ export default function ManagerSchedulePage() {
         selectedReservation={selectedGoogleSheetsReservation}
         allOrderServices={allOrderServices}
         loading={loadingOrderServices}
+        orderUserInfo={orderUserInfo}
       />
     </ManagerLayout>
   );
