@@ -590,10 +590,13 @@ export default function ManagerReservationsPage() {
 
   // ✅ 단일 팝업 관리 함수들
   const openUserModal = (userGroup: any) => {
-    setSelectedUser(userGroup);
-    setSelectedReservation(null);
-    setModalView('user');
-    setShowModal(true);
+    // ✅ 고객 카드 클릭 시 바로 첫 번째 예약의 상세 정보 표시
+    if (userGroup.reservations.length > 0) {
+      setSelectedUser(userGroup);
+      setSelectedReservation(userGroup.reservations[0]);
+      setModalView('reservation');
+      setShowModal(true);
+    }
   };
 
   const openReservationModal = (reservation: any) => {
@@ -1118,6 +1121,7 @@ export default function ManagerReservationsPage() {
                     isOpen={showModal}
                     onClose={closeModal}
                     reservation={selectedReservation}
+                    selectedUser={selectedUser}
                     onRefresh={loadReservations}
                     onBack={goBackToUserView}
                   />

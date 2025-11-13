@@ -457,6 +457,7 @@ interface ReservationDetailModalProps {
     title?: string;
     onRefresh?: () => void; // 목록 새로고침 콜백 추가
     onBack?: () => void; // 뒤로가기 콜백 추가
+    selectedUser?: any; // 선택된 사용자 정보 추가
 }
 
 export default function ReservationDetailModal({
@@ -465,7 +466,8 @@ export default function ReservationDetailModal({
     reservation,
     title = "예약 상세 정보",
     onRefresh,
-    onBack
+    onBack,
+    selectedUser
 }: ReservationDetailModalProps) {
     if (!isOpen || !reservation) return null;
 
@@ -1632,6 +1634,35 @@ export default function ReservationDetailModal({
                     </button>
                 </div>
 
+                {/* 예약 현황 요약 (컴팩트) */}
+                {selectedUser?.statusCounts && (
+                    <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+                        <div className="flex items-center gap-6 text-sm">
+                            <span className="text-gray-600 font-medium">📊 예약 현황:</span>
+                            <div className="flex items-center gap-1">
+                                <span className="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">
+                                    대기 {selectedUser.statusCounts.pending || 0}건
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">
+                                    확정 {selectedUser.statusCounts.confirmed || 0}건
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-medium">
+                                    취소 {selectedUser.statusCounts.cancelled || 0}건
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1 ml-auto">
+                                <span className="text-gray-500 text-xs">
+                                    총 {(selectedUser.statusCounts.pending || 0) + (selectedUser.statusCounts.confirmed || 0) + (selectedUser.statusCounts.cancelled || 0)}건
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="p-8 space-y-8">
                     {/* 통합 정보 카드들 */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8">
@@ -1748,8 +1779,8 @@ export default function ReservationDetailModal({
                                         <div
                                             key={res.re_id}
                                             className={`bg-white p-5 rounded-lg border-2 transition-all ${isCurrentReservation
-                                                    ? 'border-blue-500 shadow-lg'
-                                                    : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
+                                                ? 'border-blue-500 shadow-lg'
+                                                : 'border-gray-200 hover:border-blue-300 hover:shadow-md'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-3 pb-2 border-b">
@@ -1770,10 +1801,10 @@ export default function ReservationDetailModal({
                                                     )}
                                                 </div>
                                                 <span className={`px-2 py-1 rounded text-xs font-medium ${res.re_status === 'confirmed'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : res.re_status === 'pending'
-                                                            ? 'bg-yellow-100 text-yellow-800'
-                                                            : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : res.re_status === 'pending'
+                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                        : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {res.re_status === 'confirmed' ? '확정' : res.re_status === 'pending' ? '대기' : '취소'}
                                                 </span>
