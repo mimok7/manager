@@ -168,8 +168,8 @@ export default function ManagerSidebar({ activeTab, userEmail, onLogout, userRol
                                         onClick={() => handleNavigation('/manager/schedule/new')}
                                     />
                                     <NavItem
-                                        icon="�"
-                                        label="예약관리"
+                                        icon="👤"
+                                        label="고객별"
                                         path="/manager/reservations"
                                         isActive={isActiveTab('reservations')}
                                         onClick={() => handleNavigation('/manager/reservations')}
