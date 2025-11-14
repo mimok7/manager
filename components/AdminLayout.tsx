@@ -77,6 +77,7 @@ export default function AdminLayout({ children, title, activeTab }: AdminLayoutP
     { id: 'users', label: '사용자 관리', path: '/admin/users', icon: '👥' },
     { id: 'data-management', label: '데이터 연결', path: '/admin/data-management', icon: '🔗' },
     { id: 'reservation-total-system', label: '총금액 계산', path: '/admin/reservation-total-system', icon: '💰' },
+    { id: 'sync', label: '데이터 동기화', path: '/admin/sync', icon: '🔄' },
     { id: 'sql-runner', label: 'SQL 실행', path: '/admin/sql-runner', icon: '⚡' },
     { id: 'database-schema', label: 'DB 스키마', path: '/admin/database-schema', icon: '🗃️' },
     { id: 'database', label: 'DB 관리', path: '/admin/database', icon: '🔧' },

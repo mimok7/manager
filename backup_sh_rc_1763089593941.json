@@ -1,0 +1,1146 @@
+{
+  "table": "sh_rc",
+  "columns": [
+    "boarding_date"
+  ],
+  "timestamp": "2025-11-14T03:06:33.941Z",
+  "rowCount": 284,
+  "data": [
+    {
+      "id": 321,
+      "boarding_date": "2024-07-20"
+    },
+    {
+      "id": 352,
+      "boarding_date": "2024-10-24"
+    },
+    {
+      "id": 380,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 459,
+      "boarding_date": "2025. 2. 10"
+    },
+    {
+      "id": 285,
+      "boarding_date": "2024-07-05"
+    },
+    {
+      "id": 286,
+      "boarding_date": "2024-07-23"
+    },
+    {
+      "id": 287,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 288,
+      "boarding_date": "2024-09-18"
+    },
+    {
+      "id": 289,
+      "boarding_date": "2024-09-14"
+    },
+    {
+      "id": 290,
+      "boarding_date": "2024-06-23"
+    },
+    {
+      "id": 291,
+      "boarding_date": "2024-06-23"
+    },
+    {
+      "id": 292,
+      "boarding_date": "2024-06-25"
+    },
+    {
+      "id": 293,
+      "boarding_date": "2024-07-20"
+    },
+    {
+      "id": 320,
+      "boarding_date": "2024-08-01"
+    },
+    {
+      "id": 294,
+      "boarding_date": "2024-07-22"
+    },
+    {
+      "id": 295,
+      "boarding_date": "2024-10-13"
+    },
+    {
+      "id": 296,
+      "boarding_date": "2024-10-16"
+    },
+    {
+      "id": 297,
+      "boarding_date": "2024-09-15"
+    },
+    {
+      "id": 298,
+      "boarding_date": "2024-09-17"
+    },
+    {
+      "id": 299,
+      "boarding_date": "2024-08-16"
+    },
+    {
+      "id": 300,
+      "boarding_date": "2024-08-02"
+    },
+    {
+      "id": 301,
+      "boarding_date": "2024-08-08"
+    },
+    {
+      "id": 302,
+      "boarding_date": "2024-07-13"
+    },
+    {
+      "id": 303,
+      "boarding_date": "2024-07-18"
+    },
+    {
+      "id": 304,
+      "boarding_date": "2024-07-20"
+    },
+    {
+      "id": 305,
+      "boarding_date": "2024-07-28"
+    },
+    {
+      "id": 306,
+      "boarding_date": "2024-07-24"
+    },
+    {
+      "id": 307,
+      "boarding_date": "2024-07-25"
+    },
+    {
+      "id": 308,
+      "boarding_date": "2024-07-27"
+    },
+    {
+      "id": 309,
+      "boarding_date": "2024-07-28"
+    },
+    {
+      "id": 310,
+      "boarding_date": "2024-08-11"
+    },
+    {
+      "id": 311,
+      "boarding_date": "2024-09-17"
+    },
+    {
+      "id": 312,
+      "boarding_date": "2024-11-17"
+    },
+    {
+      "id": 313,
+      "boarding_date": "2024-09-15"
+    },
+    {
+      "id": 314,
+      "boarding_date": "2024-07-11"
+    },
+    {
+      "id": 315,
+      "boarding_date": "2024-07-12"
+    },
+    {
+      "id": 316,
+      "boarding_date": "2024-08-13"
+    },
+    {
+      "id": 317,
+      "boarding_date": "2024-07-05"
+    },
+    {
+      "id": 318,
+      "boarding_date": "2024-10-04"
+    },
+    {
+      "id": 319,
+      "boarding_date": "2024-10-05"
+    },
+    {
+      "id": 322,
+      "boarding_date": "2024-07-19"
+    },
+    {
+      "id": 323,
+      "boarding_date": "2024-07-19"
+    },
+    {
+      "id": 324,
+      "boarding_date": "2024-09-22"
+    },
+    {
+      "id": 325,
+      "boarding_date": "2024-09-19"
+    },
+    {
+      "id": 326,
+      "boarding_date": "2024-10-05"
+    },
+    {
+      "id": 327,
+      "boarding_date": "2024-08-10"
+    },
+    {
+      "id": 328,
+      "boarding_date": "2024-08-12"
+    },
+    {
+      "id": 329,
+      "boarding_date": "2024-08-12"
+    },
+    {
+      "id": 330,
+      "boarding_date": "2024-08-16"
+    },
+    {
+      "id": 331,
+      "boarding_date": "2024-08-21"
+    },
+    {
+      "id": 332,
+      "boarding_date": "2024-08-21"
+    },
+    {
+      "id": 333,
+      "boarding_date": "2024-08-04"
+    },
+    {
+      "id": 334,
+      "boarding_date": "2024-08-31"
+    },
+    {
+      "id": 335,
+      "boarding_date": "2024-08-14"
+    },
+    {
+      "id": 336,
+      "boarding_date": "2024-08-16"
+    },
+    {
+      "id": 337,
+      "boarding_date": "2024-09-25"
+    },
+    {
+      "id": 338,
+      "boarding_date": "2024-08-14"
+    },
+    {
+      "id": 339,
+      "boarding_date": "2024-08-12"
+    },
+    {
+      "id": 340,
+      "boarding_date": "2024-10-14"
+    },
+    {
+      "id": 341,
+      "boarding_date": "2024-10-14"
+    },
+    {
+      "id": 342,
+      "boarding_date": "2024-09-20"
+    },
+    {
+      "id": 343,
+      "boarding_date": "2024-09-05"
+    },
+    {
+      "id": 344,
+      "boarding_date": "2024-09-21"
+    },
+    {
+      "id": 345,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 346,
+      "boarding_date": "2024-09-17"
+    },
+    {
+      "id": 347,
+      "boarding_date": "2024-10-06"
+    },
+    {
+      "id": 348,
+      "boarding_date": "2024-10-08"
+    },
+    {
+      "id": 349,
+      "boarding_date": "2024-10-04"
+    },
+    {
+      "id": 350,
+      "boarding_date": "2024-10-24"
+    },
+    {
+      "id": 351,
+      "boarding_date": "2024-10-25"
+    },
+    {
+      "id": 353,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 354,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 355,
+      "boarding_date": "2024-09-07"
+    },
+    {
+      "id": 356,
+      "boarding_date": "2024-09-08"
+    },
+    {
+      "id": 357,
+      "boarding_date": "2024-09-14"
+    },
+    {
+      "id": 358,
+      "boarding_date": "2024-09-16"
+    },
+    {
+      "id": 359,
+      "boarding_date": "2024-10-21"
+    },
+    {
+      "id": 360,
+      "boarding_date": "2024-10-22"
+    },
+    {
+      "id": 361,
+      "boarding_date": "2024-09-15"
+    },
+    {
+      "id": 362,
+      "boarding_date": "2024-09-17"
+    },
+    {
+      "id": 363,
+      "boarding_date": "2024-12-21"
+    },
+    {
+      "id": 364,
+      "boarding_date": "2024-12-23"
+    },
+    {
+      "id": 365,
+      "boarding_date": "2024-12-23"
+    },
+    {
+      "id": 366,
+      "boarding_date": "2024-10-07"
+    },
+    {
+      "id": 367,
+      "boarding_date": "2024-10-08"
+    },
+    {
+      "id": 368,
+      "boarding_date": "2024-08-27"
+    },
+    {
+      "id": 369,
+      "boarding_date": "2024-08-31"
+    },
+    {
+      "id": 370,
+      "boarding_date": "2024-09-01"
+    },
+    {
+      "id": 371,
+      "boarding_date": "2024-11-17"
+    },
+    {
+      "id": 372,
+      "boarding_date": "2024-09-03"
+    },
+    {
+      "id": 373,
+      "boarding_date": "2024-09-08"
+    },
+    {
+      "id": 374,
+      "boarding_date": "2024-09-10"
+    },
+    {
+      "id": 375,
+      "boarding_date": "2024-10-01"
+    },
+    {
+      "id": 376,
+      "boarding_date": "2024-10-18"
+    },
+    {
+      "id": 377,
+      "boarding_date": "2024-10-07"
+    },
+    {
+      "id": 378,
+      "boarding_date": "2024-09-19"
+    },
+    {
+      "id": 379,
+      "boarding_date": "2024-09-19"
+    },
+    {
+      "id": 381,
+      "boarding_date": "2024-09-13"
+    },
+    {
+      "id": 382,
+      "boarding_date": "2024-09-13"
+    },
+    {
+      "id": 383,
+      "boarding_date": "2024-09-15"
+    },
+    {
+      "id": 384,
+      "boarding_date": "2025-02-25"
+    },
+    {
+      "id": 385,
+      "boarding_date": "2025-02-26"
+    },
+    {
+      "id": 386,
+      "boarding_date": "2024-09-19"
+    },
+    {
+      "id": 387,
+      "boarding_date": "2024-09-20"
+    },
+    {
+      "id": 388,
+      "boarding_date": "2025-02-27"
+    },
+    {
+      "id": 389,
+      "boarding_date": "2025-02-10"
+    },
+    {
+      "id": 390,
+      "boarding_date": "2024-12-14"
+    },
+    {
+      "id": 391,
+      "boarding_date": "2024-10-04"
+    },
+    {
+      "id": 392,
+      "boarding_date": "2024-10-09"
+    },
+    {
+      "id": 393,
+      "boarding_date": "2024-09-25"
+    },
+    {
+      "id": 394,
+      "boarding_date": "2025-01-31"
+    },
+    {
+      "id": 395,
+      "boarding_date": "2024-10-31"
+    },
+    {
+      "id": 396,
+      "boarding_date": "2025-01-14"
+    },
+    {
+      "id": 397,
+      "boarding_date": "2024-10-12"
+    },
+    {
+      "id": 398,
+      "boarding_date": "2024-10-08"
+    },
+    {
+      "id": 399,
+      "boarding_date": "2024-10-11"
+    },
+    {
+      "id": 400,
+      "boarding_date": "2024-10-15"
+    },
+    {
+      "id": 401,
+      "boarding_date": "2024-10-26"
+    },
+    {
+      "id": 402,
+      "boarding_date": "2024-10-30"
+    },
+    {
+      "id": 403,
+      "boarding_date": "2024-10-31"
+    },
+    {
+      "id": 404,
+      "boarding_date": "2024-10-10"
+    },
+    {
+      "id": 405,
+      "boarding_date": "2024-10-30"
+    },
+    {
+      "id": 406,
+      "boarding_date": "2024-11-02"
+    },
+    {
+      "id": 407,
+      "boarding_date": "2024-10-19"
+    },
+    {
+      "id": 408,
+      "boarding_date": "2025-01-13"
+    },
+    {
+      "id": 409,
+      "boarding_date": "2025-01-17"
+    },
+    {
+      "id": 410,
+      "boarding_date": "2024-11-05"
+    },
+    {
+      "id": 411,
+      "boarding_date": "2024-10-21"
+    },
+    {
+      "id": 412,
+      "boarding_date": "2024-12-26"
+    },
+    {
+      "id": 413,
+      "boarding_date": "2024-12-27"
+    },
+    {
+      "id": 414,
+      "boarding_date": "2025-03-05"
+    },
+    {
+      "id": 415,
+      "boarding_date": "2024-10-28"
+    },
+    {
+      "id": 416,
+      "boarding_date": "2024-12-21"
+    },
+    {
+      "id": 417,
+      "boarding_date": "2024-12-23"
+    },
+    {
+      "id": 418,
+      "boarding_date": "2024. 11. 6"
+    },
+    {
+      "id": 419,
+      "boarding_date": "2024. 11. 4"
+    },
+    {
+      "id": 420,
+      "boarding_date": "2025. 5. 3"
+    },
+    {
+      "id": 421,
+      "boarding_date": "2024. 11. 6"
+    },
+    {
+      "id": 422,
+      "boarding_date": "2024-11-15"
+    },
+    {
+      "id": 423,
+      "boarding_date": "2024-11-15"
+    },
+    {
+      "id": 424,
+      "boarding_date": "2024-11-17"
+    },
+    {
+      "id": 425,
+      "boarding_date": "2024. 11. 17"
+    },
+    {
+      "id": 426,
+      "boarding_date": "2024-12-04"
+    },
+    {
+      "id": 427,
+      "boarding_date": "2025-01-20"
+    },
+    {
+      "id": 428,
+      "boarding_date": "2024-11-30"
+    },
+    {
+      "id": 429,
+      "boarding_date": "2024. 11. 23"
+    },
+    {
+      "id": 430,
+      "boarding_date": "2024-12-09"
+    },
+    {
+      "id": 431,
+      "boarding_date": "2024-12-26"
+    },
+    {
+      "id": 432,
+      "boarding_date": "2024-12-02"
+    },
+    {
+      "id": 433,
+      "boarding_date": "2025. 1. 2"
+    },
+    {
+      "id": 434,
+      "boarding_date": "2025-01-03"
+    },
+    {
+      "id": 435,
+      "boarding_date": "2024-12-07"
+    },
+    {
+      "id": 436,
+      "boarding_date": "2024-12-17"
+    },
+    {
+      "id": 437,
+      "boarding_date": "2024-12-09"
+    },
+    {
+      "id": 438,
+      "boarding_date": "2024-12-11"
+    },
+    {
+      "id": 439,
+      "boarding_date": "2024. 12. 13"
+    },
+    {
+      "id": 440,
+      "boarding_date": "2024. 12. 15"
+    },
+    {
+      "id": 441,
+      "boarding_date": "2025-01-06"
+    },
+    {
+      "id": 442,
+      "boarding_date": "2025. 1. 3"
+    },
+    {
+      "id": 443,
+      "boarding_date": "2024. 12. 16"
+    },
+    {
+      "id": 444,
+      "boarding_date": "2024. 12. 13"
+    },
+    {
+      "id": 445,
+      "boarding_date": "2024-12-16"
+    },
+    {
+      "id": 446,
+      "boarding_date": "2024-12-17"
+    },
+    {
+      "id": 447,
+      "boarding_date": "2025-03-05"
+    },
+    {
+      "id": 448,
+      "boarding_date": "2025-02-20"
+    },
+    {
+      "id": 449,
+      "boarding_date": "2025. 1. 14"
+    },
+    {
+      "id": 450,
+      "boarding_date": "2024-12-29"
+    },
+    {
+      "id": 451,
+      "boarding_date": "2025-01-02"
+    },
+    {
+      "id": 452,
+      "boarding_date": "2025. 1. 5"
+    },
+    {
+      "id": 453,
+      "boarding_date": "2025. 1. 2"
+    },
+    {
+      "id": 454,
+      "boarding_date": "2025-04-02"
+    },
+    {
+      "id": 455,
+      "boarding_date": "2025-02-01"
+    },
+    {
+      "id": 456,
+      "boarding_date": "2025-03-06"
+    },
+    {
+      "id": 457,
+      "boarding_date": "2025-01-20"
+    },
+    {
+      "id": 458,
+      "boarding_date": "2025. 1. 18"
+    },
+    {
+      "id": 460,
+      "boarding_date": "2025. 5. 5"
+    },
+    {
+      "id": 461,
+      "boarding_date": "2025. 2. 16"
+    },
+    {
+      "id": 462,
+      "boarding_date": "2025. 5. 3"
+    },
+    {
+      "id": 463,
+      "boarding_date": "2025-05-03"
+    },
+    {
+      "id": 464,
+      "boarding_date": "2025. 3. 10"
+    },
+    {
+      "id": 465,
+      "boarding_date": "2025. 3. 13"
+    },
+    {
+      "id": 466,
+      "boarding_date": "2025. 4. 9"
+    },
+    {
+      "id": 467,
+      "boarding_date": "2025. 3. 6"
+    },
+    {
+      "id": 468,
+      "boarding_date": "2025-02-25"
+    },
+    {
+      "id": 469,
+      "boarding_date": "2025-04-12"
+    },
+    {
+      "id": 470,
+      "boarding_date": "2025-04-17"
+    },
+    {
+      "id": 471,
+      "boarding_date": "2025-06-05"
+    },
+    {
+      "id": 472,
+      "boarding_date": "2025-02-27"
+    },
+    {
+      "id": 473,
+      "boarding_date": "2025. 3. 4"
+    },
+    {
+      "id": 474,
+      "boarding_date": "2025. 5. 3"
+    },
+    {
+      "id": 475,
+      "boarding_date": "2025-05-06"
+    },
+    {
+      "id": 476,
+      "boarding_date": "2025-04-07"
+    },
+    {
+      "id": 477,
+      "boarding_date": "2025-03-17"
+    },
+    {
+      "id": 478,
+      "boarding_date": "2025-03-18"
+    },
+    {
+      "id": 479,
+      "boarding_date": "2025. 4. 5"
+    },
+    {
+      "id": 480,
+      "boarding_date": "2025. 4. 26"
+    },
+    {
+      "id": 481,
+      "boarding_date": "2025-03-19"
+    },
+    {
+      "id": 482,
+      "boarding_date": "2025-03-23"
+    },
+    {
+      "id": 483,
+      "boarding_date": "2025-03-26"
+    },
+    {
+      "id": 511,
+      "boarding_date": "2025-06-18"
+    },
+    {
+      "id": 484,
+      "boarding_date": "2025-03-29"
+    },
+    {
+      "id": 485,
+      "boarding_date": "2025-04-03"
+    },
+    {
+      "id": 486,
+      "boarding_date": "2025-04-03"
+    },
+    {
+      "id": 487,
+      "boarding_date": "2025-05-06"
+    },
+    {
+      "id": 488,
+      "boarding_date": "2025-04-24"
+    },
+    {
+      "id": 489,
+      "boarding_date": "2025-07-07"
+    },
+    {
+      "id": 490,
+      "boarding_date": "2025-07-11"
+    },
+    {
+      "id": 491,
+      "boarding_date": "2025-06-06"
+    },
+    {
+      "id": 492,
+      "boarding_date": "2025-05-01"
+    },
+    {
+      "id": 493,
+      "boarding_date": "2025-11-09"
+    },
+    {
+      "id": 494,
+      "boarding_date": "2025-04-30"
+    },
+    {
+      "id": 495,
+      "boarding_date": "2025-05-08"
+    },
+    {
+      "id": 496,
+      "boarding_date": "2025-08-09"
+    },
+    {
+      "id": 497,
+      "boarding_date": "2025-07-25"
+    },
+    {
+      "id": 498,
+      "boarding_date": "2025-05-27"
+    },
+    {
+      "id": 499,
+      "boarding_date": "2025-07-31"
+    },
+    {
+      "id": 500,
+      "boarding_date": "2025-06-03"
+    },
+    {
+      "id": 501,
+      "boarding_date": "2025-06-06"
+    },
+    {
+      "id": 502,
+      "boarding_date": "2025-05-26"
+    },
+    {
+      "id": 503,
+      "boarding_date": "2025-10-10"
+    },
+    {
+      "id": 504,
+      "boarding_date": "2025-09-07"
+    },
+    {
+      "id": 505,
+      "boarding_date": "2025-05-30"
+    },
+    {
+      "id": 506,
+      "boarding_date": "2025-06-01"
+    },
+    {
+      "id": 507,
+      "boarding_date": "2025-07-28"
+    },
+    {
+      "id": 508,
+      "boarding_date": "2025-06-09"
+    },
+    {
+      "id": 509,
+      "boarding_date": "2025-08-06"
+    },
+    {
+      "id": 510,
+      "boarding_date": "2025-08-08"
+    },
+    {
+      "id": 512,
+      "boarding_date": "2025-07-05"
+    },
+    {
+      "id": 513,
+      "boarding_date": "2025-10-06"
+    },
+    {
+      "id": 514,
+      "boarding_date": "2025-07-28"
+    },
+    {
+      "id": 515,
+      "boarding_date": "2025-07-30"
+    },
+    {
+      "id": 516,
+      "boarding_date": "2025-11-09"
+    },
+    {
+      "id": 517,
+      "boarding_date": "2025-08-07"
+    },
+    {
+      "id": 518,
+      "boarding_date": "2025-07-29"
+    },
+    {
+      "id": 519,
+      "boarding_date": "2025-08-02"
+    },
+    {
+      "id": 520,
+      "boarding_date": "2025-07-24"
+    },
+    {
+      "id": 521,
+      "boarding_date": "2025-07-27"
+    },
+    {
+      "id": 522,
+      "boarding_date": "2025-07-27"
+    },
+    {
+      "id": 523,
+      "boarding_date": "2025-08-01"
+    },
+    {
+      "id": 524,
+      "boarding_date": "2025-07-27"
+    },
+    {
+      "id": 525,
+      "boarding_date": "2025-08-13"
+    },
+    {
+      "id": 526,
+      "boarding_date": "2025-08-26"
+    },
+    {
+      "id": 527,
+      "boarding_date": "2025-08-26"
+    },
+    {
+      "id": 528,
+      "boarding_date": "2025-08-12"
+    },
+    {
+      "id": 529,
+      "boarding_date": "2025-08-14"
+    },
+    {
+      "id": 530,
+      "boarding_date": "2025-08-11"
+    },
+    {
+      "id": 531,
+      "boarding_date": "2025-08-03"
+    },
+    {
+      "id": 532,
+      "boarding_date": "2025-08-05"
+    },
+    {
+      "id": 533,
+      "boarding_date": "2025-08-02"
+    },
+    {
+      "id": 534,
+      "boarding_date": "2025-10-08"
+    },
+    {
+      "id": 535,
+      "boarding_date": "2025-08-19"
+    },
+    {
+      "id": 536,
+      "boarding_date": "2025-08-10"
+    },
+    {
+      "id": 537,
+      "boarding_date": "2025-08-14"
+    },
+    {
+      "id": 538,
+      "boarding_date": "2025-12-23"
+    },
+    {
+      "id": 539,
+      "boarding_date": "2025-09-05"
+    },
+    {
+      "id": 540,
+      "boarding_date": "2025-10-02"
+    },
+    {
+      "id": 541,
+      "boarding_date": "2025-10-06"
+    },
+    {
+      "id": 542,
+      "boarding_date": "2025-08-26"
+    },
+    {
+      "id": 543,
+      "boarding_date": "2025-10-03"
+    },
+    {
+      "id": 544,
+      "boarding_date": "2025-10-06"
+    },
+    {
+      "id": 545,
+      "boarding_date": "2025-10-07"
+    },
+    {
+      "id": 546,
+      "boarding_date": "2025-09-07"
+    },
+    {
+      "id": 547,
+      "boarding_date": "2025-09-09"
+    },
+    {
+      "id": 548,
+      "boarding_date": "2025. 10. 6"
+    },
+    {
+      "id": 549,
+      "boarding_date": "2025. 9. 4"
+    },
+    {
+      "id": 550,
+      "boarding_date": "2025. 9. 24"
+    },
+    {
+      "id": 551,
+      "boarding_date": "2025. 9. 7"
+    },
+    {
+      "id": 552,
+      "boarding_date": "2025. 9. 22"
+    },
+    {
+      "id": 553,
+      "boarding_date": "2025. 10. 6"
+    },
+    {
+      "id": 554,
+      "boarding_date": "2025. 9. 21"
+    },
+    {
+      "id": 555,
+      "boarding_date": "2026. 2. 18"
+    },
+    {
+      "id": 556,
+      "boarding_date": "2025. 9. 24"
+    },
+    {
+      "id": 557,
+      "boarding_date": "2025. 10. 9"
+    },
+    {
+      "id": 558,
+      "boarding_date": "2025. 9. 26"
+    },
+    {
+      "id": 559,
+      "boarding_date": "2025. 11. 16"
+    },
+    {
+      "id": 560,
+      "boarding_date": "2025. 11. 8"
+    },
+    {
+      "id": 561,
+      "boarding_date": "2025. 10. 18"
+    },
+    {
+      "id": 562,
+      "boarding_date": "2025. 10. 20"
+    },
+    {
+      "id": 563,
+      "boarding_date": "2025. 10. 16"
+    },
+    {
+      "id": 564,
+      "boarding_date": "2025. 10. 23"
+    },
+    {
+      "id": 565,
+      "boarding_date": "2025. 10. 27"
+    },
+    {
+      "id": 566,
+      "boarding_date": "2025. 10. 29"
+    },
+    {
+      "id": 567,
+      "boarding_date": "2025. 11. 4"
+    },
+    {
+      "id": 568,
+      "boarding_date": "2026. 1. 30"
+    }
+  ]
+}

@@ -115,12 +115,11 @@ export default function GoogleSheetsDetailModal({
         if (serviceType === 'vehicle') {
             return (
                 <div className="space-y-1 text-sm">
-                    <div><span className="font-semibold text-gray-600">크루즈:</span> {service.cruiseInfo}</div>
-                    <div><span className="font-semibold text-gray-600">구분:</span> {service.serviceType}</div>
+                    <div><span className="font-semibold text-gray-600">구분:</span> {service.division}</div>
                     <div><span className="font-semibold text-gray-600">분류:</span> {service.category}</div>
                     <div><span className="font-semibold text-gray-600">승차일:</span> {service.boardingDate}</div>
-                    <div><span className="font-semibold text-gray-600">차량번호:</span> {service.vehicleNumber} / 좌석: {service.seatNumber}</div>
-                    <div><span className="font-semibold text-gray-600">위치:</span> {service.pickupLocation} → {service.dropoffLocation}</div>
+                    <div><span className="font-semibold text-gray-600">차량번호:</span> {service.vehicleNumber}</div>
+                    {service.seatNumber && <div><span className="font-semibold text-gray-600">좌석:</span> {service.seatNumber}</div>}
                 </div>
             );
         }
