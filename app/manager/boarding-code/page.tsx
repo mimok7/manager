@@ -18,6 +18,8 @@ interface CruiseReservation {
     room_total_price?: number;
     request_note?: string;
     cruise_name?: string;
+    room_type?: string;
+    room_category?: string;
     users?: {
         name?: string;
         phone?: string;
@@ -36,14 +38,30 @@ const BoardingCodePage = () => {
     const [error, setError] = useState<string | null>(null);
 
     // 필터 상태
-    const [statusFilter, setStatusFilter] = useState<'all' | 'has_code' | 'no_code'>('all');
+    const [statusFilter, setStatusFilter] = useState<'all' | 'has_code' | 'no_code'>('no_code'); // 초기값: 미발급만 보기
     const [dateFilter, setDateFilter] = useState<string>('');
-    const [futureOnly, setFutureOnly] = useState<boolean>(true);
+    const [futureOnly, setFutureOnly] = useState<boolean>(true); // 초기값: 오늘 이후만 보기
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     // 편집 상태
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingCode, setEditingCode] = useState<string>('');
+
+    // 날짜 비교를 위한 YYYY-MM-DD 키 함수 (타임존 영향 최소화)
+    const toDateKey = (input?: string) => {
+        if (!input) return '';
+        // 문자열인 경우 ISO/일반 날짜 문자열의 앞 10자리(YYYY-MM-DD)만 사용
+        if (typeof input === 'string') {
+            if (input.length >= 10 && input[4] === '-' && input[7] === '-') return input.slice(0, 10);
+            // 포맷이 다르면 Date 파싱 후 en-CA로 변환
+            const d = new Date(input);
+            return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-CA');
+        }
+        const d = new Date(input as any);
+        return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-CA');
+    };
+
+    const todayKey = () => new Date().toLocaleDateString('en-CA');
 
     // 크루즈 예약 데이터 로드 (매니저 뷰 + 배치 조회)
     const loadCruiseReservations = async () => {
@@ -51,12 +69,13 @@ const BoardingCodePage = () => {
             setLoading(true);
             setError(null);
 
-            // 1) 매니저 전용 뷰에서 크루즈 예약 기본 목록 조회
+            // 1) 매니저 전용 뷰에서 크루즈 예약 기본 목록 조회 (모든 데이터)
             const { data: baseRows, error: baseErr } = await supabase
                 .from('manager_reservations')
                 .select('re_id, re_user_id, re_quote_id, re_status, re_created_at, customer_name, customer_email, customer_phone')
                 .eq('re_type', 'cruise')
-                .order('re_created_at', { ascending: false });
+                .order('re_created_at', { ascending: false })
+                .limit(10000); // 최대 10,000건까지 조회
 
             if (baseErr) {
                 console.error('크루즈 예약 목록 조회 오류:', baseErr);
@@ -73,69 +92,103 @@ const BoardingCodePage = () => {
             const reIds = baseRows.map(r => r.re_id).filter(Boolean);
             const quoteIds = baseRows.map(r => r.re_quote_id).filter(Boolean);
 
-            // 2) reservation_cruise 상세를 배치로 조회하여 맵으로 구성
+            console.log(`📊 총 ${baseRows.length}건의 예약 데이터 처리 시작...`);
+
+            // 2) reservation_cruise 상세를 배치로 조회하여 맵 구성 (URL 길이 제한 회피를 위해 청크 단위 처리)
             let cruiseMap: Record<string, any> = {};
             if (reIds.length > 0) {
-                const { data: cruiseRows, error: cruiseErr } = await supabase
-                    .from('reservation_cruise')
-                    .select('reservation_id, boarding_code, checkin, room_price_code, guest_count, room_total_price, request_note')
-                    .in('reservation_id', reIds);
-
-                if (!cruiseErr && cruiseRows) {
-                    cruiseMap = cruiseRows.reduce((acc: Record<string, any>, row: any) => {
-                        acc[row.reservation_id] = row;
-                        return acc;
-                    }, {});
-                } else if (cruiseErr) {
-                    console.warn('크루즈 상세 배치 조회 오류:', cruiseErr);
+                const CHUNK_SIZE = 200; // 한 번에 200개씩 조회 (성능 최적화)
+                const chunks: string[][] = [];
+                for (let i = 0; i < reIds.length; i += CHUNK_SIZE) {
+                    chunks.push(reIds.slice(i, i + CHUNK_SIZE));
                 }
+
+                console.log(`🔄 reservation_cruise 조회 중... (${chunks.length}개 청크)`);
+                for (let idx = 0; idx < chunks.length; idx++) {
+                    const chunk = chunks[idx];
+                    const { data: cruiseRows, error: cruiseErr } = await supabase
+                        .from('reservation_cruise')
+                        .select('reservation_id, boarding_code, checkin, room_price_code, guest_count, room_total_price, request_note')
+                        .in('reservation_id', chunk);
+
+                    if (!cruiseErr && cruiseRows) {
+                        cruiseRows.forEach((row: any) => {
+                            cruiseMap[row.reservation_id] = row;
+                        });
+                    } else if (cruiseErr) {
+                        console.warn(`⚠️ 크루즈 상세 배치 조회 오류 (chunk ${idx + 1}/${chunks.length}):`, cruiseErr);
+                    }
+                }
+                console.log(`✅ reservation_cruise 조회 완료: ${Object.keys(cruiseMap).length}건`);
             }
 
-            // 3) quote 타이틀을 배치로 조회하여 맵 구성
+            // 3) quote 타이틀을 배치로 조회하여 맵 구성 (청크 단위 처리)
             let quoteMap: Record<string, any> = {};
             if (quoteIds.length > 0) {
-                const { data: quotes, error: quoteErr } = await supabase
-                    .from('quote')
-                    .select('id, title')
-                    .in('id', quoteIds);
-
-                if (!quoteErr && quotes) {
-                    quoteMap = quotes.reduce((acc: Record<string, any>, q: any) => {
-                        acc[q.id] = q;
-                        return acc;
-                    }, {});
-                } else if (quoteErr) {
-                    console.warn('견적 타이틀 배치 조회 오류:', quoteErr);
+                const CHUNK_SIZE = 200;
+                const chunks: string[][] = [];
+                for (let i = 0; i < quoteIds.length; i += CHUNK_SIZE) {
+                    chunks.push(quoteIds.slice(i, i + CHUNK_SIZE));
                 }
+
+                console.log(`🔄 quote 조회 중... (${chunks.length}개 청크)`);
+                for (let idx = 0; idx < chunks.length; idx++) {
+                    const chunk = chunks[idx];
+                    const { data: quotes, error: quoteErr } = await supabase
+                        .from('quote')
+                        .select('id, title')
+                        .in('id', chunk);
+
+                    if (!quoteErr && quotes) {
+                        quotes.forEach((q: any) => {
+                            quoteMap[q.id] = q;
+                        });
+                    } else if (quoteErr) {
+                        console.warn(`⚠️ 견적 타이틀 배치 조회 오류 (chunk ${idx + 1}/${chunks.length}):`, quoteErr);
+                    }
+                }
+                console.log(`✅ quote 조회 완료: ${Object.keys(quoteMap).length}건`);
             }
 
-            // 4) room_price를 배치로 조회해 크루즈명 맵 구성
+            // 4) room_price를 배치로 조회해 크루즈명 맵 구성 (청크 단위 처리)
             const roomPriceCodes = Object.values(cruiseMap)
                 .map((c: any) => c?.room_price_code)
                 .filter(Boolean);
 
             let roomPriceMap: Record<string, any> = {};
             if (roomPriceCodes.length > 0) {
-                const { data: rpRows, error: rpErr } = await supabase
-                    .from('room_price')
-                    .select('room_code, cruise, room_category, room_type, schedule')
-                    .in('room_code', roomPriceCodes);
-
-                if (!rpErr && rpRows) {
-                    roomPriceMap = rpRows.reduce((acc: Record<string, any>, row: any) => {
-                        acc[row.room_code] = row;
-                        return acc;
-                    }, {});
-                } else if (rpErr) {
-                    console.warn('room_price 배치 조회 오류:', rpErr);
+                const CHUNK_SIZE = 200;
+                const chunks: string[][] = [];
+                for (let i = 0; i < roomPriceCodes.length; i += CHUNK_SIZE) {
+                    chunks.push(roomPriceCodes.slice(i, i + CHUNK_SIZE));
                 }
+
+                console.log(`🔄 room_price 조회 중... (${chunks.length}개 청크)`);
+                for (let idx = 0; idx < chunks.length; idx++) {
+                    const chunk = chunks[idx];
+                    const { data: rpRows, error: rpErr } = await supabase
+                        .from('room_price')
+                        .select('room_code, cruise, room_category, room_type, schedule')
+                        .in('room_code', chunk);
+
+                    if (!rpErr && rpRows) {
+                        rpRows.forEach((row: any) => {
+                            roomPriceMap[row.room_code] = row;
+                        });
+                    } else if (rpErr) {
+                        console.warn(`⚠️ room_price 배치 조회 오류 (chunk ${idx + 1}/${chunks.length}):`, rpErr);
+                    }
+                }
+                console.log(`✅ room_price 조회 완료: ${Object.keys(roomPriceMap).length}건`);
             }
 
             // 5) 최종 머지
+            console.log('🔄 데이터 병합 중...');
             const merged: CruiseReservation[] = baseRows.map((r: any) => {
                 const c = cruiseMap[r.re_id] || {};
                 const q = r.re_quote_id ? quoteMap[r.re_quote_id] : undefined;
                 const rp = c.room_price_code ? roomPriceMap[c.room_price_code] : undefined;
+
                 return {
                     reservation_id: r.re_id,
                     re_user_id: r.re_user_id,
@@ -149,6 +202,8 @@ const BoardingCodePage = () => {
                     room_total_price: c.room_total_price,
                     request_note: c.request_note,
                     cruise_name: rp?.cruise,
+                    room_type: rp?.room_type,
+                    room_category: rp?.room_category,
                     users: {
                         name: r.customer_name,
                         email: r.customer_email,
@@ -159,7 +214,13 @@ const BoardingCodePage = () => {
             });
 
             setReservations(merged);
-            console.log('크루즈 예약 데이터 로드 완료:', merged.length, '건');
+            console.log(`✅ 데이터 로드 완료: 총 ${merged.length}건`);
+
+            // 통계 정보 출력
+            const withCruiseName = merged.filter(m => m.cruise_name).length;
+            const withRoomType = merged.filter(m => m.room_type).length;
+            const withCategory = merged.filter(m => m.room_category).length;
+            console.log(`📊 크루즈명: ${withCruiseName}건, 객실명: ${withRoomType}건, 카테고리: ${withCategory}건`);
         } catch (err) {
             console.error('예상치 못한 오류:', err);
             setError('데이터 로드 중 예상치 못한 오류가 발생했습니다.');
@@ -182,21 +243,17 @@ const BoardingCodePage = () => {
         // 날짜 필터 (체크인 날짜 기준)
         if (dateFilter) {
             filtered = filtered.filter(r => {
-                if (!r.checkin) return false;
-                const checkinDate = new Date(r.checkin).toISOString().split('T')[0];
-                return checkinDate === dateFilter;
+                const checkinKey = toDateKey(r.checkin);
+                return !!checkinKey && checkinKey === dateFilter;
             });
         }
 
-        // 오늘 이후만 보기
+        // 오늘 이후만 보기 (체크인 날짜 기준)
         if (futureOnly) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            const tKey = todayKey();
             filtered = filtered.filter(r => {
-                if (!r.checkin) return false;
-                const d = new Date(r.checkin);
-                d.setHours(0, 0, 0, 0);
-                return d >= today;
+                const checkinKey = toDateKey(r.checkin);
+                return !!checkinKey && checkinKey >= tKey;
             });
         }
 
@@ -271,7 +328,7 @@ const BoardingCodePage = () => {
     const groupedByCheckin = useMemo(() => {
         const map: Record<string, CruiseReservation[]> = {};
         for (const r of filteredReservations) {
-            const key = r.checkin ? r.checkin.slice(0, 10) : '미정';
+            const key = toDateKey(r.checkin) || '미정';
             (map[key] ||= []).push(r);
         }
         return Object.entries(map)
@@ -371,14 +428,17 @@ const BoardingCodePage = () => {
                                     className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
-                            <label className="mt-2 flex items-center gap-2 text-xs text-gray-600">
-                                <input
-                                    type="checkbox"
-                                    checked={futureOnly}
-                                    onChange={(e) => setFutureOnly(e.target.checked)}
-                                />
-                                오늘 이후만 보기
-                            </label>
+                            <p className="mt-1 text-xs text-gray-500">체크인(승선) 날짜 기준으로 필터링됩니다. 예약 생성일이 아닙니다.</p>
+                            <div className="mt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setFutureOnly(v => !v)}
+                                    className={`text-xs px-3 py-1 rounded border transition-colors ${futureOnly ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}
+                                    title="체크인 기준으로 오늘 이후 일정만 표시합니다."
+                                >
+                                    {futureOnly ? '✅ 오늘 이후만 보기' : '오늘 이후만 보기'}
+                                </button>
+                            </div>
                         </div>
 
                         {/* 검색 */}
@@ -471,24 +531,22 @@ const BoardingCodePage = () => {
                                                     <div className="text-xs text-gray-500 mb-1">
                                                         {reservation.quote?.title || '제목 없음'}
                                                     </div>
-                                                    {/* 견적ID는 사용자 카드에서 제거됨 */}
+                                                    {/* 크루즈 정보 표시 */}
+                                                    <div className="text-xs text-gray-500 space-y-1">
+                                                        <div>🚢 {reservation.cruise_name || '크루즈명 미정'}</div>
+                                                        <div>🏠 객실명: {reservation.room_type || '미정'}</div>
+                                                        <div>🏷️ 카테고리: {reservation.room_category || '미정'}</div>
+                                                        <div>👥 인원수: {reservation.guest_count ? `${reservation.guest_count}명` : '미정'}</div>
+                                                    </div>
                                                 </div>
 
                                                 {/* 크루즈 일정 섹션 */}
                                                 <div className="mb-3">
                                                     <div className="text-xs text-gray-600 mb-1">
-                                                        {reservation.checkin ? (
-                                                            <>
-                                                                <div className="font-medium">
-                                                                    체크인: {new Date(reservation.checkin).toLocaleDateString('ko-KR')}
-                                                                </div>
-                                                                <div className="text-gray-500">
-                                                                    {reservation.cruise_name || '크루즈명 미정'}
-                                                                </div>
-                                                                <div className="text-gray-500">
-                                                                    {reservation.guest_count ? `${reservation.guest_count}명` : '인원 미정'}
-                                                                </div>
-                                                            </>
+                                                        {reservation.checkin && toDateKey(reservation.checkin) ? (
+                                                            <div className="font-medium">
+                                                                📅 체크인: {toDateKey(reservation.checkin).replace(/-/g, '. ')}
+                                                            </div>
                                                         ) : (
                                                             <span className="text-gray-400">일정 미정</span>
                                                         )}
@@ -560,7 +618,7 @@ const BoardingCodePage = () => {
                                                         {reservation.re_status}
                                                     </span>
                                                     <div className="text-xs text-gray-400">
-                                                        {new Date(reservation.re_created_at).toLocaleDateString('ko-KR')}
+                                                        {toDateKey(reservation.checkin) || '-'}
                                                     </div>
                                                 </div>
                                             </div>

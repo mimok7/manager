@@ -21,33 +21,39 @@ type Quote = {
 
 export default function ManagerQuotesPage() {
   const router = useRouter();
-  const { user, role } = useRole();
+  const { user } = useRole();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>(typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('filter') || 'submitted') : 'submitted');
-  const [managerId, setManagerId] = useState<string>('');
   const [stats, setStats] = useState({ total: 0, submitted: 0, approved: 0, draft: 0, rejected: 0 });
   const [statsLoading, setStatsLoading] = useState(false);
   const [modalQuoteId, setModalQuoteId] = useState<string | null>(null);
   const [selectedQuotes, setSelectedQuotes] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // 초기 로딩 (권한 체크 제거)
   useEffect(() => {
-    // ManagerLayout에서 권한 체크 완료 후 렌더링됨. 여기서는 컨텍스트만 사용.
-    if (!user) return;
-    if (role && !['manager', 'admin'].includes(role)) { router.push('/'); return; }
-    setManagerId(user.id);
-  }, [user, role]);
+    if (user) {
+      loadQuotes();
+      loadStats();
+    }
+  }, [user]);
 
-  useEffect(() => { if (managerId) { loadQuotes(); loadStats(); } }, [filter, managerId]);
+  const handleFilterChange = async (newFilter: string) => {
+    setFilter(newFilter);
+    // 필터 변경 시 즉시 조회 시작 (새 필터 값 전달)
+    await loadQuotes(newFilter);
+    await loadStats();
+  };
 
-  async function loadQuotes() {
+  async function loadQuotes(filterOverride?: string) {
     setLoading(true);
     try {
+      const currentFilter = filterOverride !== undefined ? filterOverride : filter;
       let q = supabase.from('quote').select('id, title, status, user_id, created_at, approved_at, total_price').order('created_at', { ascending: false });
-      if (filter !== 'all') q = q.eq('status', filter as any);
+      if (currentFilter !== 'all') q = q.eq('status', currentFilter as any);
       const { data, error } = await q;
       if (error) throw error;
 
@@ -83,7 +89,7 @@ export default function ManagerQuotesPage() {
     const reason = prompt('승인 취소 사유 (선택)') || undefined;
     setActionLoading(quoteId);
     try {
-      const res = await cancelQuoteApproval(quoteId, managerId, reason);
+      const res = await cancelQuoteApproval(quoteId, user?.id || '', reason);
       if (res?.success) { await Promise.all([loadQuotes(), loadStats()]); alert(res.message || '취소 완료'); }
       else alert('승인 취소 실패');
     } catch (e) { console.error(e); alert('오류 발생'); }
@@ -94,7 +100,7 @@ export default function ManagerQuotesPage() {
     if (!confirm(`"${quoteTitle || quoteId}" 승인할까요?`)) return;
     setActionLoading(quoteId);
     try {
-      const res = await reapproveQuote(quoteId, managerId);
+      const res = await reapproveQuote(quoteId, user?.id || '');
       if (res?.success) { await Promise.all([loadQuotes(), loadStats()]); alert(res.message || '승인 완료'); }
       else alert('승인 실패');
     } catch (e) { console.error(e); alert('오류 발생'); }
@@ -190,22 +196,26 @@ export default function ManagerQuotesPage() {
     <ManagerLayout title="견적 관리" activeTab="quotes">
       <div className="space-y-6">
         {/* stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div className={`bg-white rounded border p-4 ${filter === 'all' ? 'ring-2 ring-blue-400' : ''}`} onClick={() => setFilter('all')}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div className={`bg-white rounded border p-4 ${filter === 'all' ? 'ring-2 ring-blue-400' : ''}`} onClick={() => handleFilterChange('all')}>
             <div className="text-lg font-medium">{statsLoading ? '...' : stats.total}</div>
             <div className="text-xs text-gray-600">전체 견적</div>
           </div>
-          <div className={`bg-white rounded border p-4 ${filter === 'submitted' ? 'ring-2 ring-yellow-400' : ''}`} onClick={() => setFilter('submitted')}>
-            <div className="text-lg font-medium text-yellow-600">{statsLoading ? '...' : stats.submitted}</div>
+          <div className={`bg-white rounded border p-4 ${filter === 'submitted' ? 'ring-2 ring-yellow-400' : ''}`} onClick={() => handleFilterChange('submitted')}>
+            <div className="text-lg font-medium text-yellow-600">{loading ? '...' : quotes.filter(q => q.status === 'submitted').length}</div>
             <div className="text-xs text-gray-600">검토 대기</div>
           </div>
-          <div className={`bg-white rounded border p-4 ${filter === 'approved' ? 'ring-2 ring-green-400' : ''}`} onClick={() => setFilter('approved')}>
-            <div className="text-lg font-medium text-green-600">{statsLoading ? '...' : stats.approved}</div>
+          <div className={`bg-white rounded border p-4 ${filter === 'approved' ? 'ring-2 ring-green-400' : ''}`} onClick={() => handleFilterChange('approved')}>
+            <div className="text-lg font-medium text-green-600">{loading ? '...' : quotes.filter(q => q.status === 'approved').length}</div>
             <div className="text-xs text-gray-600">승인됨</div>
           </div>
-          <div className={`bg-white rounded border p-4 ${filter === 'draft' ? 'ring-2 ring-gray-400' : ''}`} onClick={() => setFilter('draft')}>
-            <div className="text-lg font-medium">{statsLoading ? '...' : stats.draft}</div>
+          <div className={`bg-white rounded border p-4 ${filter === 'draft' ? 'ring-2 ring-gray-400' : ''}`} onClick={() => handleFilterChange('draft')}>
+            <div className="text-lg font-medium">{loading ? '...' : quotes.filter(q => q.status === 'draft').length}</div>
             <div className="text-xs text-gray-600">작성 중</div>
+          </div>
+          <div className={`bg-white rounded border p-4 ${filter === 'rejected' ? 'ring-2 ring-red-400' : ''}`} onClick={() => handleFilterChange('rejected')}>
+            <div className="text-lg font-medium text-red-600">{loading ? '...' : quotes.filter(q => q.status === 'rejected').length}</div>
+            <div className="text-xs text-gray-600">거부됨</div>
           </div>
         </div>
 
@@ -215,10 +225,9 @@ export default function ManagerQuotesPage() {
             <div>
               <h4 className="text-md font-semibold mb-2">견적 상태 필터</h4>
               <div className="flex gap-2 flex-wrap">
-                {[{ key: 'all', label: '전체' }, { key: 'draft', label: '작성 중' }, { key: 'pending', label: '검토 대기' }, { key: 'approved', label: '승인됨' }, { key: 'rejected', label: '거부됨' }].map(opt => (
-                  <button key={opt.key} onClick={() => setFilter(opt.key)} className={`px-3 py-2 rounded-lg text-sm ${filter === opt.key ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}>{opt.label}</button>
+                {[{ key: 'all', label: '전체' }, { key: 'draft', label: '작성 중' }, { key: 'submitted', label: '검토 대기' }, { key: 'approved', label: '승인됨' }, { key: 'rejected', label: '거부됨' }].map(opt => (
+                  <button key={opt.key} onClick={() => handleFilterChange(opt.key)} className={`px-3 py-2 rounded-lg text-sm ${filter === opt.key ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}>{opt.label}</button>
                 ))}
-                <button onClick={loadQuotes} disabled={loading} className="px-3 py-2 rounded-lg text-sm bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 disabled:opacity-50">{loading ? '조회 중...' : '📋 조회'}</button>
               </div>
             </div>
 
@@ -239,7 +248,7 @@ export default function ManagerQuotesPage() {
             <div className="bg-white rounded border p-8 text-center">
               <div className="text-4xl">📋</div>
               <p className="text-gray-500">조건에 맞는 견적이 없습니다.</p>
-              <div className="mt-4"><button onClick={loadQuotes} className="px-4 py-2 rounded bg-blue-50 text-blue-600">다시 조회</button></div>
+              <div className="mt-4"><button onClick={() => loadQuotes()} className="px-4 py-2 rounded bg-blue-50 text-blue-600">다시 조회</button></div>
             </div>
           ) : (
             <>
