@@ -26,9 +26,9 @@ export default function ManagerQuotesPage() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>(typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('filter') || 'pending') : 'pending');
+  const [filter, setFilter] = useState<string>(typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('filter') || 'submitted') : 'submitted');
   const [managerId, setManagerId] = useState<string>('');
-  const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, draft: 0, rejected: 0 });
+  const [stats, setStats] = useState({ total: 0, submitted: 0, approved: 0, draft: 0, rejected: 0 });
   const [statsLoading, setStatsLoading] = useState(false);
   const [modalQuoteId, setModalQuoteId] = useState<string | null>(null);
   const [selectedQuotes, setSelectedQuotes] = useState<Set<string>>(new Set());
@@ -69,11 +69,11 @@ export default function ManagerQuotesPage() {
     setStatsLoading(true);
     try {
       const total = await supabase.from('quote').select('*', { count: 'exact', head: true });
-      const pending = await supabase.from('quote').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+      const submitted = await supabase.from('quote').select('*', { count: 'exact', head: true }).eq('status', 'submitted');
       const approved = await supabase.from('quote').select('*', { count: 'exact', head: true }).eq('status', 'approved');
       const draft = await supabase.from('quote').select('*', { count: 'exact', head: true }).eq('status', 'draft');
       const rejected = await supabase.from('quote').select('*', { count: 'exact', head: true }).eq('status', 'rejected');
-      setStats({ total: Number((total as any).count) || 0, pending: Number((pending as any).count) || 0, approved: Number((approved as any).count) || 0, draft: Number((draft as any).count) || 0, rejected: Number((rejected as any).count) || 0 });
+      setStats({ total: Number((total as any).count) || 0, submitted: Number((submitted as any).count) || 0, approved: Number((approved as any).count) || 0, draft: Number((draft as any).count) || 0, rejected: Number((rejected as any).count) || 0 });
     } catch (e) { console.error(e); }
     finally { setStatsLoading(false); }
   }
@@ -163,7 +163,7 @@ export default function ManagerQuotesPage() {
   const getStatusStyle = (status?: string | null) => {
     switch (status) {
       case 'draft': return 'bg-gray-50 text-gray-600';
-      case 'pending': return 'bg-yellow-50 text-yellow-700';
+      case 'submitted': return 'bg-yellow-50 text-yellow-700';
       case 'approved': return 'bg-green-50 text-green-700';
       case 'rejected': return 'bg-red-50 text-red-700';
       default: return 'bg-gray-50 text-gray-600';
@@ -173,7 +173,7 @@ export default function ManagerQuotesPage() {
   const getStatusText = (status?: string | null) => {
     switch (status) {
       case 'draft': return '작성 중';
-      case 'pending': return '검토 대기';
+      case 'submitted': return '검토 대기';
       case 'approved': return '승인됨';
       case 'rejected': return '거부됨';
       default: return status || '';
@@ -195,8 +195,8 @@ export default function ManagerQuotesPage() {
             <div className="text-lg font-medium">{statsLoading ? '...' : stats.total}</div>
             <div className="text-xs text-gray-600">전체 견적</div>
           </div>
-          <div className={`bg-white rounded border p-4 ${filter === 'pending' ? 'ring-2 ring-yellow-400' : ''}`} onClick={() => setFilter('pending')}>
-            <div className="text-lg font-medium text-yellow-600">{statsLoading ? '...' : stats.pending}</div>
+          <div className={`bg-white rounded border p-4 ${filter === 'submitted' ? 'ring-2 ring-yellow-400' : ''}`} onClick={() => setFilter('submitted')}>
+            <div className="text-lg font-medium text-yellow-600">{statsLoading ? '...' : stats.submitted}</div>
             <div className="text-xs text-gray-600">검토 대기</div>
           </div>
           <div className={`bg-white rounded border p-4 ${filter === 'approved' ? 'ring-2 ring-green-400' : ''}`} onClick={() => setFilter('approved')}>
@@ -300,7 +300,7 @@ export default function ManagerQuotesPage() {
                     <div className="mt-3 flex items-center gap-2">
                       <button onClick={() => setModalQuoteId(q.id)} className="bg-gray-50 text-gray-600 px-3 py-1 rounded border text-xs">👁️ 상세보기</button>
                       {q.status === 'approved' && <button onClick={() => handleCancelApproval(q.id, q.title || undefined)} disabled={actionLoading === q.id} className="bg-red-50 text-red-600 px-3 py-1 rounded border text-xs">{actionLoading === q.id ? '처리 중...' : '❌ 승인 취소'}</button>}
-                      {(['draft', 'pending'].includes(q.status || '')) && <button onClick={() => handleReapprove(q.id, q.title || undefined)} disabled={actionLoading === q.id} className="bg-green-50 text-green-600 px-3 py-1 rounded border text-xs">{actionLoading === q.id ? '처리 중...' : '✅ 승인'}</button>}
+                      {(['draft', 'submitted'].includes(q.status || '')) && <button onClick={() => handleReapprove(q.id, q.title || undefined)} disabled={actionLoading === q.id} className="bg-green-50 text-green-600 px-3 py-1 rounded border text-xs">{actionLoading === q.id ? '처리 중...' : '✅ 승인'}</button>}
                       {q.status === 'draft' && <button onClick={() => router.push(`/manager/quotes/${q.id}/edit`)} className="bg-blue-50 text-blue-600 px-3 py-1 rounded border text-xs">✏️ 수정</button>}
                     </div>
                   </div>
