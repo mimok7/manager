@@ -361,7 +361,12 @@ function QuoteDetailModal({ quoteId, onClose }: { quoteId: string; onClose: () =
                           <div>
                             <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
                             <p className="text-sm text-gray-600">객실 코드: {room.roomInfo?.room_code}</p>
-                            <p className="text-sm text-gray-600">성인수: {room.roomInfo?.adult_count}명</p>
+                            <p className="text-sm text-gray-600">기본 인원: {room.roomInfo?.person_count || 0}명</p>
+                            <p className="text-sm text-gray-600">추가 인원: {room.roomInfo?.extra_count || 0}명</p>
+                            <p className="text-sm text-gray-600">1인 객실 수: {room.roomInfo?.single_charge_count || 0}개</p>
+                            {room.priceInfo && room.priceInfo[0]?.room_category && (
+                              <p className="text-sm text-gray-600">카테고리: {room.priceInfo[0].room_category}</p>
+                            )}
                           </div>
                           <div>
                             <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
@@ -379,7 +384,9 @@ function QuoteDetailModal({ quoteId, onClose }: { quoteId: string; onClose: () =
                             ) : (
                               <p className="text-sm text-red-600">가격 정보 없음</p>
                             )}
-                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {room.total_price?.toLocaleString()}동</p>
+                            <p className="text-sm font-medium text-blue-600 mt-2">
+                              총액: {room.total_price?.toLocaleString()}동
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -398,6 +405,7 @@ function QuoteDetailModal({ quoteId, onClose }: { quoteId: string; onClose: () =
                           <div>
                             <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
                             <p className="text-sm text-gray-600">차량 코드: {car.carInfo?.car_code}</p>
+                            <p className="text-sm text-gray-600">차량 및 인원수: {car.carInfo?.car_count || 1}</p>
                           </div>
                           <div>
                             <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
@@ -413,7 +421,9 @@ function QuoteDetailModal({ quoteId, onClose }: { quoteId: string; onClose: () =
                             ) : (
                               <p className="text-sm text-red-600">가격 정보 없음</p>
                             )}
-                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {car.total_price?.toLocaleString()}동</p>
+                            <p className="text-sm font-medium text-blue-600 mt-2">
+                              총액: {car.unit_price?.toLocaleString()}동
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -422,7 +432,157 @@ function QuoteDetailModal({ quoteId, onClose }: { quoteId: string; onClose: () =
                 </div>
               )}
 
-              {/* other service sections rendered above in this file when used as extracted component */}
+              {detailedServices.airports && detailedServices.airports.length > 0 && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">✈️ 공항 서비스 (상세)</h2>
+                  <div className="space-y-4">
+                    {detailedServices.airports.map((airport: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
+                            <p className="text-sm text-gray-600">공항 코드: {airport.airportInfo?.airport_code}</p>
+                            <p className="text-sm text-gray-600">위치: {airport.airportInfo?.airport_location}</p>
+                            <p className="text-sm text-gray-600">항공편: {airport.airportInfo?.flight_number}</p>
+                            <p className="text-sm text-gray-600">일시: {airport.airportInfo?.datetime}</p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
+                            {airport.priceInfo && airport.priceInfo.length > 0 ? (
+                              <div className="space-y-2">
+                                {airport.priceInfo.map((price: any, priceIndex: number) => (
+                                  <div key={priceIndex} className="bg-gray-50 p-2 rounded">
+                                    <p className="text-sm text-gray-600">카테고리: {price.category}</p>
+                                    <p className="text-sm text-gray-600">노선: {price.route}</p>
+                                    <p className="text-sm font-medium text-green-600">기본 가격: {price.price?.toLocaleString()}동</p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-red-600">가격 정보 없음</p>
+                            )}
+                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {airport.total_price?.toLocaleString()}동</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailedServices.hotels && detailedServices.hotels.length > 0 && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">🏨 호텔 서비스 (상세)</h2>
+                  <div className="space-y-4">
+                    {detailedServices.hotels.map((hotel: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
+                            <p className="text-sm text-gray-600">호텔 코드: {hotel.hotelInfo?.hotel_code}</p>
+                            <p className="text-sm text-gray-600">체크인: {hotel.hotelInfo?.checkin_date}</p>
+                            <p className="text-sm text-gray-600">박수: {hotel.hotelInfo?.nights}박</p>
+                            <p className="text-sm text-gray-600">인원: {hotel.hotelInfo?.guest_count}명</p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
+                            {hotel.priceInfo && hotel.priceInfo.length > 0 ? (
+                              <div className="space-y-2">
+                                {hotel.priceInfo.map((price: any, priceIndex: number) => (
+                                  <div key={priceIndex} className="bg-gray-50 p-2 rounded">
+                                    <p className="text-sm text-gray-600">호텔명: {price.hotel_name}</p>
+                                    <p className="text-sm text-gray-600">룸 타입: {price.room_type}</p>
+                                    <p className="text-sm font-medium text-green-600">기본 가격: {price.price?.toLocaleString()}동</p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-red-600">가격 정보 없음</p>
+                            )}
+                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {hotel.total_price?.toLocaleString()}동</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailedServices.rentcars && detailedServices.rentcars.length > 0 && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">🚙 렌터카 서비스 (상세)</h2>
+                  <div className="space-y-4">
+                    {detailedServices.rentcars.map((rentcar: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
+                            <p className="text-sm text-gray-600">렌터카 코드: {rentcar.rentcarInfo?.rentcar_code}</p>
+                            <p className="text-sm text-gray-600">픽업일시: {rentcar.rentcarInfo?.pickup_datetime}</p>
+                            <p className="text-sm text-gray-600">대여일수: {rentcar.rentcarInfo?.rental_days}일</p>
+                            <p className="text-sm text-gray-600">목적지: {rentcar.rentcarInfo?.destination}</p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
+                            {rentcar.priceInfo && rentcar.priceInfo.length > 0 ? (
+                              <div className="space-y-2">
+                                {rentcar.priceInfo.map((price: any, priceIndex: number) => (
+                                  <div key={priceIndex} className="bg-gray-50 p-2 rounded">
+                                    <p className="text-sm text-gray-600">차량 타입: {price.vehicle_type}</p>
+                                    <p className="text-sm text-gray-600">노선: {price.route}</p>
+                                    <p className="text-sm font-medium text-green-600">기본 가격: {price.price?.toLocaleString()}동</p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-red-600">가격 정보 없음</p>
+                            )}
+                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {rentcar.total_price?.toLocaleString()}동</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailedServices.tours && detailedServices.tours.length > 0 && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">🎯 투어 서비스 (상세)</h2>
+                  <div className="space-y-4">
+                    {detailedServices.tours.map((tour: any, index: number) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">기본 정보</h3>
+                            <p className="text-sm text-gray-600">투어 코드: {tour.tourInfo?.tour_code}</p>
+                            <p className="text-sm text-gray-600">투어일: {tour.tourInfo?.tour_date}</p>
+                            <p className="text-sm text-gray-600">참가인원: {tour.tourInfo?.participant_count}명</p>
+                            <p className="text-sm text-gray-600">픽업위치: {tour.tourInfo?.pickup_location}</p>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-900 mb-2">가격 정보</h3>
+                            {tour.priceInfo && tour.priceInfo.length > 0 ? (
+                              <div className="space-y-2">
+                                {tour.priceInfo.map((price: any, priceIndex: number) => (
+                                  <div key={priceIndex} className="bg-gray-50 p-2 rounded">
+                                    <p className="text-sm text-gray-600">투어명: {price.tour_name}</p>
+                                    <p className="text-sm text-gray-600">옵션: {price.tour_option}</p>
+                                    <p className="text-sm font-medium text-green-600">기본 가격: {price.price?.toLocaleString()}동</p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-red-600">가격 정보 없음</p>
+                            )}
+                            <p className="text-sm font-medium text-blue-600 mt-2">총액: {tour.total_price?.toLocaleString()}동</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 사이드바 영역: 요약 및 승인 */}

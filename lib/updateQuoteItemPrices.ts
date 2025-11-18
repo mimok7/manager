@@ -210,7 +210,10 @@ export async function updateQuoteItemPrices(quoteId: string): Promise<boolean> {
           continue;
         }
 
-        const totalPrice = unitPrice * (item.quantity || 1);
+        // 차량은 unit_price에 이미 car_count가 곱해져 있으므로 quantity를 곱하지 않음
+        const totalPrice = item.service_type === 'car'
+          ? unitPrice
+          : unitPrice * (item.quantity || 1);
         totalQuotePrice += totalPrice;
 
         // quote_item 업데이트
@@ -226,7 +229,11 @@ export async function updateQuoteItemPrices(quoteId: string): Promise<boolean> {
         if (updateError) {
           console.error(`❌ quote_item 업데이트 실패 (id: ${item.id}):`, updateError);
         } else {
-          console.log(`  ✅ 업데이트 완료: ${unitPrice} x ${item.quantity} = ${totalPrice}`);
+          if (item.service_type === 'car') {
+            console.log(`  ✅ 업데이트 완료 (차량): ${unitPrice} (quantity 미적용)`);
+          } else {
+            console.log(`  ✅ 업데이트 완료: ${unitPrice} x ${item.quantity} = ${totalPrice}`);
+          }
         }
 
       } catch (itemError) {
