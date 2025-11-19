@@ -481,7 +481,7 @@ export default function NotificationManagement() {
             </div>
 
             {/* 상태/우선순위 필터 */}
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* 상태 필터 버튼 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">상태 필터</label>
@@ -706,39 +706,35 @@ export default function NotificationManagement() {
                     <div className="text-gray-700">
                       {(() => {
                         const message = selectedNotification.message;
-                        // 메시지 파싱 로직
-                        const lines = message.split(' ').filter(item => item.trim());
-                        const parsedData: { [key: string]: string } = {};
 
-                        lines.forEach(line => {
-                          if (line.includes(':')) {
-                            const [key, ...valueParts] = line.split(':');
-                            const value = valueParts.join(':').trim();
-                            parsedData[key.trim()] = value;
-                          }
-                        });
+                        // 정규식으로 각 항목 추출
+                        const customerNameMatch = message.match(/고객명:\s*([^\s]+)/);
+                        const serviceMatch = message.match(/서비스:\s*([^\s]+)/);
+                        const quoteNameMatch = message.match(/견적명:\s*([^\s]+(?:\s+\d+)?)/);
+                        const amountMatch = message.match(/예약\s+금액:\s*([^\s]+)/);
+                        const statusMatch = message.match(/예약\s+상태:\s*([^\s]+)/);
+
+                        // 추출된 데이터로 나머지 메시지 생성
+                        let remainingText = message
+                          .replace(/고객명:\s*[^\s]+\s*/g, '')
+                          .replace(/이메일:\s*[^\s]+\s*/g, '')
+                          .replace(/연락처:\s*[^\s]+\s*/g, '')
+                          .replace(/서비스:\s*[^\s]+\s*/g, '')
+                          .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
+                          .replace(/예약\s+금액:\s*[^\s]+\s*/g, '')
+                          .replace(/예약\s+상태:\s*[^\s]+\s*/g, '')
+                          .trim();
 
                         // 파싱된 데이터가 있으면 구조화해서 표시
-                        if (Object.keys(parsedData).length > 0) {
+                        if (customerNameMatch || serviceMatch || quoteNameMatch) {
                           return (
                             <div className="space-y-1">
-                              {parsedData['고객명'] && <div><span className="font-medium">고객명:</span> {parsedData['고객명']}</div>}
-                              {parsedData['서비스'] && <div><span className="font-medium">서비스:</span> {parsedData['서비스']}</div>}
-                              {parsedData['견적명'] && <div><span className="font-medium">견적명:</span> {parsedData['견적명']}</div>}
-                              {parsedData['예약'] && parsedData['금액'] && <div><span className="font-medium">예약 금액:</span> {parsedData['금액']}</div>}
-                              {parsedData['예약'] && parsedData['상태'] && <div><span className="font-medium">예약 상태:</span> {parsedData['상태']}</div>}
-                              {/* 나머지 텍스트 표시 */}
-                              {(() => {
-                                const remainingText = message.replace(/고객명:\s*[^ ]+\s*/g, '')
-                                  .replace(/이메일:\s*[^ ]+\s*/g, '')
-                                  .replace(/연락처:\s*[^ ]+\s*/g, '')
-                                  .replace(/서비스:\s*[^ ]+\s*/g, '')
-                                  .replace(/견적명:\s*[^ ]+\s*/g, '')
-                                  .replace(/예약\s+금액:\s*[^ ]+\s*/g, '')
-                                  .replace(/예약\s+상태:\s*[^ ]+\s*/g, '')
-                                  .trim();
-                                return remainingText && <div className="mt-2">{remainingText}</div>;
-                              })()}
+                              {customerNameMatch && <div><span className="font-medium">고객명:</span> {customerNameMatch[1]}</div>}
+                              {serviceMatch && <div><span className="font-medium">서비스:</span> {serviceMatch[1]}</div>}
+                              {quoteNameMatch && <div><span className="font-medium">견적명:</span> {quoteNameMatch[1]}</div>}
+                              {amountMatch && <div><span className="font-medium">예약 금액:</span> {amountMatch[1]}</div>}
+                              {statusMatch && <div><span className="font-medium">예약 상태:</span> {statusMatch[1]}</div>}
+                              {remainingText && <div className="mt-2">{remainingText}</div>}
                             </div>
                           );
                         }
