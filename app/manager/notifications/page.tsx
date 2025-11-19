@@ -457,27 +457,25 @@ export default function NotificationManagement() {
             </div>
           </button>
 
-          <button
-            onClick={() => setStatusFilter('unread')}
-            className={`bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow ${statusFilter === 'unread' ? 'ring-2 ring-red-500' : ''
-              }`}
+          <div
+            className={`bg-white rounded-lg shadow-sm p-4 transition-shadow ${statusFilter === 'unread' ? 'ring-2 ring-red-500' : ''}`}
           >
-            <div className="text-center">
+            <div className="text-center select-none cursor-default">
               <div className="text-2xl font-bold text-red-600">{stats.unread}</div>
               <div className="text-sm font-medium text-gray-600 mt-1">읽지않음</div>
+              <div className="mt-1 text-xs text-gray-400">(통계만 표시)</div>
             </div>
-          </button>
+          </div>
 
-          <button
-            onClick={() => setPriorityFilter('urgent')}
-            className={`bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow ${priorityFilter === 'urgent' ? 'ring-2 ring-red-500' : ''
-              }`}
+          <div
+            className={`bg-white rounded-lg shadow-sm p-4 transition-shadow ${priorityFilter === 'urgent' ? 'ring-2 ring-red-500' : ''}`}
           >
-            <div className="text-center">
+            <div className="text-center select-none cursor-default">
               <div className="text-2xl font-bold text-red-600">{stats.urgent}</div>
               <div className="text-sm font-medium text-gray-600 mt-1">긴급</div>
+              <div className="mt-1 text-xs text-gray-400">(통계만 표시)</div>
             </div>
-          </button>
+          </div>
         </div>
 
         {/* 필터 */}
@@ -504,24 +502,6 @@ export default function NotificationManagement() {
                     }`}
                 >
                   읽지 않음
-                </button>
-                <button
-                  onClick={() => setStatusFilter('read')}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'read'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                  읽음
-                </button>
-                <button
-                  onClick={() => setStatusFilter('processing')}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'processing'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                  처리중
                 </button>
                 <button
                   onClick={() => setStatusFilter('completed')}
@@ -585,6 +565,18 @@ export default function NotificationManagement() {
                   낮음
                 </button>
               </div>
+            </div>
+            {/* 새로고침 버튼 */}
+            <div className="flex items-start lg:items-center gap-2">
+              <button
+                onClick={() => { setLoading(true); Promise.all([loadNotifications(), loadStats()]).finally(() => setLoading(false)); }}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-500 text-white hover:bg-indigo-600 transition-colors"
+              >
+                새로고침
+              </button>
+              {loading && (
+                <span className="text-xs text-gray-500">갱신 중...</span>
+              )}
             </div>
           </div>
         </div>
