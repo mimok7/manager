@@ -647,7 +647,27 @@ export default function NotificationManagement() {
                         </div>
                       )}
 
-                      <p className="text-gray-600 text-sm line-clamp-3 mb-3">{notification.message}</p>
+                      {(() => {
+                        const msg = notification.message || '';
+                        // 중복 정보 제거: 고객/연락/견적/금액/상태 키-값 패턴을 제거
+                        const cleaned = msg
+                          .replace(/고객명:\s*[^\s]+\s*/g, '')
+                          .replace(/이메일:\s*[^\s]+\s*/g, '')
+                          .replace(/연락처:\s*[^\s]+\s*/g, '')
+                          .replace(/서비스:\s*[^\s]+\s*/g, '')
+                          .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
+                          .replace(/총\s*금액:\s*[^\s]+\s*/g, '')
+                          .replace(/예약\s*금액:\s*[^\s]+\s*/g, '')
+                          .replace(/상태:\s*[^\s]+\s*/g, '')
+                          .replace(/예약\s*상태:\s*[^\s]+\s*/g, '')
+                          .trim();
+
+                        return (
+                          <p className="text-gray-600 text-sm line-clamp-3 mb-3">
+                            {cleaned || msg}
+                          </p>
+                        );
+                      })()}
 
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <div>{new Date(notification.created_at).toLocaleString('ko-KR')}</div>
@@ -871,7 +891,23 @@ export default function NotificationManagement() {
 
                 <div className="mb-2">
                   <div className="font-medium text-sm">{notification.title}</div>
-                  <div className="text-xs opacity-90 mt-1 line-clamp-2">{notification.message}</div>
+                  {(() => {
+                    const msg = notification.message || '';
+                    const cleaned = msg
+                      .replace(/고객명:\s*[^\s]+\s*/g, '')
+                      .replace(/이메일:\s*[^\s]+\s*/g, '')
+                      .replace(/연락처:\s*[^\s]+\s*/g, '')
+                      .replace(/서비스:\s*[^\s]+\s*/g, '')
+                      .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
+                      .replace(/총\s*금액:\s*[^\s]+\s*/g, '')
+                      .replace(/예약\s*금액:\s*[^\s]+\s*/g, '')
+                      .replace(/상태:\s*[^\s]+\s*/g, '')
+                      .replace(/예약\s*상태:\s*[^\s]+\s*/g, '')
+                      .trim();
+                    return (
+                      <div className="text-xs opacity-90 mt-1 line-clamp-2">{cleaned || msg}</div>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex justify-between items-center text-xs">
