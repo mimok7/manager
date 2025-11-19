@@ -588,333 +588,332 @@ export default function NotificationManagement() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 알림 목록 - 외부 3열 카드 레이아웃 */}
-      <div>
-        {notifications.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <span className="text-4xl mb-4 block">📭</span>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">알림이 없습니다</h3>
-            <p className="text-gray-600">새로운 알림이 도착하면 여기에 표시됩니다.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`bg-white rounded-lg shadow-sm p-5 cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-md ${notification.status === 'unread' ? 'ring-2 ring-blue-100' : ''}`}
-                onClick={() => handleNotificationClick(notification)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-3 flex-wrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(notification.priority)}`}>
-                        {notification.priority === 'urgent' && '🚨 '}
-                        {notification.priority === 'high' && '⚡ '}
-                        {notification.priority === 'normal' && '📋 '}
-                        {notification.priority === 'low' && '📄 '}
-                        {getKoreanPriority(notification.priority)}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(notification.status)}`}>
-                        {notification.status === 'unread' && '🔴 '}
-                        {notification.status === 'read' && '👁️ '}
-                        {notification.status === 'processing' && '⚙️ '}
-                        {notification.status === 'completed' && '✅ '}
-                        {notification.status === 'dismissed' && '❌ '}
-                        {getKoreanStatus(notification.status)}
-                      </span>
-                      <span className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
-                        {notification.type === 'business' ? '💼 업무' : '👥 고객'}
-                      </span>
-                      <span className="px-2 py-1 bg-purple-100 rounded-full text-xs font-medium text-purple-600">
-                        {notification.category}
-                      </span>
-                    </div>
+        {/* 알림 목록 - 외부 3열 카드 레이아웃 */}
+        <div>
+          {notifications.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+              <span className="text-4xl mb-4 block">📭</span>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">알림이 없습니다</h3>
+              <p className="text-gray-600">새로운 알림이 도착하면 여기에 표시됩니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`bg-white rounded-lg shadow-sm p-5 cursor-pointer transition transform hover:-translate-y-0.5 hover:shadow-md ${notification.status === 'unread' ? 'ring-2 ring-blue-100' : ''}`}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(notification.priority)}`}>
+                          {notification.priority === 'urgent' && '🚨 '}
+                          {notification.priority === 'high' && '⚡ '}
+                          {notification.priority === 'normal' && '📋 '}
+                          {notification.priority === 'low' && '📄 '}
+                          {getKoreanPriority(notification.priority)}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(notification.status)}`}>
+                          {notification.status === 'unread' && '🔴 '}
+                          {notification.status === 'read' && '👁️ '}
+                          {notification.status === 'processing' && '⚙️ '}
+                          {notification.status === 'completed' && '✅ '}
+                          {notification.status === 'dismissed' && '❌ '}
+                          {getKoreanStatus(notification.status)}
+                        </span>
+                        <span className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                          {notification.type === 'business' ? '💼 업무' : '👥 고객'}
+                        </span>
+                        <span className="px-2 py-1 bg-purple-100 rounded-full text-xs font-medium text-purple-600">
+                          {notification.category}
+                        </span>
+                      </div>
 
-                    <h3 className="text-md font-semibold text-gray-900 mb-2 line-clamp-2">{notification.title}</h3>
+                      <h3 className="text-md font-semibold text-gray-900 mb-2 line-clamp-2">{notification.title}</h3>
 
-                    {(notification.customer_name || notification.customer_email) && (
-                      <div className="bg-blue-50 rounded-lg p-2 mb-3">
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="text-blue-600 font-medium">👤 고객정보:</span>
-                          {notification.customer_name && (
-                            <span className="text-gray-800">{notification.customer_name}</span>
-                          )}
-                          {notification.customer_email && (
-                            <span className="text-blue-600">📧 {notification.customer_email}</span>
+                      {(notification.customer_name || notification.customer_email) && (
+                        <div className="bg-blue-50 rounded-lg p-2 mb-3">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-blue-600 font-medium">👤 고객정보:</span>
+                            {notification.customer_name && (
+                              <span className="text-gray-800">{notification.customer_name}</span>
+                            )}
+                            {notification.customer_email && (
+                              <span className="text-blue-600">📧 {notification.customer_email}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      <p className="text-gray-600 text-sm line-clamp-3 mb-3">{notification.message}</p>
+
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div>{new Date(notification.created_at).toLocaleString('ko-KR')}</div>
+                        <div className="flex items-center space-x-2">
+                          {notification.assigned_to && (
+                            <span className="text-xs text-blue-600">담당자: {notification.assigned_to}</span>
                           )}
                         </div>
                       </div>
-                    )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-3">{notification.message}</p>
+        {/* 알림 상세 모달 */}
+        {showModal && selectedNotification && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-bold text-gray-900">알림 상세 정보</h3>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-xl"
+                  >
+                    ×
+                  </button>
+                </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <div>{new Date(notification.created_at).toLocaleString('ko-KR')}</div>
-                      <div className="flex items-center space-x-2">
-                        {notification.assigned_to && (
-                          <span className="text-xs text-blue-600">담당자: {notification.assigned_to}</span>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedNotification.priority)}`}>
+                      {getKoreanPriority(selectedNotification.priority)}
+                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedNotification.status)}`}>
+                      {getKoreanStatus(selectedNotification.status)}
+                    </span>
+                    <span className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                      {selectedNotification.type === 'business' ? '💼 업무' : '👥 고객'}
+                    </span>
+                    <span className="px-2 py-1 bg-purple-100 rounded-full text-xs font-medium text-purple-600">
+                      {selectedNotification.category}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">{getKoreanFieldName('title')}</h4>
+                    <p className="text-gray-700">{selectedNotification.title}</p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">{getKoreanFieldName('message')}</h4>
+                    <div className="text-gray-700">
+                      {(() => {
+                        const message = selectedNotification.message;
+
+                        // 정규식으로 각 항목 추출
+                        const customerNameMatch = message.match(/고객명:\s*([^\s]+)/);
+                        const serviceMatch = message.match(/서비스:\s*([^\s]+)/);
+                        const quoteNameMatch = message.match(/견적명:\s*([^\s]+(?:\s+\d+)?)/);
+                        const amountMatch = message.match(/예약\s+금액:\s*([^\s]+)/);
+                        const statusMatch = message.match(/예약\s+상태:\s*([^\s]+)/);
+
+                        // 추출된 데이터로 나머지 메시지 생성
+                        let remainingText = message
+                          .replace(/고객명:\s*[^\s]+\s*/g, '')
+                          .replace(/이메일:\s*[^\s]+\s*/g, '')
+                          .replace(/연락처:\s*[^\s]+\s*/g, '')
+                          .replace(/서비스:\s*[^\s]+\s*/g, '')
+                          .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
+                          .replace(/예약\s+금액:\s*[^\s]+\s*/g, '')
+                          .replace(/예약\s+상태:\s*[^\s]+\s*/g, '')
+                          .trim();
+
+                        // 파싱된 데이터가 있으면 구조화해서 표시
+                        if (customerNameMatch || serviceMatch || quoteNameMatch) {
+                          return (
+                            <div className="space-y-1">
+                              {customerNameMatch && <div><span className="font-medium">고객명:</span> {customerNameMatch[1]}</div>}
+                              {serviceMatch && <div><span className="font-medium">서비스:</span> {serviceMatch[1]}</div>}
+                              {quoteNameMatch && <div><span className="font-medium">견적명:</span> {quoteNameMatch[1]}</div>}
+                              {amountMatch && <div><span className="font-medium">예약 금액:</span> {amountMatch[1]}</div>}
+                              {statusMatch && <div><span className="font-medium">예약 상태:</span> {statusMatch[1]}</div>}
+                              {remainingText && <div className="mt-2">{remainingText}</div>}
+                            </div>
+                          );
+                        }
+
+                        // 파싱할 수 없으면 원본 메시지 표시
+                        return <p className="whitespace-pre-line">{message}</p>;
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* 고객 정보 표시 (고객 알림인 경우) */}
+                  {selectedNotification.type === 'customer' && selectedNotification.customer_details && selectedNotification.customer_details[0] && (
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-blue-900 mb-2">👤 고객 정보</h4>
+                      <div className="space-y-1 text-sm">
+                        <div><span className="font-medium">이름:</span> {selectedNotification.customer_details[0].customer_name || '이름 정보 없음'}</div>
+                        <div><span className="font-medium">이메일:</span> {selectedNotification.customer_details[0].customer_email || '이메일 정보 없음'}</div>
+                        <div><span className="font-medium">연락처:</span> {selectedNotification.customer_details[0].customer_phone || '연락처 정보 없음'}</div>
+                        <div><span className="font-medium">문의 유형:</span> {selectedNotification.customer_details[0].inquiry_type || '-'}</div>
+                        <div><span className="font-medium">서비스 유형:</span> {selectedNotification.customer_details[0].service_type || '-'}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 처리 매니저 정보 표시 (완료된 경우) */}
+                  {selectedNotification.status === 'completed' && selectedNotification.processed_by_name && (
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-green-900 mb-2">✅ 처리 정보</h4>
+                      <div className="space-y-1 text-sm">
+                        <div><span className="font-medium">처리 매니저:</span> {selectedNotification.processed_by_name}</div>
+                        {selectedNotification.processed_at && (
+                          <div><span className="font-medium">처리 완료:</span> {new Date(selectedNotification.processed_at).toLocaleString('ko-KR')}</div>
                         )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                  )}
 
-      {/* 알림 상세 모달 */}
-      {showModal && selectedNotification && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-bold text-gray-900">알림 상세 정보</h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedNotification.priority)}`}>
-                    {getKoreanPriority(selectedNotification.priority)}
-                  </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedNotification.status)}`}>
-                    {getKoreanStatus(selectedNotification.status)}
-                  </span>
-                  <span className="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
-                    {selectedNotification.type === 'business' ? '💼 업무' : '👥 고객'}
-                  </span>
-                  <span className="px-2 py-1 bg-purple-100 rounded-full text-xs font-medium text-purple-600">
-                    {selectedNotification.category}
-                  </span>
-                </div>
-
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">{getKoreanFieldName('title')}</h4>
-                  <p className="text-gray-700">{selectedNotification.title}</p>
-                </div>
-
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-2">{getKoreanFieldName('message')}</h4>
-                  <div className="text-gray-700">
-                    {(() => {
-                      const message = selectedNotification.message;
-
-                      // 정규식으로 각 항목 추출
-                      const customerNameMatch = message.match(/고객명:\s*([^\s]+)/);
-                      const serviceMatch = message.match(/서비스:\s*([^\s]+)/);
-                      const quoteNameMatch = message.match(/견적명:\s*([^\s]+(?:\s+\d+)?)/);
-                      const amountMatch = message.match(/예약\s+금액:\s*([^\s]+)/);
-                      const statusMatch = message.match(/예약\s+상태:\s*([^\s]+)/);
-
-                      // 추출된 데이터로 나머지 메시지 생성
-                      let remainingText = message
-                        .replace(/고객명:\s*[^\s]+\s*/g, '')
-                        .replace(/이메일:\s*[^\s]+\s*/g, '')
-                        .replace(/연락처:\s*[^\s]+\s*/g, '')
-                        .replace(/서비스:\s*[^\s]+\s*/g, '')
-                        .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
-                        .replace(/예약\s+금액:\s*[^\s]+\s*/g, '')
-                        .replace(/예약\s+상태:\s*[^\s]+\s*/g, '')
-                        .trim();
-
-                      // 파싱된 데이터가 있으면 구조화해서 표시
-                      if (customerNameMatch || serviceMatch || quoteNameMatch) {
-                        return (
-                          <div className="space-y-1">
-                            {customerNameMatch && <div><span className="font-medium">고객명:</span> {customerNameMatch[1]}</div>}
-                            {serviceMatch && <div><span className="font-medium">서비스:</span> {serviceMatch[1]}</div>}
-                            {quoteNameMatch && <div><span className="font-medium">견적명:</span> {quoteNameMatch[1]}</div>}
-                            {amountMatch && <div><span className="font-medium">예약 금액:</span> {amountMatch[1]}</div>}
-                            {statusMatch && <div><span className="font-medium">예약 상태:</span> {statusMatch[1]}</div>}
-                            {remainingText && <div className="mt-2">{remainingText}</div>}
-                          </div>
-                        );
-                      }
-
-                      // 파싱할 수 없으면 원본 메시지 표시
-                      return <p className="whitespace-pre-line">{message}</p>;
-                    })()}
-                  </div>
-                </div>
-
-                {/* 고객 정보 표시 (고객 알림인 경우) */}
-                {selectedNotification.type === 'customer' && selectedNotification.customer_details && selectedNotification.customer_details[0] && (
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-blue-900 mb-2">👤 고객 정보</h4>
-                    <div className="space-y-1 text-sm">
-                      <div><span className="font-medium">이름:</span> {selectedNotification.customer_details[0].customer_name || '이름 정보 없음'}</div>
-                      <div><span className="font-medium">이메일:</span> {selectedNotification.customer_details[0].customer_email || '이메일 정보 없음'}</div>
-                      <div><span className="font-medium">연락처:</span> {selectedNotification.customer_details[0].customer_phone || '연락처 정보 없음'}</div>
-                      <div><span className="font-medium">문의 유형:</span> {selectedNotification.customer_details[0].inquiry_type || '-'}</div>
-                      <div><span className="font-medium">서비스 유형:</span> {selectedNotification.customer_details[0].service_type || '-'}</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 처리 매니저 정보 표시 (완료된 경우) */}
-                {selectedNotification.status === 'completed' && selectedNotification.processed_by_name && (
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-green-900 mb-2">✅ 처리 정보</h4>
-                    <div className="space-y-1 text-sm">
-                      <div><span className="font-medium">처리 매니저:</span> {selectedNotification.processed_by_name}</div>
-                      {selectedNotification.processed_at && (
-                        <div><span className="font-medium">처리 완료:</span> {new Date(selectedNotification.processed_at).toLocaleString('ko-KR')}</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-600">{getKoreanFieldName('created_at')}:</span>
-                    <p className="text-gray-800">{new Date(selectedNotification.created_at).toLocaleString('ko-KR')}</p>
-                  </div>
-                  {selectedNotification.processed_at && (
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-medium text-gray-600">{getKoreanFieldName('processed_at')}:</span>
-                      <p className="text-gray-800">{new Date(selectedNotification.processed_at).toLocaleString('ko-KR')}</p>
+                      <span className="font-medium text-gray-600">{getKoreanFieldName('created_at')}:</span>
+                      <p className="text-gray-800">{new Date(selectedNotification.created_at).toLocaleString('ko-KR')}</p>
+                    </div>
+                    {selectedNotification.processed_at && (
+                      <div>
+                        <span className="font-medium text-gray-600">{getKoreanFieldName('processed_at')}:</span>
+                        <p className="text-gray-800">{new Date(selectedNotification.processed_at).toLocaleString('ko-KR')}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 처리 메모 입력 */}
+                  {selectedNotification.status !== 'completed' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        처리 메모
+                      </label>
+                      <textarea
+                        value={processingNote}
+                        onChange={(e) => setProcessingNote(e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="처리 내용을 입력하세요..."
+                      />
+                    </div>
+                  )}
+
+                  {/* 고객 만족도 (고객 알림인 경우) */}
+                  {selectedNotification.type === 'customer' && selectedNotification.status !== 'completed' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        고객 만족도 (1-5점)
+                      </label>
+                      <select
+                        value={customerSatisfaction}
+                        onChange={(e) => setCustomerSatisfaction(Number(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value={5}>5점 (매우 만족)</option>
+                        <option value={4}>4점 (만족)</option>
+                        <option value={3}>3점 (보통)</option>
+                        <option value={2}>2점 (불만족)</option>
+                        <option value={1}>1점 (매우 불만족)</option>
+                      </select>
                     </div>
                   )}
                 </div>
 
-                {/* 처리 메모 입력 */}
-                {selectedNotification.status !== 'completed' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      처리 메모
-                    </label>
-                    <textarea
-                      value={processingNote}
-                      onChange={(e) => setProcessingNote(e.target.value)}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="처리 내용을 입력하세요..."
-                    />
-                  </div>
-                )}
-
-                {/* 고객 만족도 (고객 알림인 경우) */}
-                {selectedNotification.type === 'customer' && selectedNotification.status !== 'completed' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      고객 만족도 (1-5점)
-                    </label>
-                    <select
-                      value={customerSatisfaction}
-                      onChange={(e) => setCustomerSatisfaction(Number(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value={5}>5점 (매우 만족)</option>
-                      <option value={4}>4점 (만족)</option>
-                      <option value={3}>3점 (보통)</option>
-                      <option value={2}>2점 (불만족)</option>
-                      <option value={1}>1점 (매우 불만족)</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {/* 액션 버튼 */}
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={async () => {
-                    await updateNotificationStatus(selectedNotification.id, 'processing');
-                    setShowModal(false);
-                  }}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  처리
-                </button>
-
-                {selectedNotification.status === 'processing' && (
+                {/* 액션 버튼 */}
+                <div className="flex justify-end space-x-3 mt-6">
                   <button
-                    onClick={() => updateNotificationStatus(selectedNotification.id, 'completed')}
-                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    onClick={async () => {
+                      await updateNotificationStatus(selectedNotification.id, 'processing');
+                      setShowModal(false);
+                    }}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    처리 완료
+                    처리
                   </button>
-                )}
+
+                  {selectedNotification.status === 'processing' && (
+                    <button
+                      onClick={() => updateNotificationStatus(selectedNotification.id, 'completed')}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      처리 완료
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* 실시간 알림 팝업 */}
-      {showPopup && popupNotifications.length > 0 && (
-        <div className="fixed top-4 right-4 z-50 space-y-2">
-          {popupNotifications.map((notification) => (
-            <div
-              key={notification.id}
-              className="bg-red-500 text-white rounded-lg shadow-lg p-4 max-w-sm animate-slideInRight"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center">
-                  <span className="text-lg mr-2">🚨</span>
-                  <span className="font-bold text-sm">{getKoreanPriority(notification.priority)} 알림</span>
+        {/* 실시간 알림 팝업 */}
+        {showPopup && popupNotifications.length > 0 && (
+          <div className="fixed top-4 right-4 z-50 space-y-2">
+            {popupNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className="bg-red-500 text-white rounded-lg shadow-lg p-4 max-w-sm animate-slideInRight"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center">
+                    <span className="text-lg mr-2">🚨</span>
+                    <span className="font-bold text-sm">{getKoreanPriority(notification.priority)} 알림</span>
+                  </div>
+                  <button
+                    onClick={() => dismissPopup(notification.id)}
+                    className="text-white hover:text-gray-200 ml-2"
+                  >
+                    ×
+                  </button>
                 </div>
+
+                <div className="mb-2">
+                  <div className="font-medium text-sm">{notification.title}</div>
+                  <div className="text-xs opacity-90 mt-1 line-clamp-2">{notification.message}</div>
+                </div>
+
+                <div className="flex justify-between items-center text-xs">
+                  <span className="opacity-75">{getKoreanFieldName('type')}: {notification.type === 'business' ? '업무' : '고객'}</span>
+                  <div className="flex space-x-1">
+                    <button
+                      onClick={() => {
+                        setSelectedNotification(notification);
+                        setShowModal(true);
+                        dismissPopup(notification.id);
+                      }}
+                      className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs hover:bg-opacity-30"
+                    >
+                      상세보기
+                    </button>
+                    <button
+                      onClick={async () => {
+                        await updateNotificationStatus(notification.id, 'processing');
+                        dismissPopup(notification.id);
+                      }}
+                      className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs hover:bg-opacity-30"
+                    >
+                      처리하기
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {popupNotifications.length > 1 && (
+              <div className="bg-gray-800 text-white rounded-lg p-2 text-center">
                 <button
-                  onClick={() => dismissPopup(notification.id)}
-                  className="text-white hover:text-gray-200 ml-2"
+                  onClick={() => dismissPopup()}
+                  className="text-xs hover:text-gray-300"
                 >
-                  ×
+                  모든 알림 닫기 ({popupNotifications.length}개)
                 </button>
               </div>
-
-              <div className="mb-2">
-                <div className="font-medium text-sm">{notification.title}</div>
-                <div className="text-xs opacity-90 mt-1 line-clamp-2">{notification.message}</div>
-              </div>
-
-              <div className="flex justify-between items-center text-xs">
-                <span className="opacity-75">{getKoreanFieldName('type')}: {notification.type === 'business' ? '업무' : '고객'}</span>
-                <div className="flex space-x-1">
-                  <button
-                    onClick={() => {
-                      setSelectedNotification(notification);
-                      setShowModal(true);
-                      dismissPopup(notification.id);
-                    }}
-                    className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs hover:bg-opacity-30"
-                  >
-                    상세보기
-                  </button>
-                  <button
-                    onClick={async () => {
-                      await updateNotificationStatus(notification.id, 'processing');
-                      dismissPopup(notification.id);
-                    }}
-                    className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs hover:bg-opacity-30"
-                  >
-                    처리하기
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {popupNotifications.length > 1 && (
-            <div className="bg-gray-800 text-white rounded-lg p-2 text-center">
-              <button
-                onClick={() => dismissPopup()}
-                className="text-xs hover:text-gray-300"
-              >
-                모든 알림 닫기 ({popupNotifications.length}개)
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-    </ManagerLayout >
+            )}
+          </div>
+        )}
+      </div>
+    </ManagerLayout>
   );
 }
