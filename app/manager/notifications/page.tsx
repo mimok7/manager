@@ -145,10 +145,10 @@ export default function NotificationManagement() {
         loadNotifications();
         loadStats();
 
-        // 실시간 알림 체크 (30초마다)
+        // 실시간 알림 체크 (1분마다)
         const interval = setInterval(() => {
           loadNotifications();
-        }, 30000);
+        }, 60000);
 
         return () => clearInterval(interval);
       }
@@ -481,30 +481,110 @@ export default function NotificationManagement() {
             </div>
 
             {/* 상태/우선순위 필터 */}
-            <div className="flex gap-3">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">모든 상태</option>
-                <option value="unread">읽지 않음</option>
-                <option value="read">읽음</option>
-                <option value="processing">처리중</option>
-                <option value="completed">완료</option>
-              </select>
+            <div className="space-y-3">
+              {/* 상태 필터 버튼 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">상태 필터</label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setStatusFilter('all')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'all'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    모든 상태
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('unread')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'unread'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    읽지 않음
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('read')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'read'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    읽음
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('processing')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'processing'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    처리중
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('completed')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'completed'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    완료
+                  </button>
+                </div>
+              </div>
 
-              <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">모든 우선순위</option>
-                <option value="urgent">긴급</option>
-                <option value="high">높음</option>
-                <option value="normal">보통</option>
-                <option value="low">낮음</option>
-              </select>
+              {/* 우선순위 필터 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">우선순위 필터</label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setPriorityFilter('all')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === 'all'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    모든 우선순위
+                  </button>
+                  <button
+                    onClick={() => setPriorityFilter('urgent')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === 'urgent'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    긴급
+                  </button>
+                  <button
+                    onClick={() => setPriorityFilter('high')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === 'high'
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    높음
+                  </button>
+                  <button
+                    onClick={() => setPriorityFilter('normal')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === 'normal'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    보통
+                  </button>
+                  <button
+                    onClick={() => setPriorityFilter('low')}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${priorityFilter === 'low'
+                      ? 'bg-gray-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    낮음
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -623,7 +703,50 @@ export default function NotificationManagement() {
 
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">{getKoreanFieldName('message')}</h4>
-                    <p className="text-gray-700 whitespace-pre-line">{selectedNotification.message}</p>
+                    <div className="text-gray-700">
+                      {(() => {
+                        const message = selectedNotification.message;
+                        // 메시지 파싱 로직
+                        const lines = message.split(' ').filter(item => item.trim());
+                        const parsedData: { [key: string]: string } = {};
+
+                        lines.forEach(line => {
+                          if (line.includes(':')) {
+                            const [key, ...valueParts] = line.split(':');
+                            const value = valueParts.join(':').trim();
+                            parsedData[key.trim()] = value;
+                          }
+                        });
+
+                        // 파싱된 데이터가 있으면 구조화해서 표시
+                        if (Object.keys(parsedData).length > 0) {
+                          return (
+                            <div className="space-y-1">
+                              {parsedData['고객명'] && <div><span className="font-medium">고객명:</span> {parsedData['고객명']}</div>}
+                              {parsedData['서비스'] && <div><span className="font-medium">서비스:</span> {parsedData['서비스']}</div>}
+                              {parsedData['견적명'] && <div><span className="font-medium">견적명:</span> {parsedData['견적명']}</div>}
+                              {parsedData['예약'] && parsedData['금액'] && <div><span className="font-medium">예약 금액:</span> {parsedData['금액']}</div>}
+                              {parsedData['예약'] && parsedData['상태'] && <div><span className="font-medium">예약 상태:</span> {parsedData['상태']}</div>}
+                              {/* 나머지 텍스트 표시 */}
+                              {(() => {
+                                const remainingText = message.replace(/고객명:\s*[^ ]+\s*/g, '')
+                                  .replace(/이메일:\s*[^ ]+\s*/g, '')
+                                  .replace(/연락처:\s*[^ ]+\s*/g, '')
+                                  .replace(/서비스:\s*[^ ]+\s*/g, '')
+                                  .replace(/견적명:\s*[^ ]+\s*/g, '')
+                                  .replace(/예약\s+금액:\s*[^ ]+\s*/g, '')
+                                  .replace(/예약\s+상태:\s*[^ ]+\s*/g, '')
+                                  .trim();
+                                return remainingText && <div className="mt-2">{remainingText}</div>;
+                              })()}
+                            </div>
+                          );
+                        }
+
+                        // 파싱할 수 없으면 원본 메시지 표시
+                        return <p className="whitespace-pre-line">{message}</p>;
+                      })()}
+                    </div>
                   </div>
 
                   {/* 고객 정보 표시 (고객 알림인 경우) */}
@@ -706,23 +829,14 @@ export default function NotificationManagement() {
                 {/* 액션 버튼 */}
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    onClick={async () => {
+                      await updateNotificationStatus(selectedNotification.id, 'processing');
+                      setShowModal(false);
+                    }}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    닫기
+                    처리
                   </button>
-
-                  {selectedNotification.status === 'unread' && (
-                    <button
-                      onClick={async () => {
-                        await updateNotificationStatus(selectedNotification.id, 'processing');
-                        setShowModal(false);
-                      }}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                      처리 시작
-                    </button>
-                  )}
 
                   {selectedNotification.status === 'processing' && (
                     <button
