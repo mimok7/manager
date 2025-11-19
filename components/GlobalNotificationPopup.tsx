@@ -136,12 +136,49 @@ export default function GlobalNotificationPopup({ userRole }: GlobalNotification
         window.location.href = '/manager/notifications';
     };
 
-    // 30초마다 알림 새로고침
+    // 1분마다 알림 새로고침 (중복 실행 방지)
     useEffect(() => {
         loadNotifications();
-        const interval = setInterval(loadNotifications, 30000);
+        const interval = setInterval(loadNotifications, 60000);
         return () => clearInterval(interval);
-    }, [shouldShowNotifications, dismissedIds]);
+        // dismissedIds 변동 시 현재 열린 알림만 제거 처리, 새 fetch 는 정기 주기로 유지
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldShowNotifications]);
+
+    // dismissedIds 변경 시 즉시 반영 (새 fetch 없이 현재 목록만 필터)
+    useEffect(() => {
+        setNotifications(prev => prev.filter(n => !dismissedIds.has(n.id)));
+    }, [dismissedIds]);
+
+    // 중복 정보 제거 유틸
+    const simplifyMessage = (msg: string) => {
+        if (!msg) return '';
+        const cleaned = msg
+            .replace(/고객명:\s*[^\s]+\s*/g, '')
+            .replace(/이메일:\s*[^\s]+\s*/g, '')
+            .replace(/연락처:\s*[^\s]+\s*/g, '')
+            .replace(/서비스:\s*[^\s]+\s*/g, '')
+            .replace(/견적명:\s*[^\s]+(?:\s+\d+)?\s*/g, '')
+            .replace(/총\s*금액:\s*[^\s]+\s*/g, '')
+            .replace(/예약\s*금액:\s*[^\s]+\s*/g, '')
+            .replace(/상태:\s*[^\s]+\s*/g, '')
+            .replace(/예약\s*상태:\s*[^\s]+\s*/g, '')
+            .trim();
+        return cleaned || msg; // 모두 제거되면 원문 유지
+    };
+
+    const startProcessing = async (id: string) => {
+        try {
+            await supabase
+                .from('notifications')
+                .update({ status: 'processing', updated_at: new Date().toISOString() })
+                .eq('id', id);
+            // 즉시 UI 반영
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        } catch (e) {
+            console.error('알림 처리 시작 실패:', e);
+        }
+    };
 
     if (!shouldShowNotifications || notifications.length === 0) {
         return null;
@@ -203,9 +240,9 @@ export default function GlobalNotificationPopup({ userRole }: GlobalNotification
                         </div>
                     )}
 
-                    {/* 메시지 */}
-                    <p className="text-xs text-gray-700 mb-3">
-                        {notification.message}
+                    {/* 메시지 (중복 제거 후 간단 표시) */}
+                    <p className="text-xs text-gray-700 mb-3 whitespace-pre-line">
+                        {simplifyMessage(notification.message)}
                     </p>
 
                     {/* 시간 정보 */}
@@ -213,19 +250,13 @@ export default function GlobalNotificationPopup({ userRole }: GlobalNotification
                         🕒 {new Date(notification.created_at).toLocaleString('ko-KR')}
                     </div>
 
-                    {/* 액션 버튼 */}
-                    <div className="flex space-x-2">
+                    {/* 단일 처리 시작 버튼 */}
+                    <div className="flex">
                         <button
-                            onClick={goToNotifications}
-                            className="flex-1 bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                            onClick={() => startProcessing(notification.id)}
+                            className="flex-1 bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700 transition-colors"
                         >
-                            알림 관리
-                        </button>
-                        <button
-                            onClick={() => dismissNotification(notification.id)}
-                            className="bg-gray-300 text-gray-700 text-xs px-3 py-1 rounded hover:bg-gray-400 transition-colors"
-                        >
-                            닫기
+                            처리 시작
                         </button>
                     </div>
                 </div>
