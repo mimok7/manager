@@ -45,13 +45,6 @@ export default function ReservationConfirmPage() {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) { router.push("/login"); return; }
 
-                // 권한 확인 (매니저/관리자만)
-                const { data: roleRow } = await supabase.from("users").select("role").eq("id", user.id).maybeSingle();
-                if (!roleRow || !["manager", "admin"].includes(roleRow.role)) {
-                    setError("매니저 권한이 필요합니다.");
-                    return;
-                }
-
                 // 예약 원본
                 const { data: r } = await supabase.from("reservation").select("*").eq("re_id", reservationId).maybeSingle();
                 if (!r) { setError("예약을 찾을 수 없습니다."); return; }

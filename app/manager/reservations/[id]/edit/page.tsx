@@ -85,18 +85,6 @@ function ReservationEditContent() {
                 return;
             }
 
-            const { data: userData } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (!userData || !['manager', 'admin'].includes(userData.role)) {
-                alert('매니저 권한이 필요합니다.');
-                router.push('/manager/reservations');
-                return;
-            }
-
             // 예약 원본 조회
             const { data: reservationRow, error: queryError } = await supabase
                 .from('reservation')

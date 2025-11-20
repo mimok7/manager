@@ -93,18 +93,6 @@ function QuoteEditContent() {
                 return;
             }
 
-            const { data: userData } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (!userData || !['manager', 'admin'].includes(userData.role)) {
-                alert('매니저 권한이 필요합니다.');
-                router.push('/manager/quotes');
-                return;
-            }
-
             // 견적 기본 정보 조회
             const { data: quoteData, error: quoteError } = await supabase
                 .from('quote')

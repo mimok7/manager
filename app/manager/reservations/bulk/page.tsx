@@ -73,25 +73,6 @@ export default function BulkReservationPage() {
         try {
             setLoading(true);
 
-            // 매니저 권한 확인
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-                return;
-            }
-
-            const { data: userData } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (!userData || !['manager', 'admin'].includes(userData.role)) {
-                alert('매니저 권한이 필요합니다.');
-                router.push('/');
-                return;
-            }
-
             // 1) 예약 데이터 조회 (기본 컬럼만)
             let baseQuery = supabase
                 .from('reservation')

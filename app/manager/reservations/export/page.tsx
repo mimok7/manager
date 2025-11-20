@@ -71,39 +71,9 @@ export default function ReservationExportPage() {
     ];
 
     useEffect(() => {
-        // 권한 확인
-        checkPermission();
-    }, []);
-
-    useEffect(() => {
         // 옵션이 변경되면 미리보기 데이터 로드
         loadPreviewData();
     }, [options.startDate, options.endDate, options.status, options.types]);
-
-    const checkPermission = async () => {
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-                return;
-            }
-
-            const { data: userData } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (!userData || !['manager', 'admin'].includes(userData.role)) {
-                alert('매니저 권한이 필요합니다.');
-                router.push('/');
-                return;
-            }
-        } catch (error) {
-            console.error('권한 확인 실패:', error);
-            router.push('/');
-        }
-    };
 
     const loadPreviewData = async () => {
         if (options.status.length === 0 || options.types.length === 0) {

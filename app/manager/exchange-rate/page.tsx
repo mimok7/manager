@@ -228,40 +228,39 @@ export default function ManagerExchangeRatePage() {
                     </div>
                 </div>
 
-                {/* 환율 업데이트 (매니저 및 관리자) */}
-                {(userRole === 'manager' || userRole === 'admin') && (
-                    <div className="bg-white rounded-lg shadow-sm p-6">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">⚙️ 환율 업데이트 (매니저/관리자 전용)</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    새 환율 입력 (100동당 원화)
-                                </label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={manualRateInput}
-                                    onChange={(e) => setManualRateInput(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="예: 5.25"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    예시: 5.25 입력 시 → 100동 = 5.25원
-                                </p>
-                            </div>
-                            <div className="flex items-end">
-                                <button
-                                    onClick={updateExchangeRate}
-                                    disabled={exchangeRateLoading}
-                                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {exchangeRateLoading ? '업데이트 중...' : '환율 업데이트'}
-                                </button>
-                            </div>
+                {/* 환율 업데이트 */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">⚙️ 환율 업데이트</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                새 환율 입력 (100동당 원화)
+                            </label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={manualRateInput}
+                                onChange={(e) => setManualRateInput(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="예: 5.25"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                                예시: 5.25 입력 시 → 100동 = 5.25원
+                            </p>
+                        </div>
+                        <div className="flex items-end">
+                            <button
+                                onClick={updateExchangeRate}
+                                disabled={exchangeRateLoading}
+                                className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {exchangeRateLoading ? '업데이트 중...' : '환율 업데이트'}
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
             </div>
-        </ManagerLayout>
+        </div>
+        </ManagerLayout >
     );
 }
