@@ -260,7 +260,6 @@ export default function ManagerExchangeRatePage() {
                     </div>
                 </div>
             </div>
-        </div>
-        </ManagerLayout >
+        </ManagerLayout>
     );
 }
