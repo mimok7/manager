@@ -222,14 +222,24 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                     case 'rentcar':
                         tableName = 'reservation_rentcar';
                         break;
+                    case 'car':
+                    case 'sht_car':
+                    case 'car_sht':
+                        tableName = 'reservation_car_sht';
+                        break;
                     default:
+                        console.warn('알 수 없는 서비스 타입:', serviceType);
                         return;
                 }
+
+                console.log('🔍 서비스 상세 정보 조회:', { serviceType, tableName, reservationId: reservation.re_id });
 
                 const { data, error } = await supabase
                     .from(tableName)
                     .select('*')
                     .eq('reservation_id', reservation.re_id);
+
+                console.log('📊 조회 결과:', { data, error });
 
                 if (!error && data) {
                     // 각 서비스별로 가격 정보를 별도 조회하여 추가
@@ -243,7 +253,7 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                             .from('airport_price')
                                             .select('*')
                                             .eq('airport_code', item.airport_price_code)
-                                            .single();
+                                            .maybeSingle();
                                         priceData = priceInfo;
                                     }
                                     break;
@@ -253,7 +263,7 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                             .from('hotel_price')
                                             .select('*')
                                             .eq('hotel_code', item.hotel_price_code)
-                                            .single();
+                                            .maybeSingle();
                                         priceData = priceInfo;
                                     }
                                     break;
@@ -263,7 +273,7 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                             .from('tour_price')
                                             .select('*')
                                             .eq('tour_code', item.tour_price_code)
-                                            .single();
+                                            .maybeSingle();
                                         priceData = priceInfo;
                                     }
                                     break;
@@ -273,7 +283,19 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                             .from('rent_price')
                                             .select('*')
                                             .eq('rent_code', item.rentcar_price_code)
-                                            .single();
+                                            .maybeSingle();
+                                        priceData = priceInfo;
+                                    }
+                                    break;
+                                case 'car':
+                                case 'sht_car':
+                                case 'car_sht':
+                                    if (item.car_price_code) {
+                                        const { data: priceInfo } = await supabase
+                                            .from('car_price')
+                                            .select('*')
+                                            .eq('car_code', item.car_price_code)
+                                            .maybeSingle();
                                         priceData = priceInfo;
                                     }
                                     break;
@@ -281,10 +303,13 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                             return { ...item, price_info: priceData };
                         })
                     );
+                    console.log('✅ 상세 정보 구성 완료:', enrichedData);
                     setServiceDetails(enrichedData);
+                } else if (error) {
+                    console.error('❌ 서비스 상세 정보 조회 실패:', error);
                 }
             } catch (error) {
-                console.error('서비스 상세 정보 조회 실패:', error);
+                console.error('❌ 서비스 상세 정보 조회 중 오류:', error);
             } finally {
                 setLoading(false);
             }
@@ -430,6 +455,25 @@ const ServiceDetailSection = ({ reservation }: { reservation: any }) => {
                                         <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{detail.total_price?.toLocaleString() || 0}동</span></div>
                                         {detail.request_note && (
                                             <div className="md:col-span-2 mt-3 pt-3 border-t border-red-100">
+                                                <strong>요청사항:</strong>
+                                                <div className="bg-gray-50 p-2 rounded mt-1 text-sm">{detail.request_note}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {(serviceType === 'car' || serviceType === 'sht_car' || serviceType === 'car_sht') && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                        <div><strong>차량 가격 코드:</strong> <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">{detail.car_price_code}</span></div>
+                                        <div><strong>차량 타입:</strong> {detail.price_info?.car_type || '정보 없음'}</div>
+                                        <div><strong>차량 카테고리:</strong> {detail.price_info?.car_category || '정보 없음'}</div>
+                                        <div><strong>가격:</strong> <span className="text-green-600 font-medium">{detail.price_info?.price?.toLocaleString() || 0}동</span></div>
+                                        <div><strong>차량 번호:</strong> {detail.vehicle_number || '미정'}</div>
+                                        <div><strong>좌석 수:</strong> {detail.seat_number || 0}석</div>
+                                        <div><strong>색상:</strong> {detail.color_label || '미정'}</div>
+                                        <div><strong>총 금액:</strong> <span className="text-lg font-bold text-green-600">{detail.total_price?.toLocaleString() || 0}동</span></div>
+                                        {detail.request_note && (
+                                            <div className="md:col-span-2 mt-3 pt-3 border-t border-purple-100">
                                                 <strong>요청사항:</strong>
                                                 <div className="bg-gray-50 p-2 rounded mt-1 text-sm">{detail.request_note}</div>
                                             </div>
@@ -1811,13 +1855,11 @@ export default function ReservationDetailModal({
                                 {getServiceName(reservation.re_type || reservation.reservation?.re_type)} 상세 정보
                             </h3>
 
-                            {/* 다른 서비스 상세 정보 */}
+                            {/* ServiceDetailSection - 모든 서비스 정보 표시 */}
                             <ServiceDetailSection reservation={reservation} />
 
-                            {/* 기존 방식도 유지 (fallback) */}
-                            {!['cruise', 'airport', 'hotel', 'tour', 'rentcar'].includes(reservation.re_type || reservation.reservation?.re_type) &&
-                                renderServiceDetails(reservation)
-                            }
+                            {/* FallbackServiceDetails - 상세 정보가 없을 때도 표시 */}
+                            <FallbackServiceDetails reservation={reservation} />
                         </div>
                     )}
 
