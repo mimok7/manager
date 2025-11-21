@@ -1,0 +1,1185 @@
+| table_schema | table_name                   | column_name                  | data_type                   |
+| ------------ | ---------------------------- | ---------------------------- | --------------------------- |
+| auth         | audit_log_entries            | instance_id                  | uuid                        |
+| auth         | audit_log_entries            | id                           | uuid                        |
+| auth         | audit_log_entries            | payload                      | json                        |
+| auth         | audit_log_entries            | created_at                   | timestamp with time zone    |
+| auth         | audit_log_entries            | ip_address                   | character varying           |
+| auth         | flow_state                   | id                           | uuid                        |
+| auth         | flow_state                   | user_id                      | uuid                        |
+| auth         | flow_state                   | auth_code                    | text                        |
+| auth         | flow_state                   | code_challenge_method        | USER-DEFINED                |
+| auth         | flow_state                   | code_challenge               | text                        |
+| auth         | flow_state                   | provider_type                | text                        |
+| auth         | flow_state                   | provider_access_token        | text                        |
+| auth         | flow_state                   | provider_refresh_token       | text                        |
+| auth         | flow_state                   | created_at                   | timestamp with time zone    |
+| auth         | flow_state                   | updated_at                   | timestamp with time zone    |
+| auth         | flow_state                   | authentication_method        | text                        |
+| auth         | flow_state                   | auth_code_issued_at          | timestamp with time zone    |
+| auth         | identities                   | provider_id                  | text                        |
+| auth         | identities                   | user_id                      | uuid                        |
+| auth         | identities                   | identity_data                | jsonb                       |
+| auth         | identities                   | provider                     | text                        |
+| auth         | identities                   | last_sign_in_at              | timestamp with time zone    |
+| auth         | identities                   | created_at                   | timestamp with time zone    |
+| auth         | identities                   | updated_at                   | timestamp with time zone    |
+| auth         | identities                   | email                        | text                        |
+| auth         | identities                   | id                           | uuid                        |
+| auth         | instances                    | id                           | uuid                        |
+| auth         | instances                    | uuid                         | uuid                        |
+| auth         | instances                    | raw_base_config              | text                        |
+| auth         | instances                    | created_at                   | timestamp with time zone    |
+| auth         | instances                    | updated_at                   | timestamp with time zone    |
+| auth         | mfa_amr_claims               | session_id                   | uuid                        |
+| auth         | mfa_amr_claims               | created_at                   | timestamp with time zone    |
+| auth         | mfa_amr_claims               | updated_at                   | timestamp with time zone    |
+| auth         | mfa_amr_claims               | authentication_method        | text                        |
+| auth         | mfa_amr_claims               | id                           | uuid                        |
+| auth         | mfa_challenges               | id                           | uuid                        |
+| auth         | mfa_challenges               | factor_id                    | uuid                        |
+| auth         | mfa_challenges               | created_at                   | timestamp with time zone    |
+| auth         | mfa_challenges               | verified_at                  | timestamp with time zone    |
+| auth         | mfa_challenges               | ip_address                   | inet                        |
+| auth         | mfa_challenges               | otp_code                     | text                        |
+| auth         | mfa_challenges               | web_authn_session_data       | jsonb                       |
+| auth         | mfa_factors                  | id                           | uuid                        |
+| auth         | mfa_factors                  | user_id                      | uuid                        |
+| auth         | mfa_factors                  | friendly_name                | text                        |
+| auth         | mfa_factors                  | factor_type                  | USER-DEFINED                |
+| auth         | mfa_factors                  | status                       | USER-DEFINED                |
+| auth         | mfa_factors                  | created_at                   | timestamp with time zone    |
+| auth         | mfa_factors                  | updated_at                   | timestamp with time zone    |
+| auth         | mfa_factors                  | secret                       | text                        |
+| auth         | mfa_factors                  | phone                        | text                        |
+| auth         | mfa_factors                  | last_challenged_at           | timestamp with time zone    |
+| auth         | mfa_factors                  | web_authn_credential         | jsonb                       |
+| auth         | mfa_factors                  | web_authn_aaguid             | uuid                        |
+| auth         | mfa_factors                  | last_webauthn_challenge_data | jsonb                       |
+| auth         | oauth_authorizations         | id                           | uuid                        |
+| auth         | oauth_authorizations         | authorization_id             | text                        |
+| auth         | oauth_authorizations         | client_id                    | uuid                        |
+| auth         | oauth_authorizations         | user_id                      | uuid                        |
+| auth         | oauth_authorizations         | redirect_uri                 | text                        |
+| auth         | oauth_authorizations         | scope                        | text                        |
+| auth         | oauth_authorizations         | state                        | text                        |
+| auth         | oauth_authorizations         | resource                     | text                        |
+| auth         | oauth_authorizations         | code_challenge               | text                        |
+| auth         | oauth_authorizations         | code_challenge_method        | USER-DEFINED                |
+| auth         | oauth_authorizations         | response_type                | USER-DEFINED                |
+| auth         | oauth_authorizations         | status                       | USER-DEFINED                |
+| auth         | oauth_authorizations         | authorization_code           | text                        |
+| auth         | oauth_authorizations         | created_at                   | timestamp with time zone    |
+| auth         | oauth_authorizations         | expires_at                   | timestamp with time zone    |
+| auth         | oauth_authorizations         | approved_at                  | timestamp with time zone    |
+| auth         | oauth_clients                | id                           | uuid                        |
+| auth         | oauth_clients                | client_secret_hash           | text                        |
+| auth         | oauth_clients                | registration_type            | USER-DEFINED                |
+| auth         | oauth_clients                | redirect_uris                | text                        |
+| auth         | oauth_clients                | grant_types                  | text                        |
+| auth         | oauth_clients                | client_name                  | text                        |
+| auth         | oauth_clients                | client_uri                   | text                        |
+| auth         | oauth_clients                | logo_uri                     | text                        |
+| auth         | oauth_clients                | created_at                   | timestamp with time zone    |
+| auth         | oauth_clients                | updated_at                   | timestamp with time zone    |
+| auth         | oauth_clients                | deleted_at                   | timestamp with time zone    |
+| auth         | oauth_clients                | client_type                  | USER-DEFINED                |
+| auth         | oauth_consents               | id                           | uuid                        |
+| auth         | oauth_consents               | user_id                      | uuid                        |
+| auth         | oauth_consents               | client_id                    | uuid                        |
+| auth         | oauth_consents               | scopes                       | text                        |
+| auth         | oauth_consents               | granted_at                   | timestamp with time zone    |
+| auth         | oauth_consents               | revoked_at                   | timestamp with time zone    |
+| auth         | one_time_tokens              | id                           | uuid                        |
+| auth         | one_time_tokens              | user_id                      | uuid                        |
+| auth         | one_time_tokens              | token_type                   | USER-DEFINED                |
+| auth         | one_time_tokens              | token_hash                   | text                        |
+| auth         | one_time_tokens              | relates_to                   | text                        |
+| auth         | one_time_tokens              | created_at                   | timestamp without time zone |
+| auth         | one_time_tokens              | updated_at                   | timestamp without time zone |
+| auth         | refresh_tokens               | instance_id                  | uuid                        |
+| auth         | refresh_tokens               | id                           | bigint                      |
+| auth         | refresh_tokens               | token                        | character varying           |
+| auth         | refresh_tokens               | user_id                      | character varying           |
+| auth         | refresh_tokens               | revoked                      | boolean                     |
+| auth         | refresh_tokens               | created_at                   | timestamp with time zone    |
+| auth         | refresh_tokens               | updated_at                   | timestamp with time zone    |
+| auth         | refresh_tokens               | parent                       | character varying           |
+| auth         | refresh_tokens               | session_id                   | uuid                        |
+| auth         | saml_providers               | id                           | uuid                        |
+| auth         | saml_providers               | sso_provider_id              | uuid                        |
+| auth         | saml_providers               | entity_id                    | text                        |
+| auth         | saml_providers               | metadata_xml                 | text                        |
+| auth         | saml_providers               | metadata_url                 | text                        |
+| auth         | saml_providers               | attribute_mapping            | jsonb                       |
+| auth         | saml_providers               | created_at                   | timestamp with time zone    |
+| auth         | saml_providers               | updated_at                   | timestamp with time zone    |
+| auth         | saml_providers               | name_id_format               | text                        |
+| auth         | saml_relay_states            | id                           | uuid                        |
+| auth         | saml_relay_states            | sso_provider_id              | uuid                        |
+| auth         | saml_relay_states            | request_id                   | text                        |
+| auth         | saml_relay_states            | for_email                    | text                        |
+| auth         | saml_relay_states            | redirect_to                  | text                        |
+| auth         | saml_relay_states            | created_at                   | timestamp with time zone    |
+| auth         | saml_relay_states            | updated_at                   | timestamp with time zone    |
+| auth         | saml_relay_states            | flow_state_id                | uuid                        |
+| auth         | schema_migrations            | version                      | character varying           |
+| auth         | sessions                     | id                           | uuid                        |
+| auth         | sessions                     | user_id                      | uuid                        |
+| auth         | sessions                     | created_at                   | timestamp with time zone    |
+| auth         | sessions                     | updated_at                   | timestamp with time zone    |
+| auth         | sessions                     | factor_id                    | uuid                        |
+| auth         | sessions                     | aal                          | USER-DEFINED                |
+| auth         | sessions                     | not_after                    | timestamp with time zone    |
+| auth         | sessions                     | refreshed_at                 | timestamp without time zone |
+| auth         | sessions                     | user_agent                   | text                        |
+| auth         | sessions                     | ip                           | inet                        |
+| auth         | sessions                     | tag                          | text                        |
+| auth         | sessions                     | oauth_client_id              | uuid                        |
+| auth         | sessions                     | refresh_token_hmac_key       | text                        |
+| auth         | sessions                     | refresh_token_counter        | bigint                      |
+| auth         | sso_domains                  | id                           | uuid                        |
+| auth         | sso_domains                  | sso_provider_id              | uuid                        |
+| auth         | sso_domains                  | domain                       | text                        |
+| auth         | sso_domains                  | created_at                   | timestamp with time zone    |
+| auth         | sso_domains                  | updated_at                   | timestamp with time zone    |
+| auth         | sso_providers                | id                           | uuid                        |
+| auth         | sso_providers                | resource_id                  | text                        |
+| auth         | sso_providers                | created_at                   | timestamp with time zone    |
+| auth         | sso_providers                | updated_at                   | timestamp with time zone    |
+| auth         | sso_providers                | disabled                     | boolean                     |
+| auth         | users                        | instance_id                  | uuid                        |
+| auth         | users                        | id                           | uuid                        |
+| auth         | users                        | aud                          | character varying           |
+| auth         | users                        | role                         | character varying           |
+| auth         | users                        | email                        | character varying           |
+| auth         | users                        | encrypted_password           | character varying           |
+| auth         | users                        | email_confirmed_at           | timestamp with time zone    |
+| auth         | users                        | invited_at                   | timestamp with time zone    |
+| auth         | users                        | confirmation_token           | character varying           |
+| auth         | users                        | confirmation_sent_at         | timestamp with time zone    |
+| auth         | users                        | recovery_token               | character varying           |
+| auth         | users                        | recovery_sent_at             | timestamp with time zone    |
+| auth         | users                        | email_change_token_new       | character varying           |
+| auth         | users                        | email_change                 | character varying           |
+| auth         | users                        | email_change_sent_at         | timestamp with time zone    |
+| auth         | users                        | last_sign_in_at              | timestamp with time zone    |
+| auth         | users                        | raw_app_meta_data            | jsonb                       |
+| auth         | users                        | raw_user_meta_data           | jsonb                       |
+| auth         | users                        | is_super_admin               | boolean                     |
+| auth         | users                        | created_at                   | timestamp with time zone    |
+| auth         | users                        | updated_at                   | timestamp with time zone    |
+| auth         | users                        | phone                        | text                        |
+| auth         | users                        | phone_confirmed_at           | timestamp with time zone    |
+| auth         | users                        | phone_change                 | text                        |
+| auth         | users                        | phone_change_token           | character varying           |
+| auth         | users                        | phone_change_sent_at         | timestamp with time zone    |
+| auth         | users                        | confirmed_at                 | timestamp with time zone    |
+| auth         | users                        | email_change_token_current   | character varying           |
+| auth         | users                        | email_change_confirm_status  | smallint                    |
+| auth         | users                        | banned_until                 | timestamp with time zone    |
+| auth         | users                        | reauthentication_token       | character varying           |
+| auth         | users                        | reauthentication_sent_at     | timestamp with time zone    |
+| auth         | users                        | is_sso_user                  | boolean                     |
+| auth         | users                        | deleted_at                   | timestamp with time zone    |
+| auth         | users                        | is_anonymous                 | boolean                     |
+| extensions   | pg_stat_statements           | userid                       | oid                         |
+| extensions   | pg_stat_statements           | dbid                         | oid                         |
+| extensions   | pg_stat_statements           | toplevel                     | boolean                     |
+| extensions   | pg_stat_statements           | queryid                      | bigint                      |
+| extensions   | pg_stat_statements           | query                        | text                        |
+| extensions   | pg_stat_statements           | plans                        | bigint                      |
+| extensions   | pg_stat_statements           | total_plan_time              | double precision            |
+| extensions   | pg_stat_statements           | min_plan_time                | double precision            |
+| extensions   | pg_stat_statements           | max_plan_time                | double precision            |
+| extensions   | pg_stat_statements           | mean_plan_time               | double precision            |
+| extensions   | pg_stat_statements           | stddev_plan_time             | double precision            |
+| extensions   | pg_stat_statements           | calls                        | bigint                      |
+| extensions   | pg_stat_statements           | total_exec_time              | double precision            |
+| extensions   | pg_stat_statements           | min_exec_time                | double precision            |
+| extensions   | pg_stat_statements           | max_exec_time                | double precision            |
+| extensions   | pg_stat_statements           | mean_exec_time               | double precision            |
+| extensions   | pg_stat_statements           | stddev_exec_time             | double precision            |
+| extensions   | pg_stat_statements           | rows                         | bigint                      |
+| extensions   | pg_stat_statements           | shared_blks_hit              | bigint                      |
+| extensions   | pg_stat_statements           | shared_blks_read             | bigint                      |
+| extensions   | pg_stat_statements           | shared_blks_dirtied          | bigint                      |
+| extensions   | pg_stat_statements           | shared_blks_written          | bigint                      |
+| extensions   | pg_stat_statements           | local_blks_hit               | bigint                      |
+| extensions   | pg_stat_statements           | local_blks_read              | bigint                      |
+| extensions   | pg_stat_statements           | local_blks_dirtied           | bigint                      |
+| extensions   | pg_stat_statements           | local_blks_written           | bigint                      |
+| extensions   | pg_stat_statements           | temp_blks_read               | bigint                      |
+| extensions   | pg_stat_statements           | temp_blks_written            | bigint                      |
+| extensions   | pg_stat_statements           | shared_blk_read_time         | double precision            |
+| extensions   | pg_stat_statements           | shared_blk_write_time        | double precision            |
+| extensions   | pg_stat_statements           | local_blk_read_time          | double precision            |
+| extensions   | pg_stat_statements           | local_blk_write_time         | double precision            |
+| extensions   | pg_stat_statements           | temp_blk_read_time           | double precision            |
+| extensions   | pg_stat_statements           | temp_blk_write_time          | double precision            |
+| extensions   | pg_stat_statements           | wal_records                  | bigint                      |
+| extensions   | pg_stat_statements           | wal_fpi                      | bigint                      |
+| extensions   | pg_stat_statements           | wal_bytes                    | numeric                     |
+| extensions   | pg_stat_statements           | jit_functions                | bigint                      |
+| extensions   | pg_stat_statements           | jit_generation_time          | double precision            |
+| extensions   | pg_stat_statements           | jit_inlining_count           | bigint                      |
+| extensions   | pg_stat_statements           | jit_inlining_time            | double precision            |
+| extensions   | pg_stat_statements           | jit_optimization_count       | bigint                      |
+| extensions   | pg_stat_statements           | jit_optimization_time        | double precision            |
+| extensions   | pg_stat_statements           | jit_emission_count           | bigint                      |
+| extensions   | pg_stat_statements           | jit_emission_time            | double precision            |
+| extensions   | pg_stat_statements           | jit_deform_count             | bigint                      |
+| extensions   | pg_stat_statements           | jit_deform_time              | double precision            |
+| extensions   | pg_stat_statements           | stats_since                  | timestamp with time zone    |
+| extensions   | pg_stat_statements           | minmax_stats_since           | timestamp with time zone    |
+| extensions   | pg_stat_statements_info      | dealloc                      | bigint                      |
+| extensions   | pg_stat_statements_info      | stats_reset                  | timestamp with time zone    |
+| public       | airport                      | id                           | uuid                        |
+| public       | airport                      | airport_code                 | character varying           |
+| public       | airport                      | passenger_count              | integer                     |
+| public       | airport                      | special_requests             | text                        |
+| public       | airport                      | base_price                   | numeric                     |
+| public       | airport                      | created_at                   | timestamp with time zone    |
+| public       | airport                      | updated_at                   | timestamp with time zone    |
+| public       | airport_price                | airport_code                 | text                        |
+| public       | airport_price                | airport_category             | text                        |
+| public       | airport_price                | airport_route                | text                        |
+| public       | airport_price                | airport_car_type             | text                        |
+| public       | airport_price                | price                        | numeric                     |
+| public       | business_notifications       | id                           | uuid                        |
+| public       | business_notifications       | notification_id              | uuid                        |
+| public       | business_notifications       | business_type                | character varying           |
+| public       | business_notifications       | department                   | character varying           |
+| public       | business_notifications       | urgency_level                | integer                     |
+| public       | business_notifications       | estimated_duration           | integer                     |
+| public       | business_notifications       | required_action              | text                        |
+| public       | business_notifications       | checklist                    | jsonb                       |
+| public       | business_notifications       | related_users                | ARRAY                       |
+| public       | business_notifications       | created_at                   | timestamp without time zone |
+| public       | business_notifications       | updated_at                   | timestamp without time zone |
+| public       | car                          | id                           | uuid                        |
+| public       | car                          | base_price                   | numeric                     |
+| public       | car                          | created_at                   | timestamp with time zone    |
+| public       | car                          | updated_at                   | timestamp with time zone    |
+| public       | car                          | car_code                     | character varying           |
+| public       | car                          | special_requests             | text                        |
+| public       | car                          | car_count                    | integer                     |
+| public       | car_price                    | car_code                     | text                        |
+| public       | car_price                    | car_category                 | text                        |
+| public       | car_price                    | cruise                       | text                        |
+| public       | car_price                    | car_type                     | text                        |
+| public       | car_price                    | price                        | numeric                     |
+| public       | car_price                    | schedule                     | text                        |
+| public       | car_price                    | passenger_count              | text                        |
+| public       | confirmation_status          | id                           | uuid                        |
+| public       | confirmation_status          | reservation_id               | uuid                        |
+| public       | confirmation_status          | quote_id                     | uuid                        |
+| public       | confirmation_status          | status                       | text                        |
+| public       | confirmation_status          | generated_at                 | timestamp with time zone    |
+| public       | confirmation_status          | sent_at                      | timestamp with time zone    |
+| public       | confirmation_status          | email_sent_to                | text                        |
+| public       | confirmation_status          | created_at                   | timestamp with time zone    |
+| public       | confirmation_status          | updated_at                   | timestamp with time zone    |
+| public       | cruise                       | id                           | uuid                        |
+| public       | cruise                       | cruise_name                  | character varying           |
+| public       | cruise                       | departure_date               | date                        |
+| public       | cruise                       | return_date                  | date                        |
+| public       | cruise                       | departure_port               | character varying           |
+| public       | cruise                       | room_type                    | character varying           |
+| public       | cruise                       | adult_count                  | integer                     |
+| public       | cruise                       | child_count                  | integer                     |
+| public       | cruise                       | infant_count                 | integer                     |
+| public       | cruise                       | special_requests             | text                        |
+| public       | cruise                       | base_price                   | numeric                     |
+| public       | cruise                       | created_at                   | timestamp with time zone    |
+| public       | cruise                       | updated_at                   | timestamp with time zone    |
+| public       | cruise_info                  | id                           | uuid                        |
+| public       | cruise_info                  | cruise_code                  | text                        |
+| public       | cruise_info                  | name                         | text                        |
+| public       | cruise_info                  | description                  | text                        |
+| public       | cruise_info                  | duration                     | text                        |
+| public       | cruise_info                  | features                     | jsonb                       |
+| public       | cruise_info                  | images                       | jsonb                       |
+| public       | cruise_info                  | base_price                   | numeric                     |
+| public       | cruise_info                  | created_at                   | timestamp with time zone    |
+| public       | cruise_info                  | updated_at                   | timestamp with time zone    |
+| public       | cruise_info                  | category                     | text                        |
+| public       | cruise_info                  | cruise_name                  | text                        |
+| public       | cruise_info                  | cruise_image                 | text                        |
+| public       | cruise_info                  | room_name                    | text                        |
+| public       | cruise_info                  | room_image                   | text                        |
+| public       | cruise_info                  | room_area                    | text                        |
+| public       | cruise_info                  | room_description             | text                        |
+| public       | cruise_info                  | room_url                     | text                        |
+| public       | cruise_info_by_category      | category                     | text                        |
+| public       | cruise_info_by_category      | cruise_name                  | text                        |
+| public       | cruise_info_by_category      | room_count                   | bigint                      |
+| public       | cruise_info_by_category      | room_names                   | ARRAY                       |
+| public       | cruise_info_by_category      | room_areas                   | ARRAY                       |
+| public       | cruise_info_view             | id                           | uuid                        |
+| public       | cruise_info_view             | cruise_code                  | text                        |
+| public       | cruise_info_view             | name                         | text                        |
+| public       | cruise_info_view             | description                  | text                        |
+| public       | cruise_info_view             | duration                     | text                        |
+| public       | cruise_info_view             | features                     | jsonb                       |
+| public       | cruise_info_view             | images                       | jsonb                       |
+| public       | cruise_info_view             | base_price                   | numeric                     |
+| public       | cruise_info_view             | created_at                   | timestamp with time zone    |
+| public       | cruise_info_view             | updated_at                   | timestamp with time zone    |
+| public       | cruise_location              | id                           | uuid                        |
+| public       | cruise_location              | en_name                      | text                        |
+| public       | cruise_location              | kr_name                      | text                        |
+| public       | cruise_location              | pier_location                | text                        |
+| public       | cruise_location              | pier_map_url                 | text                        |
+| public       | cruise_location              | tour_schedule_url            | text                        |
+| public       | cruise_location              | details                      | text                        |
+| public       | cruise_location              | created_at                   | timestamp with time zone    |
+| public       | cruise_rooms_view            | id                           | uuid                        |
+| public       | cruise_rooms_view            | category                     | text                        |
+| public       | cruise_rooms_view            | cruise_name                  | text                        |
+| public       | cruise_rooms_view            | cruise_image                 | text                        |
+| public       | cruise_rooms_view            | room_name                    | text                        |
+| public       | cruise_rooms_view            | room_image                   | text                        |
+| public       | cruise_rooms_view            | room_area                    | text                        |
+| public       | cruise_rooms_view            | room_description             | text                        |
+| public       | cruise_rooms_view            | room_url                     | text                        |
+| public       | cruise_rooms_view            | created_at                   | timestamp with time zone    |
+| public       | cruise_rooms_view            | updated_at                   | timestamp with time zone    |
+| public       | customer_notifications       | id                           | uuid                        |
+| public       | customer_notifications       | notification_id              | uuid                        |
+| public       | customer_notifications       | customer_id                  | uuid                        |
+| public       | customer_notifications       | customer_name                | character varying           |
+| public       | customer_notifications       | customer_phone               | character varying           |
+| public       | customer_notifications       | customer_email               | character varying           |
+| public       | customer_notifications       | inquiry_type                 | character varying           |
+| public       | customer_notifications       | service_type                 | character varying           |
+| public       | customer_notifications       | response_deadline            | timestamp without time zone |
+| public       | customer_notifications       | customer_satisfaction        | integer                     |
+| public       | customer_notifications       | follow_up_required           | boolean                     |
+| public       | customer_notifications       | resolution_notes             | text                        |
+| public       | customer_notifications       | created_at                   | timestamp without time zone |
+| public       | customer_notifications       | updated_at                   | timestamp without time zone |
+| public       | customer_request_attachments | id                           | uuid                        |
+| public       | customer_request_attachments | request_id                   | uuid                        |
+| public       | customer_request_attachments | file_name                    | text                        |
+| public       | customer_request_attachments | file_path                    | text                        |
+| public       | customer_request_attachments | file_size                    | integer                     |
+| public       | customer_request_attachments | file_type                    | text                        |
+| public       | customer_request_attachments | uploaded_by                  | text                        |
+| public       | customer_request_attachments | created_at                   | timestamp with time zone    |
+| public       | customer_request_history     | id                           | uuid                        |
+| public       | customer_request_history     | request_id                   | uuid                        |
+| public       | customer_request_history     | action_type                  | text                        |
+| public       | customer_request_history     | previous_status              | text                        |
+| public       | customer_request_history     | new_status                   | text                        |
+| public       | customer_request_history     | action_by                    | text                        |
+| public       | customer_request_history     | action_note                  | text                        |
+| public       | customer_request_history     | created_at                   | timestamp with time zone    |
+| public       | customer_requests            | id                           | uuid                        |
+| public       | customer_requests            | request_id                   | text                        |
+| public       | customer_requests            | user_id                      | text                        |
+| public       | customer_requests            | request_type                 | text                        |
+| public       | customer_requests            | request_category             | text                        |
+| public       | customer_requests            | title                        | text                        |
+| public       | customer_requests            | description                  | text                        |
+| public       | customer_requests            | urgency_level                | text                        |
+| public       | customer_requests            | related_quote_id             | text                        |
+| public       | customer_requests            | related_reservation_id       | text                        |
+| public       | customer_requests            | related_table                | text                        |
+| public       | customer_requests            | related_id                   | text                        |
+| public       | customer_requests            | status                       | text                        |
+| public       | customer_requests            | assigned_to                  | text                        |
+| public       | customer_requests            | processed_by                 | text                        |
+| public       | customer_requests            | response_message             | text                        |
+| public       | customer_requests            | internal_notes               | text                        |
+| public       | customer_requests            | request_data                 | jsonb                       |
+| public       | customer_requests            | created_at                   | timestamp with time zone    |
+| public       | customer_requests            | updated_at                   | timestamp with time zone    |
+| public       | customer_requests            | due_date                     | timestamp with time zone    |
+| public       | customer_requests            | processed_at                 | timestamp with time zone    |
+| public       | dispatcher_users             | id                           | uuid                        |
+| public       | dispatcher_users             | name                         | text                        |
+| public       | dispatcher_users             | email                        | text                        |
+| public       | exchange_rates               | id                           | integer                     |
+| public       | exchange_rates               | currency_code                | character varying           |
+| public       | exchange_rates               | rate_to_krw                  | numeric                     |
+| public       | exchange_rates               | source                       | character varying           |
+| public       | exchange_rates               | last_updated                 | timestamp with time zone    |
+| public       | exchange_rates               | created_at                   | timestamp with time zone    |
+| public       | exchange_rates               | updated_at                   | timestamp with time zone    |
+| public       | hotel                        | id                           | uuid                        |
+| public       | hotel                        | hotel_code                   | character varying           |
+| public       | hotel                        | special_requests             | text                        |
+| public       | hotel                        | base_price                   | numeric                     |
+| public       | hotel                        | created_at                   | timestamp with time zone    |
+| public       | hotel                        | updated_at                   | timestamp with time zone    |
+| public       | hotel                        | checkin_date                 | date                        |
+| public       | hotel                        | checkout_date                | date                        |
+| public       | hotel_price                  | hotel_code                   | text                        |
+| public       | hotel_price                  | hotel_name                   | text                        |
+| public       | hotel_price                  | room_name                    | text                        |
+| public       | hotel_price                  | room_type                    | text                        |
+| public       | hotel_price                  | price                        | numeric                     |
+| public       | hotel_price                  | start_date                   | date                        |
+| public       | hotel_price                  | end_date                     | date                        |
+| public       | hotel_price                  | weekday_type                 | text                        |
+| public       | manager_reservations         | re_id                        | uuid                        |
+| public       | manager_reservations         | re_user_id                   | uuid                        |
+| public       | manager_reservations         | re_quote_id                  | uuid                        |
+| public       | manager_reservations         | re_type                      | text                        |
+| public       | manager_reservations         | re_status                    | text                        |
+| public       | manager_reservations         | re_created_at                | timestamp with time zone    |
+| public       | manager_reservations         | re_update_at                 | timestamp with time zone    |
+| public       | manager_reservations         | total_amount                 | numeric                     |
+| public       | manager_reservations         | customer_name                | text                        |
+| public       | manager_reservations         | customer_email               | text                        |
+| public       | manager_reservations         | customer_phone               | text                        |
+| public       | notification_reads           | id                           | uuid                        |
+| public       | notification_reads           | notification_id              | uuid                        |
+| public       | notification_reads           | user_id                      | uuid                        |
+| public       | notification_reads           | read_at                      | timestamp without time zone |
+| public       | notification_templates       | id                           | uuid                        |
+| public       | notification_templates       | name                         | character varying           |
+| public       | notification_templates       | type                         | character varying           |
+| public       | notification_templates       | category                     | character varying           |
+| public       | notification_templates       | title_template               | character varying           |
+| public       | notification_templates       | message_template             | text                        |
+| public       | notification_templates       | default_priority             | character varying           |
+| public       | notification_templates       | auto_assign_rule             | jsonb                       |
+| public       | notification_templates       | is_active                    | boolean                     |
+| public       | notification_templates       | created_at                   | timestamp without time zone |
+| public       | notification_templates       | updated_at                   | timestamp without time zone |
+| public       | notifications                | id                           | uuid                        |
+| public       | notifications                | type                         | character varying           |
+| public       | notifications                | category                     | character varying           |
+| public       | notifications                | title                        | character varying           |
+| public       | notifications                | message                      | text                        |
+| public       | notifications                | target_id                    | text                        |
+| public       | notifications                | target_table                 | character varying           |
+| public       | notifications                | priority                     | character varying           |
+| public       | notifications                | status                       | character varying           |
+| public       | notifications                | created_by                   | uuid                        |
+| public       | notifications                | assigned_to                  | uuid                        |
+| public       | notifications                | due_date                     | timestamp without time zone |
+| public       | notifications                | metadata                     | jsonb                       |
+| public       | notifications                | created_at                   | timestamp without time zone |
+| public       | notifications                | updated_at                   | timestamp without time zone |
+| public       | notifications                | processed_at                 | timestamp without time zone |
+| public       | notifications                | processed_by_name            | character varying           |
+| public       | notifications                | subcategory                  | text                        |
+| public       | notifications                | customer_name                | text                        |
+| public       | notifications                | customer_email               | text                        |
+| public       | notifications                | customer_phone               | text                        |
+| public       | payment_info                 | code                         | text                        |
+| public       | payment_info                 | name                         | text                        |
+| public       | payment_notifications        | id                           | uuid                        |
+| public       | payment_notifications        | reservation_id               | uuid                        |
+| public       | payment_notifications        | notification_type            | text                        |
+| public       | payment_notifications        | notification_date            | date                        |
+| public       | payment_notifications        | message_content              | text                        |
+| public       | payment_notifications        | is_sent                      | boolean                     |
+| public       | payment_notifications        | sent_at                      | timestamp with time zone    |
+| public       | payment_notifications        | created_at                   | timestamp with time zone    |
+| public       | payment_notifications        | recipient_email              | text                        |
+| public       | payment_notifications        | recipient_phone              | text                        |
+| public       | payment_notifications        | priority                     | text                        |
+| public       | quote                        | id                           | uuid                        |
+| public       | quote                        | user_id                      | uuid                        |
+| public       | quote                        | status                       | character varying           |
+| public       | quote                        | title                        | character varying           |
+| public       | quote                        | description                  | text                        |
+| public       | quote                        | total_price                  | numeric                     |
+| public       | quote                        | created_at                   | timestamp with time zone    |
+| public       | quote                        | updated_at                   | timestamp with time zone    |
+| public       | quote                        | submitted_at                 | timestamp with time zone    |
+| public       | quote                        | approved_at                  | timestamp with time zone    |
+| public       | quote                        | manager_note                 | text                        |
+| public       | quote                        | payment_status               | text                        |
+| public       | quote                        | confirmed_at                 | timestamp with time zone    |
+| public       | quote_item                   | id                           | uuid                        |
+| public       | quote_item                   | quote_id                     | uuid                        |
+| public       | quote_item                   | service_type                 | character varying           |
+| public       | quote_item                   | service_ref_id               | uuid                        |
+| public       | quote_item                   | quantity                     | integer                     |
+| public       | quote_item                   | unit_price                   | numeric                     |
+| public       | quote_item                   | total_price                  | numeric                     |
+| public       | quote_item                   | options                      | jsonb                       |
+| public       | quote_item                   | created_at                   | timestamp with time zone    |
+| public       | quote_item                   | updated_at                   | timestamp with time zone    |
+| public       | quote_item                   | usage_date                   | date                        |
+| public       | rent_price                   | rent_code                    | text                        |
+| public       | rent_price                   | rent_type                    | text                        |
+| public       | rent_price                   | rent_category                | text                        |
+| public       | rent_price                   | rent_route                   | text                        |
+| public       | rent_price                   | rent_car_type                | text                        |
+| public       | rent_price                   | price                        | numeric                     |
+| public       | rentcar                      | id                           | uuid                        |
+| public       | rentcar                      | rentcar_code                 | character varying           |
+| public       | rentcar                      | special_requests             | text                        |
+| public       | rentcar                      | base_price                   | numeric                     |
+| public       | rentcar                      | created_at                   | timestamp with time zone    |
+| public       | rentcar                      | updated_at                   | timestamp with time zone    |
+| public       | reservation                  | re_id                        | uuid                        |
+| public       | reservation                  | re_user_id                   | uuid                        |
+| public       | reservation                  | re_quote_id                  | uuid                        |
+| public       | reservation                  | re_type                      | text                        |
+| public       | reservation                  | re_status                    | text                        |
+| public       | reservation                  | re_created_at                | timestamp with time zone    |
+| public       | reservation                  | re_update_at                 | timestamp with time zone    |
+| public       | reservation                  | total_amount                 | numeric                     |
+| public       | reservation                  | paid_amount                  | numeric                     |
+| public       | reservation                  | payment_status               | text                        |
+| public       | reservation                  | order_id                     | text                        |
+| public       | reservation_airport          | id                           | uuid                        |
+| public       | reservation_airport          | reservation_id               | uuid                        |
+| public       | reservation_airport          | airport_price_code           | text                        |
+| public       | reservation_airport          | ra_airport_location          | text                        |
+| public       | reservation_airport          | ra_flight_number             | text                        |
+| public       | reservation_airport          | ra_datetime                  | timestamp without time zone |
+| public       | reservation_airport          | ra_stopover_location         | text                        |
+| public       | reservation_airport          | ra_stopover_wait_minutes     | integer                     |
+| public       | reservation_airport          | ra_car_count                 | integer                     |
+| public       | reservation_airport          | ra_passenger_count           | integer                     |
+| public       | reservation_airport          | ra_luggage_count             | integer                     |
+| public       | reservation_airport          | request_note                 | text                        |
+| public       | reservation_airport          | ra_is_processed              | text                        |
+| public       | reservation_airport          | unit_price                   | numeric                     |
+| public       | reservation_airport          | total_price                  | numeric                     |
+| public       | reservation_airport          | created_at                   | timestamp with time zone    |
+| public       | reservation_airport          | dispatch_code                | text                        |
+| public       | reservation_airport          | pickup_confirmed_at          | timestamp with time zone    |
+| public       | reservation_airport          | dispatch_memo                | text                        |
+| public       | reservation_car_sht          | reservation_id               | uuid                        |
+| public       | reservation_car_sht          | vehicle_number               | text                        |
+| public       | reservation_car_sht          | seat_number                  | text                        |
+| public       | reservation_car_sht          | sht_category                 | text                        |
+| public       | reservation_car_sht          | id                           | uuid                        |
+| public       | reservation_car_sht          | created_at                   | timestamp with time zone    |
+| public       | reservation_car_sht          | usage_date                   | timestamp with time zone    |
+| public       | reservation_car_sht          | dispatch_code                | text                        |
+| public       | reservation_car_sht          | pickup_confirmed_at          | timestamp with time zone    |
+| public       | reservation_car_sht          | dispatch_memo                | text                        |
+| public       | reservation_car_sht          | car_price_code               | text                        |
+| public       | reservation_car_sht          | car_count                    | integer                     |
+| public       | reservation_car_sht          | passenger_count              | integer                     |
+| public       | reservation_car_sht          | pickup_datetime              | date                        |
+| public       | reservation_car_sht          | pickup_location              | text                        |
+| public       | reservation_car_sht          | dropoff_location             | text                        |
+| public       | reservation_car_sht          | car_total_price              | numeric                     |
+| public       | reservation_car_sht          | request_note                 | text                        |
+| public       | reservation_car_sht          | updated_at                   | timestamp with time zone    |
+| public       | reservation_car_sht          | unit_price                   | numeric                     |
+| public       | reservation_confirmation     | id                           | uuid                        |
+| public       | reservation_confirmation     | quote_id                     | uuid                        |
+| public       | reservation_confirmation     | sender_id                    | uuid                        |
+| public       | reservation_confirmation     | method                       | text                        |
+| public       | reservation_confirmation     | status                       | text                        |
+| public       | reservation_confirmation     | subject                      | text                        |
+| public       | reservation_confirmation     | recipient_email              | text                        |
+| public       | reservation_confirmation     | meta                         | jsonb                       |
+| public       | reservation_confirmation     | created_at                   | timestamp with time zone    |
+| public       | reservation_confirmation     | sent_at                      | timestamp with time zone    |
+| public       | reservation_confirmation     | reservation_id               | uuid                        |
+| public       | reservation_cruise           | reservation_id               | uuid                        |
+| public       | reservation_cruise           | room_price_code              | text                        |
+| public       | reservation_cruise           | checkin                      | date                        |
+| public       | reservation_cruise           | guest_count                  | integer                     |
+| public       | reservation_cruise           | unit_price                   | numeric                     |
+| public       | reservation_cruise           | room_total_price             | numeric                     |
+| public       | reservation_cruise           | request_note                 | text                        |
+| public       | reservation_cruise           | id                           | uuid                        |
+| public       | reservation_cruise           | created_at                   | timestamp with time zone    |
+| public       | reservation_cruise           | boarding_code                | text                        |
+| public       | reservation_cruise           | boarding_assist              | boolean                     |
+| public       | reservation_cruise           | updated_at                   | timestamp with time zone    |
+| public       | reservation_cruise_car       | id                           | uuid                        |
+| public       | reservation_cruise_car       | reservation_id               | uuid                        |
+| public       | reservation_cruise_car       | car_price_code               | text                        |
+| public       | reservation_cruise_car       | car_count                    | integer                     |
+| public       | reservation_cruise_car       | passenger_count              | integer                     |
+| public       | reservation_cruise_car       | pickup_datetime              | date                        |
+| public       | reservation_cruise_car       | pickup_location              | text                        |
+| public       | reservation_cruise_car       | dropoff_location             | text                        |
+| public       | reservation_cruise_car       | car_total_price              | numeric                     |
+| public       | reservation_cruise_car       | request_note                 | text                        |
+| public       | reservation_cruise_car       | created_at                   | timestamp with time zone    |
+| public       | reservation_cruise_car       | updated_at                   | timestamp with time zone    |
+| public       | reservation_cruise_car       | unit_price                   | numeric                     |
+| public       | reservation_cruise_car       | dispatch_code                | text                        |
+| public       | reservation_cruise_car       | pickup_confirmed_at          | timestamp with time zone    |
+| public       | reservation_cruise_car       | dispatch_memo                | text                        |
+| public       | reservation_hotel            | reservation_id               | uuid                        |
+| public       | reservation_hotel            | schedule                     | text                        |
+| public       | reservation_hotel            | room_count                   | integer                     |
+| public       | reservation_hotel            | checkin_date                 | date                        |
+| public       | reservation_hotel            | breakfast_service            | text                        |
+| public       | reservation_hotel            | hotel_category               | text                        |
+| public       | reservation_hotel            | guest_count                  | integer                     |
+| public       | reservation_hotel            | total_price                  | numeric                     |
+| public       | reservation_hotel            | hotel_price_code             | text                        |
+| public       | reservation_hotel            | request_note                 | text                        |
+| public       | reservation_hotel            | id                           | uuid                        |
+| public       | reservation_hotel            | created_at                   | timestamp with time zone    |
+| public       | reservation_hotel            | unit_price                   | numeric                     |
+| public       | reservation_hotel            | assignment_code              | text                        |
+| public       | reservation_payment          | id                           | uuid                        |
+| public       | reservation_payment          | reservation_id               | uuid                        |
+| public       | reservation_payment          | user_id                      | uuid                        |
+| public       | reservation_payment          | amount                       | numeric                     |
+| public       | reservation_payment          | payment_method               | text                        |
+| public       | reservation_payment          | payment_status               | text                        |
+| public       | reservation_payment          | memo                         | text                        |
+| public       | reservation_payment          | created_at                   | timestamp with time zone    |
+| public       | reservation_payment          | updated_at                   | timestamp with time zone    |
+| public       | reservation_payment          | transaction_id               | text                        |
+| public       | reservation_payment          | gateway                      | text                        |
+| public       | reservation_payment          | raw_response                 | jsonb                       |
+| public       | reservation_payments         | id                           | uuid                        |
+| public       | reservation_payments         | reservation_id               | uuid                        |
+| public       | reservation_payments         | payment_type                 | text                        |
+| public       | reservation_payments         | payment_amount               | numeric                     |
+| public       | reservation_payments         | payment_date                 | date                        |
+| public       | reservation_payments         | payment_status               | text                        |
+| public       | reservation_payments         | payment_method               | text                        |
+| public       | reservation_payments         | transaction_id               | text                        |
+| public       | reservation_payments         | notes                        | text                        |
+| public       | reservation_payments         | created_at                   | timestamp with time zone    |
+| public       | reservation_payments         | updated_at                   | timestamp with time zone    |
+| public       | reservation_payments         | created_by                   | uuid                        |
+| public       | reservation_payments         | interim_due_date             | date                        |
+| public       | reservation_payments         | final_due_date               | date                        |
+| public       | reservation_rentcar          | reservation_id               | uuid                        |
+| public       | reservation_rentcar          | rentcar_price_code           | text                        |
+| public       | reservation_rentcar          | rentcar_count                | integer                     |
+| public       | reservation_rentcar          | unit_price                   | numeric                     |
+| public       | reservation_rentcar          | car_count                    | integer                     |
+| public       | reservation_rentcar          | passenger_count              | integer                     |
+| public       | reservation_rentcar          | pickup_datetime              | timestamp without time zone |
+| public       | reservation_rentcar          | pickup_location              | text                        |
+| public       | reservation_rentcar          | destination                  | text                        |
+| public       | reservation_rentcar          | via_location                 | text                        |
+| public       | reservation_rentcar          | via_waiting                  | text                        |
+| public       | reservation_rentcar          | luggage_count                | integer                     |
+| public       | reservation_rentcar          | total_price                  | numeric                     |
+| public       | reservation_rentcar          | request_note                 | text                        |
+| public       | reservation_rentcar          | id                           | uuid                        |
+| public       | reservation_rentcar          | created_at                   | timestamp with time zone    |
+| public       | reservation_rentcar          | dispatch_code                | text                        |
+| public       | reservation_rentcar          | pickup_confirmed_at          | timestamp with time zone    |
+| public       | reservation_rentcar          | dispatch_memo                | text                        |
+| public       | reservation_tour             | reservation_id               | uuid                        |
+| public       | reservation_tour             | tour_price_code              | text                        |
+| public       | reservation_tour             | tour_capacity                | integer                     |
+| public       | reservation_tour             | pickup_location              | text                        |
+| public       | reservation_tour             | dropoff_location             | text                        |
+| public       | reservation_tour             | total_price                  | numeric                     |
+| public       | reservation_tour             | request_note                 | text                        |
+| public       | reservation_tour             | id                           | uuid                        |
+| public       | reservation_tour             | created_at                   | timestamp with time zone    |
+| public       | reservation_tour             | usage_date                   | date                        |
+| public       | reservation_tour             | unit_price                   | numeric                     |
+| public       | room                         | id                           | uuid                        |
+| public       | room                         | base_price                   | numeric                     |
+| public       | room                         | created_at                   | timestamp with time zone    |
+| public       | room                         | updated_at                   | timestamp with time zone    |
+| public       | room                         | room_code                    | character varying           |
+| public       | room                         | special_requests             | text                        |
+| public       | room                         | person_count                 | integer                     |
+| public       | room                         | extra_count                  | integer                     |
+| public       | room                         | single_charge_count          | integer                     |
+| public       | room                         | boarding_code                | text                        |
+| public       | room                         | sale                         | character varying           |
+| public       | room_price                   | room_code                    | text                        |
+| public       | room_price                   | schedule                     | text                        |
+| public       | room_price                   | room_category                | text                        |
+| public       | room_price                   | cruise                       | text                        |
+| public       | room_price                   | room_type                    | text                        |
+| public       | room_price                   | price                        | numeric                     |
+| public       | room_price                   | start_date                   | date                        |
+| public       | room_price                   | end_date                     | date                        |
+| public       | room_price                   | payment                      | text                        |
+| public       | sh_c                         | id                           | integer                     |
+| public       | sh_c                         | sheet_id                     | text                        |
+| public       | sh_c                         | order_id                     | text                        |
+| public       | sh_c                         | division                     | text                        |
+| public       | sh_c                         | category                     | text                        |
+| public       | sh_c                         | cruise_name                  | text                        |
+| public       | sh_c                         | vehicle_type                 | text                        |
+| public       | sh_c                         | vehicle_code                 | text                        |
+| public       | sh_c                         | vehicle_count                | text                        |
+| public       | sh_c                         | passenger_count              | text                        |
+| public       | sh_c                         | boarding_datetime            | text                        |
+| public       | sh_c                         | boarding_location            | text                        |
+| public       | sh_c                         | dropoff_location             | text                        |
+| public       | sh_c                         | modifier                     | text                        |
+| public       | sh_c                         | modified_at                  | text                        |
+| public       | sh_c                         | quantity                     | text                        |
+| public       | sh_c                         | processed                    | text                        |
+| public       | sh_c                         | processed_at                 | text                        |
+| public       | sh_c                         | amount                       | text                        |
+| public       | sh_c                         | total                        | text                        |
+| public       | sh_c                         | email                        | text                        |
+| public       | sh_c                         | unit                         | text                        |
+| public       | sh_c                         | migrated                     | text                        |
+| public       | sh_c                         | synced_at                    | timestamp with time zone    |
+| public       | sh_cc                        | id                           | integer                     |
+| public       | sh_cc                        | sheet_id                     | text                        |
+| public       | sh_cc                        | order_id                     | text                        |
+| public       | sh_cc                        | boarding_date                | text                        |
+| public       | sh_cc                        | division                     | text                        |
+| public       | sh_cc                        | category                     | text                        |
+| public       | sh_cc                        | vehicle_number               | text                        |
+| public       | sh_cc                        | seat_number                  | text                        |
+| public       | sh_cc                        | name                         | text                        |
+| public       | sh_cc                        | modifier                     | text                        |
+| public       | sh_cc                        | modified_at                  | text                        |
+| public       | sh_cc                        | email                        | text                        |
+| public       | sh_cc                        | synced_at                    | timestamp with time zone    |
+| public       | sh_h                         | id                           | integer                     |
+| public       | sh_h                         | sheet_id                     | text                        |
+| public       | sh_h                         | order_id                     | text                        |
+| public       | sh_h                         | hotel_code                   | text                        |
+| public       | sh_h                         | hotel_name                   | text                        |
+| public       | sh_h                         | room_name                    | text                        |
+| public       | sh_h                         | room_type                    | text                        |
+| public       | sh_h                         | room_count                   | text                        |
+| public       | sh_h                         | schedule                     | text                        |
+| public       | sh_h                         | checkin_date                 | text                        |
+| public       | sh_h                         | checkout_date                | text                        |
+| public       | sh_h                         | breakfast_service            | text                        |
+| public       | sh_h                         | adult                        | text                        |
+| public       | sh_h                         | child                        | text                        |
+| public       | sh_h                         | toddler                      | text                        |
+| public       | sh_h                         | extra_bed                    | text                        |
+| public       | sh_h                         | guest_count                  | text                        |
+| public       | sh_h                         | modifier                     | text                        |
+| public       | sh_h                         | modified_at                  | text                        |
+| public       | sh_h                         | processed                    | text                        |
+| public       | sh_h                         | processed_at                 | text                        |
+| public       | sh_h                         | note                         | text                        |
+| public       | sh_h                         | discount_amount              | text                        |
+| public       | sh_h                         | amount                       | text                        |
+| public       | sh_h                         | total                        | text                        |
+| public       | sh_h                         | email                        | text                        |
+| public       | sh_h                         | synced_at                    | timestamp with time zone    |
+| public       | sh_m                         | id                           | integer                     |
+| public       | sh_m                         | order_id                     | text                        |
+| public       | sh_m                         | reservation_date             | text                        |
+| public       | sh_m                         | email                        | text                        |
+| public       | sh_m                         | korean_name                  | text                        |
+| public       | sh_m                         | english_name                 | text                        |
+| public       | sh_m                         | nickname                     | text                        |
+| public       | sh_m                         | member_grade                 | text                        |
+| public       | sh_m                         | name                         | text                        |
+| public       | sh_m                         | phone                        | text                        |
+| public       | sh_m                         | creator                      | text                        |
+| public       | sh_m                         | created_at                   | text                        |
+| public       | sh_m                         | exchange_rate                | text                        |
+| public       | sh_m                         | usd_rate                     | text                        |
+| public       | sh_m                         | url                          | text                        |
+| public       | sh_m                         | plan                         | text                        |
+| public       | sh_m                         | payment_method               | text                        |
+| public       | sh_m                         | request_note                 | text                        |
+| public       | sh_m                         | kakao_id                     | text                        |
+| public       | sh_m                         | special_note                 | text                        |
+| public       | sh_m                         | birth_date                   | text                        |
+| public       | sh_m                         | memo                         | text                        |
+| public       | sh_m                         | discount_amount              | text                        |
+| public       | sh_m                         | discount_code                | text                        |
+| public       | sh_m                         | synced_at                    | timestamp with time zone    |
+| public       | sh_p                         | id                           | integer                     |
+| public       | sh_p                         | sheet_id                     | text                        |
+| public       | sh_p                         | order_id                     | text                        |
+| public       | sh_p                         | division                     | text                        |
+| public       | sh_p                         | category                     | text                        |
+| public       | sh_p                         | route                        | text                        |
+| public       | sh_p                         | vehicle_code                 | text                        |
+| public       | sh_p                         | vehicle_type                 | text                        |
+| public       | sh_p                         | date                         | text                        |
+| public       | sh_p                         | time                         | text                        |
+| public       | sh_p                         | airport_name                 | text                        |
+| public       | sh_p                         | flight_number                | text                        |
+| public       | sh_p                         | passenger_count              | text                        |
+| public       | sh_p                         | carrier_count                | text                        |
+| public       | sh_p                         | location_name                | text                        |
+| public       | sh_p                         | stopover                     | text                        |
+| public       | sh_p                         | stopover_wait_time           | text                        |
+| public       | sh_p                         | vehicle_count                | text                        |
+| public       | sh_p                         | modifier                     | text                        |
+| public       | sh_p                         | modified_at                  | text                        |
+| public       | sh_p                         | processed                    | text                        |
+| public       | sh_p                         | processed_at                 | text                        |
+| public       | sh_p                         | amount                       | text                        |
+| public       | sh_p                         | total                        | text                        |
+| public       | sh_p                         | email                        | text                        |
+| public       | sh_p                         | fast_service                 | text                        |
+| public       | sh_p                         | unit                         | text                        |
+| public       | sh_p                         | synced_at                    | timestamp with time zone    |
+| public       | sh_r                         | id                           | integer                     |
+| public       | sh_r                         | sheet_id                     | text                        |
+| public       | sh_r                         | order_id                     | text                        |
+| public       | sh_r                         | cruise_name                  | text                        |
+| public       | sh_r                         | division                     | text                        |
+| public       | sh_r                         | room_type                    | text                        |
+| public       | sh_r                         | room_count                   | text                        |
+| public       | sh_r                         | room_code                    | text                        |
+| public       | sh_r                         | schedule_days                | text                        |
+| public       | sh_r                         | room_discount                | text                        |
+| public       | sh_r                         | checkin_date                 | text                        |
+| public       | sh_r                         | time                         | text                        |
+| public       | sh_r                         | adult                        | text                        |
+| public       | sh_r                         | child                        | text                        |
+| public       | sh_r                         | toddler                      | text                        |
+| public       | sh_r                         | boarding_count               | text                        |
+| public       | sh_r                         | guest_count                  | text                        |
+| public       | sh_r                         | modifier                     | text                        |
+| public       | sh_r                         | modified_at                  | text                        |
+| public       | sh_r                         | boarding_help                | text                        |
+| public       | sh_r                         | discount_code                | text                        |
+| public       | sh_r                         | room_note                    | text                        |
+| public       | sh_r                         | processed                    | text                        |
+| public       | sh_r                         | processed_at                 | text                        |
+| public       | sh_r                         | boat                         | text                        |
+| public       | sh_r                         | amount                       | text                        |
+| public       | sh_r                         | total                        | text                        |
+| public       | sh_r                         | email                        | text                        |
+| public       | sh_r                         | unit                         | text                        |
+| public       | sh_r                         | connecting_room              | text                        |
+| public       | sh_r                         | synced_at                    | timestamp with time zone    |
+| public       | sh_rc                        | id                           | integer                     |
+| public       | sh_rc                        | sheet_id                     | text                        |
+| public       | sh_rc                        | order_id                     | text                        |
+| public       | sh_rc                        | vehicle_code                 | text                        |
+| public       | sh_rc                        | division                     | text                        |
+| public       | sh_rc                        | category                     | text                        |
+| public       | sh_rc                        | route                        | text                        |
+| public       | sh_rc                        | vehicle_type                 | text                        |
+| public       | sh_rc                        | vehicle_count                | text                        |
+| public       | sh_rc                        | boarding_date                | text                        |
+| public       | sh_rc                        | boarding_time                | text                        |
+| public       | sh_rc                        | boarding_location            | text                        |
+| public       | sh_rc                        | carrier_count                | text                        |
+| public       | sh_rc                        | destination                  | text                        |
+| public       | sh_rc                        | stopover                     | text                        |
+| public       | sh_rc                        | passenger_count              | text                        |
+| public       | sh_rc                        | usage_period                 | text                        |
+| public       | sh_rc                        | modifier                     | text                        |
+| public       | sh_rc                        | modified_at                  | text                        |
+| public       | sh_rc                        | memo                         | text                        |
+| public       | sh_rc                        | processed                    | text                        |
+| public       | sh_rc                        | processed_at                 | text                        |
+| public       | sh_rc                        | amount                       | text                        |
+| public       | sh_rc                        | total                        | text                        |
+| public       | sh_rc                        | email                        | text                        |
+| public       | sh_rc                        | synced_at                    | timestamp with time zone    |
+| public       | sh_t                         | id                           | integer                     |
+| public       | sh_t                         | sheet_id                     | text                        |
+| public       | sh_t                         | order_id                     | text                        |
+| public       | sh_t                         | tour_code                    | text                        |
+| public       | sh_t                         | tour_name                    | text                        |
+| public       | sh_t                         | tour_type                    | text                        |
+| public       | sh_t                         | detail_category              | text                        |
+| public       | sh_t                         | quantity                     | text                        |
+| public       | sh_t                         | start_date                   | text                        |
+| public       | sh_t                         | end_date                     | text                        |
+| public       | sh_t                         | tour_count                   | text                        |
+| public       | sh_t                         | dispatch                     | text                        |
+| public       | sh_t                         | pickup_location              | text                        |
+| public       | sh_t                         | dropoff_location             | text                        |
+| public       | sh_t                         | modifier                     | text                        |
+| public       | sh_t                         | modified_at                  | text                        |
+| public       | sh_t                         | memo                         | text                        |
+| public       | sh_t                         | processed                    | text                        |
+| public       | sh_t                         | processed_at                 | text                        |
+| public       | sh_t                         | amount                       | text                        |
+| public       | sh_t                         | total                        | text                        |
+| public       | sh_t                         | email                        | text                        |
+| public       | sh_t                         | tour_note                    | text                        |
+| public       | sh_t                         | synced_at                    | timestamp with time zone    |
+| public       | tour                         | id                           | uuid                        |
+| public       | tour                         | tour_code                    | character varying           |
+| public       | tour                         | tour_date                    | date                        |
+| public       | tour                         | participant_count            | integer                     |
+| public       | tour                         | special_requests             | text                        |
+| public       | tour                         | base_price                   | numeric                     |
+| public       | tour                         | created_at                   | timestamp with time zone    |
+| public       | tour                         | updated_at                   | timestamp with time zone    |
+| public       | tour_price                   | tour_code                    | text                        |
+| public       | tour_price                   | tour_name                    | text                        |
+| public       | tour_price                   | tour_capacity                | integer                     |
+| public       | tour_price                   | tour_vehicle                 | text                        |
+| public       | tour_price                   | tour_type                    | text                        |
+| public       | tour_price                   | price                        | numeric                     |
+| public       | users                        | id                           | uuid                        |
+| public       | users                        | reservation_date             | date                        |
+| public       | users                        | email                        | text                        |
+| public       | users                        | name                         | text                        |
+| public       | users                        | english_name                 | text                        |
+| public       | users                        | nickname                     | text                        |
+| public       | users                        | phone_number                 | text                        |
+| public       | users                        | created_at                   | timestamp with time zone    |
+| public       | users                        | kakao_id                     | text                        |
+| public       | users                        | role                         | text                        |
+| public       | users                        | birth_date                   | date                        |
+| public       | users                        | passport_number              | character varying           |
+| public       | users                        | passport_expiry              | date                        |
+| public       | users                        | status                       | character varying           |
+| public       | users                        | updated_at                   | timestamp without time zone |
+| public       | users                        | order_id                     | text                        |
+| public       | v_customer_requests_stats    | total_requests               | bigint                      |
+| public       | v_customer_requests_stats    | pending_requests             | bigint                      |
+| public       | v_customer_requests_stats    | in_progress_requests         | bigint                      |
+| public       | v_customer_requests_stats    | completed_requests           | bigint                      |
+| public       | v_customer_requests_stats    | rejected_requests            | bigint                      |
+| public       | v_customer_requests_stats    | urgent_requests              | bigint                      |
+| public       | v_customer_requests_stats    | today_requests               | bigint                      |
+| public       | v_customer_requests_stats    | week_requests                | bigint                      |
+| public       | v_notification_stats         | total_notifications          | bigint                      |
+| public       | v_notification_stats         | unread_count                 | bigint                      |
+| public       | v_notification_stats         | read_count                   | bigint                      |
+| public       | v_notification_stats         | processing_count             | bigint                      |
+| public       | v_notification_stats         | completed_count              | bigint                      |
+| public       | v_notification_stats         | urgent_count                 | bigint                      |
+| public       | v_notification_stats         | high_count                   | bigint                      |
+| public       | v_notification_stats         | business_count               | bigint                      |
+| public       | v_notification_stats         | customer_count               | bigint                      |
+| public       | vw_manager_airport_report    | id                           | uuid                        |
+| public       | vw_manager_airport_report    | reservation_id               | uuid                        |
+| public       | vw_manager_airport_report    | ra_datetime                  | timestamp without time zone |
+| public       | vw_manager_airport_report    | ra_airport_location          | text                        |
+| public       | vw_manager_airport_report    | ra_flight_number             | text                        |
+| public       | vw_manager_airport_report    | ra_stopover_location         | text                        |
+| public       | vw_manager_airport_report    | ra_stopover_wait_minutes     | integer                     |
+| public       | vw_manager_airport_report    | ra_car_count                 | integer                     |
+| public       | vw_manager_airport_report    | ra_passenger_count           | integer                     |
+| public       | vw_manager_airport_report    | ra_luggage_count             | integer                     |
+| public       | vw_manager_airport_report    | request_note                 | text                        |
+| public       | vw_manager_airport_report    | dispatch_code                | text                        |
+| public       | vw_manager_airport_report    | airport_price_code           | text                        |
+| public       | vw_manager_airport_report    | pickup_confirmed_at          | timestamp with time zone    |
+| public       | vw_manager_airport_report    | dispatch_memo                | text                        |
+| public       | vw_manager_airport_report    | created_at                   | timestamp with time zone    |
+| public       | vw_manager_airport_report    | booker_name                  | text                        |
+| public       | vw_manager_airport_report    | booker_email                 | text                        |
+| public       | vw_manager_airport_report    | booker_phone                 | text                        |
+| public       | vw_manager_airport_report    | airport_category             | text                        |
+| public       | vw_manager_airport_report    | airport_route                | text                        |
+| public       | vw_manager_airport_report    | airport_car_type             | text                        |
+| public       | vw_manager_airport_report    | airport_price                | numeric                     |
+| public       | vw_manager_cruise_car_report | id                           | uuid                        |
+| public       | vw_manager_cruise_car_report | reservation_id               | uuid                        |
+| public       | vw_manager_cruise_car_report | usage_date                   | date                        |
+| public       | vw_manager_cruise_car_report | vehicle_number               | text                        |
+| public       | vw_manager_cruise_car_report | seat_number                  | text                        |
+| public       | vw_manager_cruise_car_report | sht_category                 | text                        |
+| public       | vw_manager_cruise_car_report | created_at                   | timestamp with time zone    |
+| public       | vw_manager_cruise_car_report | pickup_location              | text                        |
+| public       | vw_manager_cruise_car_report | dropoff_location             | text                        |
+| public       | vw_manager_cruise_car_report | pickup_datetime              | date                        |
+| public       | vw_manager_cruise_car_report | booker_name                  | text                        |
+| public       | vw_manager_cruise_car_report | booker_email                 | text                        |
+| public       | vw_manager_cruise_car_report | pier_location                | text                        |
+| public       | vw_manager_cruise_car_report | cruise_name                  | text                        |
+| public       | vw_manager_cruise_car_report | car_category                 | text                        |
+| public       | vw_manager_cruise_car_report | car_type                     | text                        |
+| public       | vw_manager_cruise_car_report | dispatch_code                | text                        |
+| public       | vw_manager_rentcar_report    | id                           | uuid                        |
+| public       | vw_manager_rentcar_report    | reservation_id               | uuid                        |
+| public       | vw_manager_rentcar_report    | pickup_datetime              | timestamp without time zone |
+| public       | vw_manager_rentcar_report    | pickup_location              | text                        |
+| public       | vw_manager_rentcar_report    | destination                  | text                        |
+| public       | vw_manager_rentcar_report    | via_location                 | text                        |
+| public       | vw_manager_rentcar_report    | via_waiting                  | text                        |
+| public       | vw_manager_rentcar_report    | car_count                    | integer                     |
+| public       | vw_manager_rentcar_report    | passenger_count              | integer                     |
+| public       | vw_manager_rentcar_report    | luggage_count                | integer                     |
+| public       | vw_manager_rentcar_report    | request_note                 | text                        |
+| public       | vw_manager_rentcar_report    | dispatch_code                | text                        |
+| public       | vw_manager_rentcar_report    | rentcar_price_code           | text                        |
+| public       | vw_manager_rentcar_report    | pickup_confirmed_at          | timestamp with time zone    |
+| public       | vw_manager_rentcar_report    | dispatch_memo                | text                        |
+| public       | vw_manager_rentcar_report    | total_price                  | numeric                     |
+| public       | vw_manager_rentcar_report    | created_at                   | timestamp with time zone    |
+| public       | vw_manager_rentcar_report    | booker_name                  | text                        |
+| public       | vw_manager_rentcar_report    | booker_email                 | text                        |
+| public       | vw_manager_rentcar_report    | booker_phone                 | text                        |
+| public       | vw_manager_rentcar_report    | rent_category                | text                        |
+| public       | vw_manager_rentcar_report    | rent_route                   | text                        |
+| public       | vw_manager_rentcar_report    | rent_car_type                | text                        |
+| public       | vw_manager_rentcar_report    | rent_type                    | text                        |
+| public       | vw_manager_sht_car_report    | id                           | uuid                        |
+| public       | vw_manager_sht_car_report    | reservation_id               | uuid                        |
+| public       | vw_manager_sht_car_report    | usage_date                   | timestamp with time zone    |
+| public       | vw_manager_sht_car_report    | vehicle_number               | text                        |
+| public       | vw_manager_sht_car_report    | seat_number                  | text                        |
+| public       | vw_manager_sht_car_report    | sht_category                 | text                        |
+| public       | vw_manager_sht_car_report    | created_at                   | timestamp with time zone    |
+| public       | vw_manager_sht_car_report    | pickup_location              | text                        |
+| public       | vw_manager_sht_car_report    | dropoff_location             | text                        |
+| public       | vw_manager_sht_car_report    | pickup_datetime              | date                        |
+| public       | vw_manager_sht_car_report    | booker_name                  | text                        |
+| public       | vw_manager_sht_car_report    | booker_email                 | text                        |
+| public       | vw_manager_sht_car_report    | pier_location                | text                        |
+| public       | vw_manager_sht_car_report    | cruise_name                  | text                        |
+| realtime     | messages                     | topic                        | text                        |
+| realtime     | messages                     | extension                    | text                        |
+| realtime     | messages                     | payload                      | jsonb                       |
+| realtime     | messages                     | event                        | text                        |
+| realtime     | messages                     | private                      | boolean                     |
+| realtime     | messages                     | updated_at                   | timestamp without time zone |
+| realtime     | messages                     | inserted_at                  | timestamp without time zone |
+| realtime     | messages                     | id                           | uuid                        |
+| realtime     | messages_2025_11_17          | topic                        | text                        |
+| realtime     | messages_2025_11_17          | extension                    | text                        |
+| realtime     | messages_2025_11_17          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_17          | event                        | text                        |
+| realtime     | messages_2025_11_17          | private                      | boolean                     |
+| realtime     | messages_2025_11_17          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_17          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_17          | id                           | uuid                        |
+| realtime     | messages_2025_11_18          | topic                        | text                        |
+| realtime     | messages_2025_11_18          | extension                    | text                        |
+| realtime     | messages_2025_11_18          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_18          | event                        | text                        |
+| realtime     | messages_2025_11_18          | private                      | boolean                     |
+| realtime     | messages_2025_11_18          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_18          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_18          | id                           | uuid                        |
+| realtime     | messages_2025_11_19          | topic                        | text                        |
+| realtime     | messages_2025_11_19          | extension                    | text                        |
+| realtime     | messages_2025_11_19          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_19          | event                        | text                        |
+| realtime     | messages_2025_11_19          | private                      | boolean                     |
+| realtime     | messages_2025_11_19          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_19          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_19          | id                           | uuid                        |
+| realtime     | messages_2025_11_20          | topic                        | text                        |
+| realtime     | messages_2025_11_20          | extension                    | text                        |
+| realtime     | messages_2025_11_20          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_20          | event                        | text                        |
+| realtime     | messages_2025_11_20          | private                      | boolean                     |
+| realtime     | messages_2025_11_20          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_20          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_20          | id                           | uuid                        |
+| realtime     | messages_2025_11_21          | topic                        | text                        |
+| realtime     | messages_2025_11_21          | extension                    | text                        |
+| realtime     | messages_2025_11_21          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_21          | event                        | text                        |
+| realtime     | messages_2025_11_21          | private                      | boolean                     |
+| realtime     | messages_2025_11_21          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_21          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_21          | id                           | uuid                        |
+| realtime     | messages_2025_11_22          | topic                        | text                        |
+| realtime     | messages_2025_11_22          | extension                    | text                        |
+| realtime     | messages_2025_11_22          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_22          | event                        | text                        |
+| realtime     | messages_2025_11_22          | private                      | boolean                     |
+| realtime     | messages_2025_11_22          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_22          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_22          | id                           | uuid                        |
+| realtime     | messages_2025_11_23          | topic                        | text                        |
+| realtime     | messages_2025_11_23          | extension                    | text                        |
+| realtime     | messages_2025_11_23          | payload                      | jsonb                       |
+| realtime     | messages_2025_11_23          | event                        | text                        |
+| realtime     | messages_2025_11_23          | private                      | boolean                     |
+| realtime     | messages_2025_11_23          | updated_at                   | timestamp without time zone |
+| realtime     | messages_2025_11_23          | inserted_at                  | timestamp without time zone |
+| realtime     | messages_2025_11_23          | id                           | uuid                        |
+| realtime     | schema_migrations            | version                      | bigint                      |
+| realtime     | schema_migrations            | inserted_at                  | timestamp without time zone |
+| realtime     | subscription                 | id                           | bigint                      |
+| realtime     | subscription                 | subscription_id              | uuid                        |
+| realtime     | subscription                 | entity                       | regclass                    |
+| realtime     | subscription                 | filters                      | ARRAY                       |
+| realtime     | subscription                 | claims                       | jsonb                       |
+| realtime     | subscription                 | claims_role                  | regrole                     |
+| realtime     | subscription                 | created_at                   | timestamp without time zone |
+| storage      | buckets                      | id                           | text                        |
+| storage      | buckets                      | name                         | text                        |
+| storage      | buckets                      | owner                        | uuid                        |
+| storage      | buckets                      | created_at                   | timestamp with time zone    |
+| storage      | buckets                      | updated_at                   | timestamp with time zone    |
+| storage      | buckets                      | public                       | boolean                     |
+| storage      | buckets                      | avif_autodetection           | boolean                     |
+| storage      | buckets                      | file_size_limit              | bigint                      |
+| storage      | buckets                      | allowed_mime_types           | ARRAY                       |
+| storage      | buckets                      | owner_id                     | text                        |
+| storage      | buckets                      | type                         | USER-DEFINED                |
+| storage      | buckets_analytics            | name                         | text                        |
+| storage      | buckets_analytics            | type                         | USER-DEFINED                |
+| storage      | buckets_analytics            | format                       | text                        |
+| storage      | buckets_analytics            | created_at                   | timestamp with time zone    |
+| storage      | buckets_analytics            | updated_at                   | timestamp with time zone    |
+| storage      | buckets_analytics            | id                           | uuid                        |
+| storage      | buckets_analytics            | deleted_at                   | timestamp with time zone    |
+| storage      | buckets_vectors              | id                           | text                        |
+| storage      | buckets_vectors              | type                         | USER-DEFINED                |
+| storage      | buckets_vectors              | created_at                   | timestamp with time zone    |
+| storage      | buckets_vectors              | updated_at                   | timestamp with time zone    |
+| storage      | migrations                   | id                           | integer                     |
+| storage      | migrations                   | name                         | character varying           |
+| storage      | migrations                   | hash                         | character varying           |
+| storage      | migrations                   | executed_at                  | timestamp without time zone |
+| storage      | objects                      | id                           | uuid                        |
+| storage      | objects                      | bucket_id                    | text                        |
+| storage      | objects                      | name                         | text                        |
+| storage      | objects                      | owner                        | uuid                        |
+| storage      | objects                      | created_at                   | timestamp with time zone    |
+| storage      | objects                      | updated_at                   | timestamp with time zone    |
+| storage      | objects                      | last_accessed_at             | timestamp with time zone    |
+| storage      | objects                      | metadata                     | jsonb                       |
+| storage      | objects                      | path_tokens                  | ARRAY                       |
+| storage      | objects                      | version                      | text                        |
+| storage      | objects                      | owner_id                     | text                        |
+| storage      | objects                      | user_metadata                | jsonb                       |
+| storage      | objects                      | level                        | integer                     |
+| storage      | prefixes                     | bucket_id                    | text                        |
+| storage      | prefixes                     | name                         | text                        |
+| storage      | prefixes                     | level                        | integer                     |
+| storage      | prefixes                     | created_at                   | timestamp with time zone    |
+| storage      | prefixes                     | updated_at                   | timestamp with time zone    |
+| storage      | s3_multipart_uploads         | id                           | text                        |
+| storage      | s3_multipart_uploads         | in_progress_size             | bigint                      |
+| storage      | s3_multipart_uploads         | upload_signature             | text                        |
+| storage      | s3_multipart_uploads         | bucket_id                    | text                        |
+| storage      | s3_multipart_uploads         | key                          | text                        |
+| storage      | s3_multipart_uploads         | version                      | text                        |
+| storage      | s3_multipart_uploads         | owner_id                     | text                        |
+| storage      | s3_multipart_uploads         | created_at                   | timestamp with time zone    |
+| storage      | s3_multipart_uploads         | user_metadata                | jsonb                       |
+| storage      | s3_multipart_uploads_parts   | id                           | uuid                        |
+| storage      | s3_multipart_uploads_parts   | upload_id                    | text                        |
+| storage      | s3_multipart_uploads_parts   | size                         | bigint                      |
+| storage      | s3_multipart_uploads_parts   | part_number                  | integer                     |
+| storage      | s3_multipart_uploads_parts   | bucket_id                    | text                        |
+| storage      | s3_multipart_uploads_parts   | key                          | text                        |
+| storage      | s3_multipart_uploads_parts   | etag                         | text                        |
+| storage      | s3_multipart_uploads_parts   | owner_id                     | text                        |
+| storage      | s3_multipart_uploads_parts   | version                      | text                        |
+| storage      | s3_multipart_uploads_parts   | created_at                   | timestamp with time zone    |
+| storage      | vector_indexes               | id                           | text                        |
+| storage      | vector_indexes               | name                         | text                        |
+| storage      | vector_indexes               | bucket_id                    | text                        |
+| storage      | vector_indexes               | data_type                    | text                        |
+| storage      | vector_indexes               | dimension                    | integer                     |
+| storage      | vector_indexes               | distance_metric              | text                        |
+| storage      | vector_indexes               | metadata_configuration       | jsonb                       |
+| storage      | vector_indexes               | created_at                   | timestamp with time zone    |
+| storage      | vector_indexes               | updated_at                   | timestamp with time zone    |
+| vault        | decrypted_secrets            | id                           | uuid                        |
+| vault        | decrypted_secrets            | name                         | text                        |
+| vault        | decrypted_secrets            | description                  | text                        |
+| vault        | decrypted_secrets            | secret                       | text                        |
+| vault        | decrypted_secrets            | decrypted_secret             | text                        |
+| vault        | decrypted_secrets            | key_id                       | uuid                        |
+| vault        | decrypted_secrets            | nonce                        | bytea                       |
+| vault        | decrypted_secrets            | created_at                   | timestamp with time zone    |
+| vault        | decrypted_secrets            | updated_at                   | timestamp with time zone    |
+| vault        | secrets                      | id                           | uuid                        |
+| vault        | secrets                      | name                         | text                        |
+| vault        | secrets                      | description                  | text                        |
+| vault        | secrets                      | secret                       | text                        |
+| vault        | secrets                      | key_id                       | uuid                        |
+| vault        | secrets                      | nonce                        | bytea                       |
+| vault        | secrets                      | created_at                   | timestamp with time zone    |
+| vault        | secrets                      | updated_at                   | timestamp with time zone    |
