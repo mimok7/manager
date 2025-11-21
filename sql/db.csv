@@ -1,34 +1,9 @@
 table_name,column_name,data_type
-airport,id,uuid
-airport,airport_code,character varying
-airport,passenger_count,integer
-airport,special_requests,text
-airport,base_price,numeric
-airport,created_at,timestamp with time zone
-airport,updated_at,timestamp with time zone
 airport_price,airport_code,text
 airport_price,airport_category,text
 airport_price,airport_route,text
 airport_price,airport_car_type,text
 airport_price,price,numeric
-business_notifications,id,uuid
-business_notifications,notification_id,uuid
-business_notifications,business_type,character varying
-business_notifications,department,character varying
-business_notifications,urgency_level,integer
-business_notifications,estimated_duration,integer
-business_notifications,required_action,text
-business_notifications,checklist,jsonb
-business_notifications,related_users,ARRAY
-business_notifications,created_at,timestamp without time zone
-business_notifications,updated_at,timestamp without time zone
-car,id,uuid
-car,base_price,numeric
-car,created_at,timestamp with time zone
-car,updated_at,timestamp with time zone
-car,car_code,character varying
-car,special_requests,text
-car,car_count,integer
 car_price,car_code,text
 car_price,car_category,text
 car_price,cruise,text
@@ -36,28 +11,6 @@ car_price,car_type,text
 car_price,price,numeric
 car_price,schedule,text
 car_price,passenger_count,text
-confirmation_status,id,uuid
-confirmation_status,reservation_id,uuid
-confirmation_status,quote_id,uuid
-confirmation_status,status,text
-confirmation_status,generated_at,timestamp with time zone
-confirmation_status,sent_at,timestamp with time zone
-confirmation_status,email_sent_to,text
-confirmation_status,created_at,timestamp with time zone
-confirmation_status,updated_at,timestamp with time zone
-cruise,id,uuid
-cruise,cruise_name,character varying
-cruise,departure_date,date
-cruise,return_date,date
-cruise,departure_port,character varying
-cruise,room_type,character varying
-cruise,adult_count,integer
-cruise,child_count,integer
-cruise,infant_count,integer
-cruise,special_requests,text
-cruise,base_price,numeric
-cruise,created_at,timestamp with time zone
-cruise,updated_at,timestamp with time zone
 cruise_info,id,uuid
 cruise_info,cruise_code,text
 cruise_info,name,text
@@ -76,21 +29,6 @@ cruise_info,room_image,text
 cruise_info,room_area,text
 cruise_info,room_description,text
 cruise_info,room_url,text
-cruise_info_by_category,category,text
-cruise_info_by_category,cruise_name,text
-cruise_info_by_category,room_count,bigint
-cruise_info_by_category,room_names,ARRAY
-cruise_info_by_category,room_areas,ARRAY
-cruise_info_view,id,uuid
-cruise_info_view,cruise_code,text
-cruise_info_view,name,text
-cruise_info_view,description,text
-cruise_info_view,duration,text
-cruise_info_view,features,jsonb
-cruise_info_view,images,jsonb
-cruise_info_view,base_price,numeric
-cruise_info_view,created_at,timestamp with time zone
-cruise_info_view,updated_at,timestamp with time zone
 cruise_location,id,uuid
 cruise_location,en_name,text
 cruise_location,kr_name,text
@@ -99,87 +37,13 @@ cruise_location,pier_map_url,text
 cruise_location,tour_schedule_url,text
 cruise_location,details,text
 cruise_location,created_at,timestamp with time zone
-cruise_rooms_view,id,uuid
-cruise_rooms_view,category,text
-cruise_rooms_view,cruise_name,text
-cruise_rooms_view,cruise_image,text
-cruise_rooms_view,room_name,text
-cruise_rooms_view,room_image,text
-cruise_rooms_view,room_area,text
-cruise_rooms_view,room_description,text
-cruise_rooms_view,room_url,text
-cruise_rooms_view,created_at,timestamp with time zone
-cruise_rooms_view,updated_at,timestamp with time zone
-customer_notifications,id,uuid
-customer_notifications,notification_id,uuid
-customer_notifications,customer_id,uuid
-customer_notifications,customer_name,character varying
-customer_notifications,customer_phone,character varying
-customer_notifications,customer_email,character varying
-customer_notifications,inquiry_type,character varying
-customer_notifications,service_type,character varying
-customer_notifications,response_deadline,timestamp without time zone
-customer_notifications,customer_satisfaction,integer
-customer_notifications,follow_up_required,boolean
-customer_notifications,resolution_notes,text
-customer_notifications,created_at,timestamp without time zone
-customer_notifications,updated_at,timestamp without time zone
-customer_request_attachments,id,uuid
-customer_request_attachments,request_id,uuid
-customer_request_attachments,file_name,text
-customer_request_attachments,file_path,text
-customer_request_attachments,file_size,integer
-customer_request_attachments,file_type,text
-customer_request_attachments,uploaded_by,text
-customer_request_attachments,created_at,timestamp with time zone
-customer_request_history,id,uuid
-customer_request_history,request_id,uuid
-customer_request_history,action_type,text
-customer_request_history,previous_status,text
-customer_request_history,new_status,text
-customer_request_history,action_by,text
-customer_request_history,action_note,text
-customer_request_history,created_at,timestamp with time zone
-customer_requests,id,uuid
-customer_requests,request_id,text
-customer_requests,user_id,text
-customer_requests,request_type,text
-customer_requests,request_category,text
-customer_requests,title,text
-customer_requests,description,text
-customer_requests,urgency_level,text
-customer_requests,related_quote_id,text
-customer_requests,related_reservation_id,text
-customer_requests,related_table,text
-customer_requests,related_id,text
-customer_requests,status,text
-customer_requests,assigned_to,text
-customer_requests,processed_by,text
-customer_requests,response_message,text
-customer_requests,internal_notes,text
-customer_requests,request_data,jsonb
-customer_requests,created_at,timestamp with time zone
-customer_requests,updated_at,timestamp with time zone
-customer_requests,due_date,timestamp with time zone
-customer_requests,processed_at,timestamp with time zone
-dispatcher_users,id,uuid
-dispatcher_users,name,text
-dispatcher_users,email,text
 exchange_rates,id,integer
-exchange_rates,currency_code,character varying
+exchange_rates,currency_code,text
 exchange_rates,rate_to_krw,numeric
-exchange_rates,source,character varying
+exchange_rates,source,text
 exchange_rates,last_updated,timestamp with time zone
 exchange_rates,created_at,timestamp with time zone
 exchange_rates,updated_at,timestamp with time zone
-hotel,id,uuid
-hotel,hotel_code,character varying
-hotel,special_requests,text
-hotel,base_price,numeric
-hotel,created_at,timestamp with time zone
-hotel,updated_at,timestamp with time zone
-hotel,checkin_date,date
-hotel,checkout_date,date
 hotel_price,hotel_code,text
 hotel_price,hotel_name,text
 hotel_price,room_name,text
@@ -188,41 +52,15 @@ hotel_price,price,numeric
 hotel_price,start_date,date
 hotel_price,end_date,date
 hotel_price,weekday_type,text
-manager_reservations,re_id,uuid
-manager_reservations,re_user_id,uuid
-manager_reservations,re_quote_id,uuid
-manager_reservations,re_type,text
-manager_reservations,re_status,text
-manager_reservations,re_created_at,timestamp with time zone
-manager_reservations,re_update_at,timestamp with time zone
-manager_reservations,total_amount,numeric
-manager_reservations,customer_name,text
-manager_reservations,customer_email,text
-manager_reservations,customer_phone,text
-notification_reads,id,uuid
-notification_reads,notification_id,uuid
-notification_reads,user_id,uuid
-notification_reads,read_at,timestamp without time zone
-notification_templates,id,uuid
-notification_templates,name,character varying
-notification_templates,type,character varying
-notification_templates,category,character varying
-notification_templates,title_template,character varying
-notification_templates,message_template,text
-notification_templates,default_priority,character varying
-notification_templates,auto_assign_rule,jsonb
-notification_templates,is_active,boolean
-notification_templates,created_at,timestamp without time zone
-notification_templates,updated_at,timestamp without time zone
 notifications,id,uuid
-notifications,type,character varying
-notifications,category,character varying
-notifications,title,character varying
+notifications,type,text
+notifications,category,text
+notifications,title,text
 notifications,message,text
 notifications,target_id,text
-notifications,target_table,character varying
-notifications,priority,character varying
-notifications,status,character varying
+notifications,target_table,text
+notifications,priority,text
+notifications,status,text
 notifications,created_by,uuid
 notifications,assigned_to,uuid
 notifications,due_date,timestamp without time zone
@@ -230,28 +68,18 @@ notifications,metadata,jsonb
 notifications,created_at,timestamp without time zone
 notifications,updated_at,timestamp without time zone
 notifications,processed_at,timestamp without time zone
-notifications,processed_by_name,character varying
+notifications,processed_by_name,text
 notifications,subcategory,text
 notifications,customer_name,text
 notifications,customer_email,text
 notifications,customer_phone,text
 payment_info,code,text
 payment_info,name,text
-payment_notifications,id,uuid
-payment_notifications,reservation_id,uuid
-payment_notifications,notification_type,text
-payment_notifications,notification_date,date
-payment_notifications,message_content,text
-payment_notifications,is_sent,boolean
-payment_notifications,sent_at,timestamp with time zone
-payment_notifications,created_at,timestamp with time zone
-payment_notifications,recipient_email,text
-payment_notifications,recipient_phone,text
-payment_notifications,priority,text
 quote,id,uuid
+quote,quote_id,text
 quote,user_id,uuid
-quote,status,character varying
-quote,title,character varying
+quote,status,text
+quote,title,text
 quote,description,text
 quote,total_price,numeric
 quote,created_at,timestamp with time zone
@@ -263,7 +91,7 @@ quote,payment_status,text
 quote,confirmed_at,timestamp with time zone
 quote_item,id,uuid
 quote_item,quote_id,uuid
-quote_item,service_type,character varying
+quote_item,service_type,text
 quote_item,service_ref_id,uuid
 quote_item,quantity,integer
 quote_item,unit_price,numeric
@@ -278,12 +106,6 @@ rent_price,rent_category,text
 rent_price,rent_route,text
 rent_price,rent_car_type,text
 rent_price,price,numeric
-rentcar,id,uuid
-rentcar,rentcar_code,character varying
-rentcar,special_requests,text
-rentcar,base_price,numeric
-rentcar,created_at,timestamp with time zone
-rentcar,updated_at,timestamp with time zone
 reservation,re_id,uuid
 reservation,re_user_id,uuid
 reservation,re_quote_id,uuid
@@ -313,46 +135,38 @@ reservation_airport,created_at,timestamp with time zone
 reservation_airport,dispatch_code,text
 reservation_airport,pickup_confirmed_at,timestamp with time zone
 reservation_airport,dispatch_memo,text
+reservation_car_sht,id,uuid
 reservation_car_sht,reservation_id,uuid
+reservation_car_sht,car_price_code,text
 reservation_car_sht,vehicle_number,text
 reservation_car_sht,seat_number,text
+reservation_car_sht,color_label,text
 reservation_car_sht,sht_category,text
-reservation_car_sht,id,uuid
-reservation_car_sht,created_at,timestamp with time zone
-reservation_car_sht,usage_date,timestamp with time zone
-reservation_car_sht,dispatch_code,text
-reservation_car_sht,pickup_confirmed_at,timestamp with time zone
-reservation_car_sht,dispatch_memo,text
-reservation_car_sht,car_price_code,text
 reservation_car_sht,car_count,integer
 reservation_car_sht,passenger_count,integer
 reservation_car_sht,pickup_datetime,date
 reservation_car_sht,pickup_location,text
 reservation_car_sht,dropoff_location,text
-reservation_car_sht,car_total_price,numeric
-reservation_car_sht,request_note,text
-reservation_car_sht,updated_at,timestamp with time zone
 reservation_car_sht,unit_price,numeric
-reservation_confirmation,id,uuid
-reservation_confirmation,quote_id,uuid
-reservation_confirmation,sender_id,uuid
-reservation_confirmation,method,text
-reservation_confirmation,status,text
-reservation_confirmation,subject,text
-reservation_confirmation,recipient_email,text
-reservation_confirmation,meta,jsonb
-reservation_confirmation,created_at,timestamp with time zone
-reservation_confirmation,sent_at,timestamp with time zone
-reservation_confirmation,reservation_id,uuid
+reservation_car_sht,total_price,numeric
+reservation_car_sht,request_note,text
+reservation_car_sht,created_at,timestamp with time zone
+reservation_car_sht,updated_at,timestamp with time zone
+reservation_car_sht,usage_date,timestamp with time zone
+reservation_car_sht,dispatch_code,text
+reservation_car_sht,pickup_confirmed_at,timestamp with time zone
+reservation_car_sht,dispatch_memo,text
+reservation_cruise,id,uuid
 reservation_cruise,reservation_id,uuid
 reservation_cruise,room_price_code,text
 reservation_cruise,checkin,date
+reservation_cruise,checkout,date
 reservation_cruise,guest_count,integer
 reservation_cruise,unit_price,numeric
 reservation_cruise,room_total_price,numeric
 reservation_cruise,request_note,text
-reservation_cruise,id,uuid
 reservation_cruise,created_at,timestamp with time zone
+reservation_cruise,updated_at,timestamp with time zone
 reservation_cruise,boarding_code,text
 reservation_cruise,boarding_assist,boolean
 reservation_cruise_car,id,uuid
@@ -363,27 +177,30 @@ reservation_cruise_car,passenger_count,integer
 reservation_cruise_car,pickup_datetime,date
 reservation_cruise_car,pickup_location,text
 reservation_cruise_car,dropoff_location,text
+reservation_cruise_car,unit_price,numeric
 reservation_cruise_car,car_total_price,numeric
 reservation_cruise_car,request_note,text
 reservation_cruise_car,created_at,timestamp with time zone
 reservation_cruise_car,updated_at,timestamp with time zone
-reservation_cruise_car,unit_price,numeric
 reservation_cruise_car,dispatch_code,text
 reservation_cruise_car,pickup_confirmed_at,timestamp with time zone
 reservation_cruise_car,dispatch_memo,text
+reservation_hotel,id,uuid
 reservation_hotel,reservation_id,uuid
+reservation_hotel,hotel_price_code,text
 reservation_hotel,schedule,text
 reservation_hotel,room_count,integer
 reservation_hotel,checkin_date,date
+reservation_hotel,checkout_date,date
+reservation_hotel,nights,integer
 reservation_hotel,breakfast_service,text
 reservation_hotel,hotel_category,text
 reservation_hotel,guest_count,integer
-reservation_hotel,total_price,numeric
-reservation_hotel,hotel_price_code,text
-reservation_hotel,request_note,text
-reservation_hotel,id,uuid
-reservation_hotel,created_at,timestamp with time zone
 reservation_hotel,unit_price,numeric
+reservation_hotel,total_price,numeric
+reservation_hotel,request_note,text
+reservation_hotel,created_at,timestamp with time zone
+reservation_hotel,updated_at,timestamp with time zone
 reservation_hotel,assignment_code,text
 reservation_payment,id,uuid
 reservation_payment,reservation_id,uuid
@@ -397,72 +214,58 @@ reservation_payment,updated_at,timestamp with time zone
 reservation_payment,transaction_id,text
 reservation_payment,gateway,text
 reservation_payment,raw_response,jsonb
-reservation_payments,id,uuid
-reservation_payments,reservation_id,uuid
-reservation_payments,payment_type,text
-reservation_payments,payment_amount,numeric
-reservation_payments,payment_date,date
-reservation_payments,payment_status,text
-reservation_payments,payment_method,text
-reservation_payments,transaction_id,text
-reservation_payments,notes,text
-reservation_payments,created_at,timestamp with time zone
-reservation_payments,updated_at,timestamp with time zone
-reservation_payments,created_by,uuid
-reservation_payments,interim_due_date,date
-reservation_payments,final_due_date,date
+reservation_rentcar,id,uuid
 reservation_rentcar,reservation_id,uuid
 reservation_rentcar,rentcar_price_code,text
 reservation_rentcar,rentcar_count,integer
-reservation_rentcar,unit_price,numeric
 reservation_rentcar,car_count,integer
 reservation_rentcar,passenger_count,integer
 reservation_rentcar,pickup_datetime,timestamp without time zone
+reservation_rentcar,pickup_date,date
 reservation_rentcar,pickup_location,text
 reservation_rentcar,destination,text
 reservation_rentcar,via_location,text
 reservation_rentcar,via_waiting,text
 reservation_rentcar,luggage_count,integer
+reservation_rentcar,rental_days,integer
+reservation_rentcar,driver_count,integer
+reservation_rentcar,unit_price,numeric
 reservation_rentcar,total_price,numeric
 reservation_rentcar,request_note,text
-reservation_rentcar,id,uuid
 reservation_rentcar,created_at,timestamp with time zone
+reservation_rentcar,updated_at,timestamp with time zone
 reservation_rentcar,dispatch_code,text
 reservation_rentcar,pickup_confirmed_at,timestamp with time zone
 reservation_rentcar,dispatch_memo,text
+reservation_tour,id,uuid
 reservation_tour,reservation_id,uuid
 reservation_tour,tour_price_code,text
 reservation_tour,tour_capacity,integer
+reservation_tour,participant_count,integer
 reservation_tour,pickup_location,text
 reservation_tour,dropoff_location,text
+reservation_tour,tour_date,date
+reservation_tour,usage_date,date
+reservation_tour,pickup_time,text
+reservation_tour,unit_price,numeric
 reservation_tour,total_price,numeric
 reservation_tour,request_note,text
-reservation_tour,id,uuid
 reservation_tour,created_at,timestamp with time zone
-reservation_tour,usage_date,date
-reservation_tour,unit_price,numeric
-room,id,uuid
-room,base_price,numeric
-room,created_at,timestamp with time zone
-room,updated_at,timestamp with time zone
-room,room_code,character varying
-room,special_requests,text
-room,person_count,integer
-room,extra_count,integer
-room,single_charge_count,integer
-room,boarding_code,text
-room,sale,character varying
+reservation_tour,updated_at,timestamp with time zone
 room_price,room_code,text
 room_price,schedule,text
 room_price,room_category,text
 room_price,cruise,text
 room_price,room_type,text
+room_price,room_name,text
+room_price,route,text
+room_price,base_price,numeric
 room_price,price,numeric
 room_price,start_date,date
 room_price,end_date,date
 room_price,payment,text
 tour,id,uuid
-tour,tour_code,character varying
+tour,tour_code,text
 tour,tour_date,date
 tour,participant_count,integer
 tour,special_requests,text
@@ -483,256 +286,10 @@ users,english_name,text
 users,nickname,text
 users,phone_number,text
 users,created_at,timestamp with time zone
+users,updated_at,timestamp without time zone
 users,kakao_id,text
 users,role,text
 users,birth_date,date
-users,passport_number,character varying
+users,passport_number,text
 users,passport_expiry,date
-users,status,character varying
-users,updated_at,timestamp without time zone
-v_customer_requests_stats,total_requests,bigint
-v_customer_requests_stats,pending_requests,bigint
-v_customer_requests_stats,in_progress_requests,bigint
-v_customer_requests_stats,completed_requests,bigint
-v_customer_requests_stats,rejected_requests,bigint
-v_customer_requests_stats,urgent_requests,bigint
-v_customer_requests_stats,today_requests,bigint
-v_customer_requests_stats,week_requests,bigint
-v_notification_stats,total_notifications,bigint
-v_notification_stats,unread_count,bigint
-v_notification_stats,read_count,bigint
-v_notification_stats,processing_count,bigint
-v_notification_stats,completed_count,bigint
-v_notification_stats,urgent_count,bigint
-v_notification_stats,high_count,bigint
-v_notification_stats,business_count,bigint
-v_notification_stats,customer_count,bigint
-vw_manager_cruise_car_report,id,uuid
-vw_manager_cruise_car_report,reservation_id,uuid
-vw_manager_cruise_car_report,usage_date,date
-vw_manager_cruise_car_report,vehicle_number,text
-vw_manager_cruise_car_report,seat_number,text
-vw_manager_cruise_car_report,sht_category,text
-vw_manager_cruise_car_report,created_at,timestamp with time zone
-vw_manager_cruise_car_report,pickup_location,text
-vw_manager_cruise_car_report,dropoff_location,text
-vw_manager_cruise_car_report,pickup_datetime,date
-vw_manager_cruise_car_report,booker_name,text
-vw_manager_cruise_car_report,booker_email,text
-vw_manager_cruise_car_report,pier_location,text
-vw_manager_cruise_car_report,cruise_name,text
-vw_manager_cruise_car_report,car_category,text
-vw_manager_cruise_car_report,car_type,text
-vw_manager_cruise_car_report,dispatch_code,text
-vw_manager_sht_car_report,id,uuid
-vw_manager_sht_car_report,reservation_id,uuid
-vw_manager_sht_car_report,usage_date,timestamp with time zone
-vw_manager_sht_car_report,vehicle_number,text
-vw_manager_sht_car_report,seat_number,text
-vw_manager_sht_car_report,sht_category,text
-vw_manager_sht_car_report,created_at,timestamp with time zone
-vw_manager_sht_car_report,pickup_location,text
-vw_manager_sht_car_report,dropoff_location,text
-vw_manager_sht_car_report,pickup_datetime,date
-vw_manager_sht_car_report,booker_name,text
-vw_manager_sht_car_report,booker_email,text
-vw_manager_sht_car_report,pier_location,text
-vw_manager_sht_car_report,cruise_name,text
-sh_m,id,SERIAL PRIMARY KEY
-sh_m,order_id,TEXT
-sh_m,reservation_date,TEXT
-sh_m,email,TEXT
-sh_m,korean_name,TEXT
-sh_m,english_name,TEXT
-sh_m,nickname,TEXT
-sh_m,member_grade,TEXT
-sh_m,name,TEXT
-sh_m,phone,TEXT
-sh_m,creator,TEXT
-sh_m,created_at,TEXT
-sh_m,exchange_rate,TEXT
-sh_m,usd_rate,TEXT
-sh_m,url,TEXT
-sh_m,plan,TEXT
-sh_m,payment_method,TEXT
-sh_m,request_note,TEXT
-sh_m,kakao_id,TEXT
-sh_m,special_note,TEXT
-sh_m,birth_date,TEXT
-sh_m,memo,TEXT
-sh_m,discount_amount,TEXT
-sh_m,discount_code,TEXT
-sh_m,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_r,id,SERIAL PRIMARY KEY
-sh_r,sheet_id,TEXT
-sh_r,order_id,TEXT
-sh_r,cruise_name,TEXT
-sh_r,division,TEXT
-sh_r,room_type,TEXT
-sh_r,room_count,TEXT
-sh_r,room_code,TEXT
-sh_r,schedule_days,TEXT
-sh_r,room_discount,TEXT
-sh_r,checkin_date,TEXT
-sh_r,time,TEXT
-sh_r,adult,TEXT
-sh_r,child,TEXT
-sh_r,toddler,TEXT
-sh_r,boarding_count,TEXT
-sh_r,guest_count,TEXT
-sh_r,modifier,TEXT
-sh_r,modified_at,TEXT
-sh_r,boarding_help,TEXT
-sh_r,discount_code,TEXT
-sh_r,room_note,TEXT
-sh_r,processed,TEXT
-sh_r,processed_at,TEXT
-sh_r,boat,TEXT
-sh_r,amount,TEXT
-sh_r,total,TEXT
-sh_r,email,TEXT
-sh_r,unit,TEXT
-sh_r,connecting_room,TEXT
-sh_r,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_c,id,SERIAL PRIMARY KEY
-sh_c,sheet_id,TEXT
-sh_c,order_id,TEXT
-sh_c,division,TEXT
-sh_c,category,TEXT
-sh_c,cruise_name,TEXT
-sh_c,vehicle_type,TEXT
-sh_c,vehicle_code,TEXT
-sh_c,vehicle_count,TEXT
-sh_c,passenger_count,TEXT
-sh_c,boarding_datetime,TEXT
-sh_c,boarding_location,TEXT
-sh_c,dropoff_location,TEXT
-sh_c,modifier,TEXT
-sh_c,modified_at,TEXT
-sh_c,quantity,TEXT
-sh_c,processed,TEXT
-sh_c,processed_at,TEXT
-sh_c,amount,TEXT
-sh_c,total,TEXT
-sh_c,email,TEXT
-sh_c,unit,TEXT
-sh_c,migrated,TEXT
-sh_c,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_cc,id,SERIAL PRIMARY KEY
-sh_cc,sheet_id,TEXT
-sh_cc,order_id,TEXT
-sh_cc,boarding_date,TEXT
-sh_cc,division,TEXT
-sh_cc,category,TEXT
-sh_cc,vehicle_number,TEXT
-sh_cc,seat_number,TEXT
-sh_cc,name,TEXT
-sh_cc,modifier,TEXT
-sh_cc,modified_at,TEXT
-sh_cc,email,TEXT
-sh_cc,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_p,id,SERIAL PRIMARY KEY
-sh_p,sheet_id,TEXT
-sh_p,order_id,TEXT
-sh_p,division,TEXT
-sh_p,category,TEXT
-sh_p,route,TEXT
-sh_p,vehicle_code,TEXT
-sh_p,vehicle_type,TEXT
-sh_p,date,TEXT
-sh_p,time,TEXT
-sh_p,airport_name,TEXT
-sh_p,flight_number,TEXT
-sh_p,passenger_count,TEXT
-sh_p,carrier_count,TEXT
-sh_p,location_name,TEXT
-sh_p,stopover,TEXT
-sh_p,stopover_wait_time,TEXT
-sh_p,vehicle_count,TEXT
-sh_p,modifier,TEXT
-sh_p,modified_at,TEXT
-sh_p,processed,TEXT
-sh_p,processed_at,TEXT
-sh_p,amount,TEXT
-sh_p,total,TEXT
-sh_p,email,TEXT
-sh_p,fast_service,TEXT
-sh_p,unit,TEXT
-sh_p,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_h,id,SERIAL PRIMARY KEY
-sh_h,sheet_id,TEXT
-sh_h,order_id,TEXT
-sh_h,hotel_code,TEXT
-sh_h,hotel_name,TEXT
-sh_h,room_name,TEXT
-sh_h,room_type,TEXT
-sh_h,room_count,TEXT
-sh_h,schedule,TEXT
-sh_h,checkin_date,TEXT
-sh_h,checkout_date,TEXT
-sh_h,breakfast_service,TEXT
-sh_h,adult,TEXT
-sh_h,child,TEXT
-sh_h,toddler,TEXT
-sh_h,extra_bed,TEXT
-sh_h,guest_count,TEXT
-sh_h,modifier,TEXT
-sh_h,modified_at,TEXT
-sh_h,processed,TEXT
-sh_h,processed_at,TEXT
-sh_h,note,TEXT
-sh_h,discount_amount,TEXT
-sh_h,amount,TEXT
-sh_h,total,TEXT
-sh_h,email,TEXT
-sh_h,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_t,id,SERIAL PRIMARY KEY
-sh_t,sheet_id,TEXT
-sh_t,order_id,TEXT
-sh_t,tour_code,TEXT
-sh_t,tour_name,TEXT
-sh_t,tour_type,TEXT
-sh_t,detail_category,TEXT
-sh_t,quantity,TEXT
-sh_t,start_date,TEXT
-sh_t,end_date,TEXT
-sh_t,tour_count,TEXT
-sh_t,dispatch,TEXT
-sh_t,pickup_location,TEXT
-sh_t,dropoff_location,TEXT
-sh_t,modifier,TEXT
-sh_t,modified_at,TEXT
-sh_t,memo,TEXT
-sh_t,processed,TEXT
-sh_t,processed_at,TEXT
-sh_t,amount,TEXT
-sh_t,total,TEXT
-sh_t,email,TEXT
-sh_t,tour_note,TEXT
-sh_t,synced_at,TIMESTAMPTZ DEFAULT NOW()
-sh_rc,id,SERIAL PRIMARY KEY
-sh_rc,sheet_id,TEXT
-sh_rc,order_id,TEXT
-sh_rc,vehicle_code,TEXT
-sh_rc,division,TEXT
-sh_rc,category,TEXT
-sh_rc,route,TEXT
-sh_rc,vehicle_type,TEXT
-sh_rc,vehicle_count,TEXT
-sh_rc,boarding_date,TEXT
-sh_rc,boarding_time,TEXT
-sh_rc,boarding_location,TEXT
-sh_rc,carrier_count,TEXT
-sh_rc,destination,TEXT
-sh_rc,stopover,TEXT
-sh_rc,passenger_count,TEXT
-sh_rc,usage_period,TEXT
-sh_rc,modifier,TEXT
-sh_rc,modified_at,TEXT
-sh_rc,memo,TEXT
-sh_rc,processed,TEXT
-sh_rc,processed_at,TEXT
-sh_rc,amount,TEXT
-sh_rc,total,TEXT
-sh_rc,email,TEXT
-sh_rc,synced_at,TIMESTAMPTZ DEFAULT NOW()
+users,status,text
