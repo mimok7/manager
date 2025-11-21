@@ -230,7 +230,6 @@ export default function SyncShCCToReservationPage() {
                                         order_id: shMData.order_id,
                                         name: shMData.name || shCC.name,
                                         email: shMData.email || shCC.email,
-                                        phone: shMData.phone || '',
                                         role: 'member',
                                         created_at: new Date().toISOString(),
                                     })
