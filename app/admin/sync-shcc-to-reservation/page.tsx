@@ -72,6 +72,25 @@ export default function SyncShCCToReservationPage() {
     const [itemsPerPage, setItemsPerPage] = useState(50);
     const [filterStatus, setFilterStatus] = useState<'all' | 'synced' | 'unsynced'>('all');
 
+    // 날짜를 YYYY-MM-DD 문자열로 정규화
+    const normalizeDate = (value?: string | null) => {
+        if (!value) return '';
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return '';
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
+    // 키 생성: 차량번호+좌석+사용일(+카테고리 옵션)
+    const shCCKey = (r: ShCCRecord) => {
+        return `${r.vehicle_number || ''}_${r.seat_number || ''}_${normalizeDate(r.boarding_date)}_${r.category || ''}`;
+    };
+    const carShtKey = (r: ReservationCarShtRecord) => {
+        return `${r.vehicle_number || ''}_${r.seat_number || ''}_${normalizeDate(r.usage_date)}_${r.sht_category || ''}`;
+    };
+
     useEffect(() => {
         loadData();
     }, []);
@@ -128,19 +147,16 @@ export default function SyncShCCToReservationPage() {
 
             setShCCData(allShCCRecords);
 
-            // vehicle_number와 seat_number로 매핑
+            // 차량번호+좌석+사용일(+카테고리)로 매핑
             const reservationMap = new Map<string, ReservationCarShtRecord>();
             allReservationRecords.forEach((record: any) => {
-                const key = `${record.vehicle_number}_${record.seat_number}`;
+                const key = carShtKey(record as ReservationCarShtRecord);
                 reservationMap.set(key, record);
             });
             setExistingReservations(reservationMap);
 
             // 통계 계산
-            const matched = allShCCRecords.filter(shCC => {
-                const key = `${shCC.vehicle_number}_${shCC.seat_number}`;
-                return reservationMap.has(key);
-            }).length;
+            const matched = allShCCRecords.filter((shCC: ShCCRecord) => reservationMap.has(shCCKey(shCC))).length;
 
             setStats({
                 totalShCC: allShCCRecords.length,
@@ -158,10 +174,7 @@ export default function SyncShCCToReservationPage() {
     };
 
     const syncData = async () => {
-        const unsyncedData = shCCData.filter(shCC => {
-            const key = `${shCC.vehicle_number}_${shCC.seat_number}`;
-            return !existingReservations.has(key);
-        });
+        const unsyncedData = shCCData.filter((shCC) => !existingReservations.has(shCCKey(shCC)));
 
         if (!confirm(`${unsyncedData.length}건의 sh_cc 데이터를 reservation_car_sht로 동기화하시겠습니까?`)) {
             return;
@@ -177,7 +190,7 @@ export default function SyncShCCToReservationPage() {
                 if (processedCount % 10 === 0) {
                     console.log(`동기화 진행중: ${processedCount}/${unsyncedData.length}`);
                 }
-                const key = `${shCC.vehicle_number}_${shCC.seat_number}`;
+                const key = shCCKey(shCC);
                 const existing = existingReservations.get(key);
 
                 // 이미 존재하는 경우 스킵
@@ -296,7 +309,7 @@ export default function SyncShCCToReservationPage() {
                             vehicle_number: shCC.vehicle_number || '',
                             seat_number: shCC.seat_number || '',
                             sht_category: shCC.category || '',
-                            usage_date: shCC.boarding_date || null,
+                            usage_date: normalizeDate(shCC.boarding_date) || null,
                             request_note: `동기화: ${shCC.name || ''} / ${shCC.email || ''}`,
                         }),
                     });
@@ -350,8 +363,7 @@ export default function SyncShCCToReservationPage() {
 
     // 필터링된 데이터
     const filteredData = shCCData.filter(record => {
-        const key = `${record.vehicle_number}_${record.seat_number}`;
-        const isSynced = existingReservations.has(key);
+        const isSynced = existingReservations.has(shCCKey(record));
 
         if (filterStatus === 'synced') return isSynced;
         if (filterStatus === 'unsynced') return !isSynced;
@@ -603,8 +615,7 @@ export default function SyncShCCToReservationPage() {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {currentData.map((record) => {
-                                    const key = `${record.vehicle_number}_${record.seat_number}`;
-                                    const isSynced = existingReservations.has(key);
+                                    const isSynced = existingReservations.has(shCCKey(record));
 
                                     return (
                                         <tr key={record.id} className={isSynced ? 'bg-green-50' : 'bg-white'}>
