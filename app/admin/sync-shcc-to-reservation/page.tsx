@@ -198,9 +198,26 @@ export default function SyncShCCToReservationPage() {
     };
 
     const syncData = async () => {
-        const unsyncedData = shCCData.filter((shCC) => !existingReservations.has(shCCKey(shCC)));
+        // 불일치 데이터 찾기 (삭제 후 재생성 필요)
+        const needsSyncData = shCCData.filter((shCC) => {
+            const key = shCCKey(shCC);
+            const existing = existingReservations.get(key);
+            if (!existing) return true; // 누락
+            // 불일치 검사
+            const normalizedUsage = normalizeDate(existing.usage_date);
+            const targetDate = normalizeDate(shCC.boarding_date);
+            const noteShouldContain = `${shCC.name || ''}`.trim();
+            const emailShouldContain = `${shCC.email || ''}`.trim();
+            const note = existing.request_note || '';
+            const noteOk = (!noteShouldContain || note.includes(noteShouldContain)) && (!emailShouldContain || note.includes(emailShouldContain));
+            const categoryOk = (existing.sht_category || '') === (shCC.category || '');
+            const dateOk = normalizedUsage === targetDate;
+            const seatOk = (existing.seat_number || '') === (shCC.seat_number || '');
+            const vehicleOk = (existing.vehicle_number || '') === (shCC.vehicle_number || '');
+            return !(categoryOk && dateOk && seatOk && vehicleOk && noteOk); // 불일치하면 true
+        });
 
-        if (!confirm(`${unsyncedData.length}건의 sh_cc 데이터를 reservation_car_sht로 동기화하시겠습니까?`)) {
+        if (!confirm(`${needsSyncData.length}건의 sh_cc 데이터를 reservation_car_sht에 동기화하시겠습니까?\n(기존 불일치 데이터는 삭제 후 재생성됩니다)`)) {
             return;
         }
 
@@ -209,24 +226,13 @@ export default function SyncShCCToReservationPage() {
         let processedCount = 0;
 
         try {
-            for (const shCC of unsyncedData) {
+            for (const shCC of needsSyncData) {
                 processedCount++;
                 if (processedCount % 10 === 0) {
-                    console.log(`동기화 진행중: ${processedCount}/${unsyncedData.length}`);
+                    console.log(`동기화 진행중: ${processedCount}/${needsSyncData.length}`);
                 }
                 const key = shCCKey(shCC);
                 const existing = existingReservations.get(key);
-
-                // 이미 존재하는 경우 스킵
-                if (existing) {
-                    results.push({
-                        success: true,
-                        message: '이미 존재함',
-                        shCCId: shCC.id,
-                        reservationId: existing.id,
-                    });
-                    continue;
-                }
 
                 try {
                     // 1. order_id로 reservation 찾기
@@ -322,13 +328,15 @@ export default function SyncShCCToReservationPage() {
                         reservationId = newReservation.re_id;
                     }
 
-                    // 3. reservation_car_sht 생성 (API 호출로 RLS 우회)
+                    // 3. reservation_car_sht 삭제 후 생성 (API 호출로 RLS 우회)
                     const response = await fetch('/api/admin/sync-car-sht', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
+                            action: existing ? 'replace' : 'insert',
+                            existing_id: existing?.id,
                             reservation_id: reservationId,
                             vehicle_number: shCC.vehicle_number || '',
                             seat_number: shCC.seat_number || '',
@@ -446,7 +454,7 @@ export default function SyncShCCToReservationPage() {
                     </div>
 
                     {/* 통계 카드 */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
                         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                             <div className="flex items-center gap-2 mb-2">
                                 <Database className="w-5 h-5 text-blue-600" />
@@ -458,15 +466,23 @@ export default function SyncShCCToReservationPage() {
                         <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                             <div className="flex items-center gap-2 mb-2">
                                 <CheckCircle className="w-5 h-5 text-green-600" />
-                                <span className="text-sm font-medium text-green-800">이미 동기화됨</span>
+                                <span className="text-sm font-medium text-green-800">정확히 일치</span>
                             </div>
                             <div className="text-2xl font-bold text-green-600">{stats.matched}건</div>
+                        </div>
+
+                        <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                            <div className="flex items-center gap-2 mb-2">
+                                <AlertCircle className="w-5 h-5 text-orange-600" />
+                                <span className="text-sm font-medium text-orange-800">불일치(업데이트)</span>
+                            </div>
+                            <div className="text-2xl font-bold text-orange-600">{stats.needsUpdate}건</div>
                         </div>
 
                         <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
                             <div className="flex items-center gap-2 mb-2">
                                 <AlertCircle className="w-5 h-5 text-yellow-600" />
-                                <span className="text-sm font-medium text-yellow-800">동기화 필요</span>
+                                <span className="text-sm font-medium text-yellow-800">누락(생성)</span>
                             </div>
                             <div className="text-2xl font-bold text-yellow-600">{stats.unmatched}건</div>
                         </div>
@@ -481,13 +497,13 @@ export default function SyncShCCToReservationPage() {
                     </div>
 
                     {/* 동기화 버튼 */}
-                    {stats.unmatched > 0 && (
+                    {(stats.unmatched + stats.needsUpdate) > 0 && (
                         <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="text-lg font-semibold text-yellow-800 mb-1">동기화 필요</h3>
                                     <p className="text-sm text-yellow-700">
-                                        {stats.unmatched}건의 데이터가 reservation_car_sht 테이블에 없습니다.
+                                        {stats.needsUpdate}건 불일치(삭제 후 재생성) + {stats.unmatched}건 누락(생성) = 총 {stats.unmatched + stats.needsUpdate}건
                                     </p>
                                 </div>
                                 <button

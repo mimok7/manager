@@ -16,7 +16,7 @@ const supabaseAdmin = createClient(
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { reservation_id, vehicle_number, seat_number, sht_category, usage_date, request_note } = body;
+        const { action, existing_id, reservation_id, vehicle_number, seat_number, sht_category, usage_date, request_note } = body;
 
         // 필수 필드 검증
         if (!reservation_id) {
@@ -26,8 +26,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        let data = null;
+
+        // action이 'replace'면 기존 데이터 삭제 후 재생성
+        if (action === 'replace' && existing_id) {
+            const { error: deleteError } = await supabaseAdmin
+                .from('reservation_car_sht')
+                .delete()
+                .eq('id', existing_id);
+
+            if (deleteError) {
+                console.error('reservation_car_sht 삭제 오류:', deleteError);
+                return NextResponse.json(
+                    { error: `삭제 실패: ${deleteError.message}` },
+                    { status: 500 }
+                );
+            }
+        }
+
         // reservation_car_sht에 데이터 삽입 (서비스 롤로 RLS 우회)
-        const { data, error } = await supabaseAdmin
+        const { data: insertData, error } = await supabaseAdmin
             .from('reservation_car_sht')
             .insert({
                 reservation_id,
@@ -47,6 +65,8 @@ export async function POST(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        data = insertData;
 
         return NextResponse.json({ data, success: true });
     } catch (error: any) {
