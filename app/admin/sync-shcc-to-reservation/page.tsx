@@ -65,6 +65,7 @@ export default function SyncShCCToReservationPage() {
         totalReservations: 0,
         matched: 0,
         unmatched: 0,
+        needsUpdate: 0,
     });
 
     // 페이지네이션 상태
@@ -155,14 +156,37 @@ export default function SyncShCCToReservationPage() {
             });
             setExistingReservations(reservationMap);
 
-            // 통계 계산
-            const matched = allShCCRecords.filter((shCC: ShCCRecord) => reservationMap.has(shCCKey(shCC))).length;
-
+            // 통계 계산 (정확/업데이트 필요/누락)
+            let matched = 0;
+            let needsUpdate = 0;
+            for (const sh of allShCCRecords as ShCCRecord[]) {
+                const key = shCCKey(sh);
+                const existing = reservationMap.get(key);
+                if (!existing) continue;
+                // 비교 필드: usage_date, sht_category, vehicle_number, seat_number, request_note(name/email 포함 여부)
+                const normalizedUsage = normalizeDate(existing.usage_date);
+                const targetDate = normalizeDate(sh.boarding_date);
+                const noteShouldContain = `${sh.name || ''}`.trim();
+                const emailShouldContain = `${sh.email || ''}`.trim();
+                const note = existing.request_note || '';
+                const noteOk = (!noteShouldContain || note.includes(noteShouldContain)) && (!emailShouldContain || note.includes(emailShouldContain));
+                const categoryOk = (existing.sht_category || '') === (sh.category || '');
+                const dateOk = normalizedUsage === targetDate;
+                const seatOk = (existing.seat_number || '') === (sh.seat_number || '');
+                const vehicleOk = (existing.vehicle_number || '') === (sh.vehicle_number || '');
+                if (categoryOk && dateOk && seatOk && vehicleOk && noteOk) {
+                    matched++;
+                } else {
+                    needsUpdate++;
+                }
+            }
+            const unmatched = allShCCRecords.length - matched - needsUpdate;
             setStats({
                 totalShCC: allShCCRecords.length,
                 totalReservations: allReservationRecords.length,
                 matched,
-                unmatched: allShCCRecords.length - matched,
+                needsUpdate,
+                unmatched,
             });
 
         } catch (error) {
