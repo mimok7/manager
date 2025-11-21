@@ -621,6 +621,12 @@ export default function ReservationDetailModal({
                 }
 
                 if (!cancelled) {
+                    // 크루즈 우선 정렬, 그 외 최신순
+                    allServices.sort((a, b) => {
+                        if (a.re_type === 'cruise' && b.re_type !== 'cruise') return -1;
+                        if (a.re_type !== 'cruise' && b.re_type === 'cruise') return 1;
+                        return new Date(b.re_created_at).getTime() - new Date(a.re_created_at).getTime();
+                    });
                     setAllUserReservations(allServices);
                 }
             } catch (error) {
