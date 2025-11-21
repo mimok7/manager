@@ -174,16 +174,56 @@ export default function SyncShCCToReservationPage() {
                     // 2. reservation이 없으면 새로 생성
                     if (!reservationData) {
                         // order_id로 사용자 찾기
-                        const { data: userData, error: userError } = await supabase
+                        let userData = null;
+                        const { data: userDataFromUsers, error: userError } = await supabase
                             .from('users')
                             .select('id')
                             .eq('order_id', shCC.order_id)
                             .maybeSingle();
 
+                        if (userDataFromUsers) {
+                            userData = userDataFromUsers;
+                        } else {
+                            // users 테이블에 없으면 sh_m 테이블에서 찾기
+                            const { data: shMData, error: shMError } = await supabase
+                                .from('sh_m')
+                                .select('*')
+                                .eq('order_id', shCC.order_id)
+                                .maybeSingle();
+
+                            if (shMData) {
+                                // sh_m 데이터로 users 테이블에 사용자 생성
+                                const { data: newUser, error: createUserError } = await supabase
+                                    .from('users')
+                                    .insert({
+                                        order_id: shMData.order_id,
+                                        name: shMData.name || shCC.name,
+                                        email: shMData.email || shCC.email,
+                                        phone: shMData.phone || '',
+                                        role: 'member',
+                                        created_at: new Date().toISOString(),
+                                    })
+                                    .select('id')
+                                    .single();
+
+                                if (createUserError) {
+                                    results.push({
+                                        success: false,
+                                        message: 'sh_m 데이터로 사용자 생성 실패',
+                                        shCCId: shCC.id,
+                                        error: createUserError.message,
+                                    });
+                                    continue;
+                                }
+
+                                userData = newUser;
+                            }
+                        }
+
                         if (!userData) {
                             results.push({
                                 success: false,
-                                message: '사용자를 찾을 수 없음',
+                                message: 'users와 sh_m 모두에서 사용자를 찾을 수 없음',
                                 shCCId: shCC.id,
                                 error: `order_id: ${shCC.order_id}`,
                             });
@@ -599,8 +639,8 @@ export default function SyncShCCToReservationPage() {
                                                 key={page}
                                                 onClick={() => setCurrentPage(page)}
                                                 className={`px-3 py-2 border rounded-lg ${currentPage === page
-                                                        ? 'bg-blue-500 text-white border-blue-500'
-                                                        : 'border-gray-300 hover:bg-gray-50'
+                                                    ? 'bg-blue-500 text-white border-blue-500'
+                                                    : 'border-gray-300 hover:bg-gray-50'
                                                     }`}
                                             >
                                                 {page}
