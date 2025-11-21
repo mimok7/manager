@@ -80,42 +80,73 @@ export default function SyncShCCToReservationPage() {
         try {
             setLoading(true);
 
-            // sh_cc 데이터 조회
-            const { data: shCCRecords, error: shCCError } = await supabase
-                .from('sh_cc')
-                .select('*')
-                .order('id', { ascending: true });
+            // sh_cc 데이터 조회 (전체)
+            let allShCCRecords: any[] = [];
+            let offset = 0;
+            const limit = 1000;
+            let hasMore = true;
 
-            if (shCCError) throw shCCError;
+            while (hasMore) {
+                const { data: shCCRecords, error: shCCError } = await supabase
+                    .from('sh_cc')
+                    .select('*')
+                    .order('id', { ascending: true })
+                    .range(offset, offset + limit - 1);
 
-            // reservation_car_sht 데이터 조회
-            const { data: reservationRecords, error: reservationError } = await supabase
-                .from('reservation_car_sht')
-                .select('*');
+                if (shCCError) throw shCCError;
 
-            if (reservationError) throw reservationError;
+                if (shCCRecords && shCCRecords.length > 0) {
+                    allShCCRecords = [...allShCCRecords, ...shCCRecords];
+                    offset += limit;
+                    hasMore = shCCRecords.length === limit;
+                } else {
+                    hasMore = false;
+                }
+            }
 
-            setShCCData(shCCRecords || []);
+            // reservation_car_sht 데이터 조회 (전체)
+            let allReservationRecords: any[] = [];
+            offset = 0;
+            hasMore = true;
+
+            while (hasMore) {
+                const { data: reservationRecords, error: reservationError } = await supabase
+                    .from('reservation_car_sht')
+                    .select('*')
+                    .range(offset, offset + limit - 1);
+
+                if (reservationError) throw reservationError;
+
+                if (reservationRecords && reservationRecords.length > 0) {
+                    allReservationRecords = [...allReservationRecords, ...reservationRecords];
+                    offset += limit;
+                    hasMore = reservationRecords.length === limit;
+                } else {
+                    hasMore = false;
+                }
+            }
+
+            setShCCData(allShCCRecords);
 
             // vehicle_number와 seat_number로 매핑
             const reservationMap = new Map<string, ReservationCarShtRecord>();
-            (reservationRecords || []).forEach((record: any) => {
+            allReservationRecords.forEach((record: any) => {
                 const key = `${record.vehicle_number}_${record.seat_number}`;
                 reservationMap.set(key, record);
             });
             setExistingReservations(reservationMap);
 
             // 통계 계산
-            const matched = (shCCRecords || []).filter(shCC => {
+            const matched = allShCCRecords.filter(shCC => {
                 const key = `${shCC.vehicle_number}_${shCC.seat_number}`;
                 return reservationMap.has(key);
             }).length;
 
             setStats({
-                totalShCC: shCCRecords?.length || 0,
-                totalReservations: reservationRecords?.length || 0,
+                totalShCC: allShCCRecords.length,
+                totalReservations: allReservationRecords.length,
                 matched,
-                unmatched: (shCCRecords?.length || 0) - matched,
+                unmatched: allShCCRecords.length - matched,
             });
 
         } catch (error) {
@@ -255,29 +286,35 @@ export default function SyncShCCToReservationPage() {
                         reservationId = newReservation.re_id;
                     }
 
-                    // 3. reservation_car_sht 생성
-                    const { data: carShtData, error: carShtError } = await supabase
-                        .from('reservation_car_sht')
-                        .insert({
+                    // 3. reservation_car_sht 생성 (API 호출로 RLS 우회)
+                    const response = await fetch('/api/admin/sync-car-sht', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
                             reservation_id: reservationId,
                             vehicle_number: shCC.vehicle_number || '',
                             seat_number: shCC.seat_number || '',
                             sht_category: shCC.category || '',
-                            usage_date: shCC.boarding_date ? new Date(shCC.boarding_date) : null,
+                            usage_date: shCC.boarding_date || null,
                             request_note: `동기화: ${shCC.name || ''} / ${shCC.email || ''}`,
-                        })
-                        .select()
-                        .single();
+                        }),
+                    });
 
-                    if (carShtError) {
+                    const carShtResult = await response.json();
+
+                    if (!response.ok || carShtResult.error) {
                         results.push({
                             success: false,
                             message: '차량 예약 생성 실패',
                             shCCId: shCC.id,
-                            error: carShtError.message,
+                            error: carShtResult.error || 'API 호출 실패',
                         });
                         continue;
                     }
+
+                    const carShtData = carShtResult.data;
 
                     results.push({
                         success: true,
